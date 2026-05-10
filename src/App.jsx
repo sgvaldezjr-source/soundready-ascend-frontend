@@ -1536,7 +1536,7 @@ export default function App() {
             </div>
             <div style={{ textAlign: "center" }}>
               <img
-                src="https://github.com/sgvaldezjr-source/soundready-site/raw/0843aac8713647c1cd04503bc55dcdb0c684fab4/soundready-logo-transparent.png"
+                src="/soundready-logo-transparent.png"
                 alt="SoundReady"
                 style={{ height: 56, objectFit: "contain" }}
               />
