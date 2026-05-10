@@ -760,6 +760,7 @@ function WritingPractice() {
   const [view, setView] = useState("write");
   const [exporting, setExporting] = useState(false);
   const [uploadedBase64, setUploadedBase64] = useState(null);
+  const [lastEssay, setLastEssay] = useState("");
   const wordCount = essay.trim() ? essay.trim().split(/\s+/).length : 0;
   const minWords = taskType === "Task 2" ? 250 : 150;
 
@@ -773,6 +774,7 @@ function WritingPractice() {
 
   async function analyze() {
     if (wordCount < 50) return;
+    setLastEssay(essay);
     setLoading(true); setFeedback(null);
     try {
       // Build message content — include image if student uploaded one
@@ -893,6 +895,14 @@ function WritingPractice() {
             <div style={{ textAlign: "center", padding: "28px 0", color: C.textMuted, fontFamily: "DM Mono", fontSize: 12 }}>
               <div style={{ fontSize: 20, marginBottom: 8 }}>📝</div>
               Extracting language samples and mapping to band descriptors…
+            </div>
+          )}
+
+          {/* Show submitted essay for comparison when feedback exists */}
+          {lastEssay && feedback && !feedback.error && (
+            <div style={{ marginTop: 14, background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px" }}>
+              <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Your Submitted Response</div>
+              <p style={{ color: C.text, fontSize: 13.5, lineHeight: 1.75, margin: 0, fontFamily: "'Lora', serif", whiteSpace: "pre-line" }}>{lastEssay}</p>
             </div>
           )}
 
@@ -1519,8 +1529,8 @@ export default function App() {
         input, textarea, select { color: ${C.text}; }
         textarea::placeholder { color: ${C.textDim}; }
       `}</style>
-      <div style={{ maxWidth: 680, margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-        <div style={{ padding: "16px 18px 0", borderBottom: `1px solid ${C.border}`, background: C.bg, position: "sticky", top: 0, zIndex: 10, boxShadow: "0 2px 12px rgba(27,42,58,0.08)" }}>
+      <div style={{ maxWidth: "100%", margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+        <div style={{ padding: "16px clamp(18px, 5vw, 120px) 0", borderBottom: `1px solid ${C.border}`, background: C.bg, position: "sticky", top: 0, zIndex: 10, boxShadow: "0 2px 12px rgba(27,42,58,0.08)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 13 }}>
             <div>
               <div style={{ fontFamily: "Sora", fontSize: 20, fontWeight: 800, color: C.text, letterSpacing: -0.5 }}>Sound<span style={{ color: C.accent }}>Ready</span></div>
@@ -1544,7 +1554,7 @@ export default function App() {
           </div>
         </div>
 
-        <div style={{ padding: 18, flex: 1 }}>
+        <div style={{ padding: "18px clamp(18px, 5vw, 120px)", flex: 1 }}>
           {tab === "dashboard" && <Dashboard />}
           {tab === "writing" && <WritingPractice />}
           {tab === "speaking" && <SpeakingPractice />}
