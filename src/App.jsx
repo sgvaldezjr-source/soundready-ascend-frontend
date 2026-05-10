@@ -390,7 +390,7 @@ function Pill({ children, active, onClick, color }) {
     <button onClick={onClick} style={{
       padding: "6px 13px", borderRadius: 999, border: `1.5px solid ${active ? col : C.border}`,
       background: active ? col + "18" : "transparent", color: active ? col : C.textMuted,
-      fontFamily: "'DM Mono', monospace", fontSize: 12, cursor: "pointer",
+      fontFamily: "'Inter', sans-serif", fontSize: 16, cursor: "pointer",
       transition: "all 0.15s", fontWeight: active ? 700 : 400, whiteSpace: "nowrap",
     }}>{children}</button>
   );
@@ -407,7 +407,7 @@ function ScoreRing({ score, label, color }) {
           style={{ transition: "stroke-dasharray 1.2s ease" }} />
         <text x={33} y={38} textAnchor="middle" fill={color} fontSize={15} fontWeight={700} fontFamily="DM Mono">{score}</text>
       </svg>
-      <span style={{ color: C.textMuted, fontSize: 10, fontFamily: "DM Mono", textTransform: "uppercase", letterSpacing: 0.8, textAlign: "center", maxWidth: 66 }}>{label}</span>
+      <span style={{ color: C.textMuted, fontSize: 16, fontFamily: "'Inter', sans-serif", textTransform: "uppercase", letterSpacing: 0.8, textAlign: "center", maxWidth: 66 }}>{label}</span>
     </div>
   );
 }
@@ -429,18 +429,18 @@ function CriterionCard({ label, band, descriptorMatched, quickSummary, evidence,
         padding: "12px 14px", background: C.surfaceAlt, border: "none", cursor: "pointer", textAlign: "left",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-          <span style={{ background: color + "22", color, border: `1px solid ${color}44`, borderRadius: 6, padding: "2px 9px", fontFamily: "DM Mono", fontSize: 11, fontWeight: 700, whiteSpace: "nowrap" }}>Band {band}</span>
-          <span style={{ color: C.text, fontFamily: "DM Mono", fontSize: 11 }}>{label}</span>
+          <span style={{ background: color + "22", color, border: `1px solid ${color}44`, borderRadius: 6, padding: "2px 9px", fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700, whiteSpace: "nowrap" }}>Band {band}</span>
+          <span style={{ color: C.text, fontFamily: "'Inter', sans-serif", fontSize: 11 }}>{label}</span>
         </div>
-        <span style={{ color: C.textDim, fontSize: 12, marginLeft: 8 }}>{open ? "▲" : "▼"}</span>
+        <span style={{ color: C.textDim, fontSize: 16, marginLeft: 8 }}>{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
         <div style={{ padding: "13px 14px", background: C.surface }}>
-          <p style={{ color: C.textMuted, fontSize: 12.5, lineHeight: 1.65, fontStyle: "italic", margin: "0 0 5px" }}>{descriptorMatched}</p>
-          <p style={{ color: C.text, fontSize: 13, lineHeight: 1.65, margin: "0 0 14px" }}>{quickSummary}</p>
+          <p style={{ color: C.textMuted, fontSize: 15, lineHeight: 1.65, fontStyle: "italic", margin: "0 0 5px" }}>{descriptorMatched}</p>
+          <p style={{ color: C.text, fontSize: 15, lineHeight: 1.65, margin: "0 0 14px" }}>{quickSummary}</p>
 
-          <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>
             Language Evidence from Candidate Response
           </div>
 
@@ -448,13 +448,13 @@ function CriterionCard({ label, band, descriptorMatched, quickSummary, evidence,
             <div key={i} style={{ display: "flex", gap: 9, marginBottom: 11, paddingBottom: 11, borderBottom: i < displayedEvidence.length - 1 ? `1px solid ${C.border}` : "none" }}>
               <BandSignalDot signal={ev.band_signal} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textDim, marginBottom: 4, textTransform: "uppercase", letterSpacing: 0.8 }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, marginBottom: 4, textTransform: "uppercase", letterSpacing: 0.8 }}>
                   {ev.feature}
                 </div>
                 <div style={{ background: C.surfaceAlt, borderLeft: `3px solid ${ev.band_signal === "positive" ? C.green : ev.band_signal === "negative" ? C.red : C.accent}`, borderRadius: "0 7px 7px 0", padding: "7px 10px", marginBottom: 6 }}>
-                  <span style={{ color: C.text, fontFamily: "'Lora', serif", fontSize: 13, fontStyle: "italic" }}>"{ev.extract}"</span>
+                  <span style={{ color: C.text, fontFamily: "'Inter', sans-serif", fontSize: 15, fontStyle: "italic" }}>"{ev.extract}"</span>
                 </div>
-                <p style={{ color: C.textMuted, fontSize: 12.5, lineHeight: 1.6, margin: 0 }}>{ev.observation}</p>
+                <p style={{ color: C.textMuted, fontSize: 15, lineHeight: 1.6, margin: 0 }}>{ev.observation}</p>
               </div>
             </div>
           ))}
@@ -462,7 +462,7 @@ function CriterionCard({ label, band, descriptorMatched, quickSummary, evidence,
           {allEvidence.length > 2 && (
             <button onClick={() => setShowAll(!showAll)} style={{
               background: "transparent", border: `1px solid ${C.border}`, borderRadius: 7,
-              padding: "5px 12px", color: C.textMuted, fontFamily: "DM Mono", fontSize: 11,
+              padding: "5px 12px", color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 15,
               cursor: "pointer", marginTop: 4, width: "100%",
             }}>
               {showAll ? "Show less ▲" : `Show all ${allEvidence.length} evidence items ▼`}
@@ -481,9 +481,9 @@ function FeedbackReport({ feedback, criteriaMap, descriptors, ringColors, onExpo
       <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 13, padding: "16px 15px", marginBottom: 14 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
           <div>
-            <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Overall Band</div>
-            <div style={{ fontFamily: "DM Mono", fontSize: 40, fontWeight: 700, color: BAND_COLOR(feedback.overall_band), lineHeight: 1 }}>{feedback.overall_band}</div>
-            <div style={{ fontFamily: "DM Mono", fontSize: 10, color: C.textMuted, marginTop: 3 }}>CEFR {feedback.cefr} · {CEFR(feedback.overall_band)}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Overall Band</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 40, fontWeight: 700, color: BAND_COLOR(feedback.overall_band), lineHeight: 1 }}>{feedback.overall_band}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, marginTop: 3 }}>CEFR {feedback.cefr} · {CEFR(feedback.overall_band)}</div>
           </div>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {criteriaMap.map(({ key }, i) => (
@@ -495,12 +495,12 @@ function FeedbackReport({ feedback, criteriaMap, descriptors, ringColors, onExpo
 
       {/* Examiner comment */}
       <div style={{ background: C.blue + "0e", border: `1px solid ${C.blue}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 12 }}>
-        <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.blue, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>📋 Examiner Comment</div>
-        <p style={{ color: C.text, fontSize: 13.5, lineHeight: 1.68, margin: 0 }}>{feedback.examiner_comment}</p>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.blue, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Examiner Comment</div>
+        <p style={{ color: C.text, fontSize: 16, lineHeight: 1.68, margin: 0 }}>{feedback.examiner_comment}</p>
       </div>
 
       {/* Criterion breakdown */}
-      <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Criterion Breakdown</div>
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Criterion Breakdown</div>
       {criteriaMap.map(({ key }, i) => (
         <CriterionCard
           key={key}
@@ -517,14 +517,14 @@ function FeedbackReport({ feedback, criteriaMap, descriptors, ringColors, onExpo
 
       {/* Next band */}
       <div style={{ background: C.accent + "0e", border: `1px solid ${C.accent}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 10 }}>
-        <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>🎯 To Reach the Next Band</div>
-        <p style={{ color: C.text, fontSize: 13.5, lineHeight: 1.68, margin: 0 }}>{feedback.next_band_targets}</p>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>— To Reach the Next Band</div>
+        <p style={{ color: C.text, fontSize: 16, lineHeight: 1.68, margin: 0 }}>{feedback.next_band_targets}</p>
       </div>
 
       {/* Model rewrite */}
       <div style={{ background: C.purple + "0e", border: `1px solid ${C.purple}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 16 }}>
-        <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.purple, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>✨ Model Rewrite</div>
-        <p style={{ color: C.text, fontSize: 13.5, lineHeight: 1.68, margin: 0 }}>{feedback.model_rewrite}</p>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.purple, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Model Rewrite</div>
+        <p style={{ color: C.text, fontSize: 16, lineHeight: 1.68, margin: 0 }}>{feedback.model_rewrite}</p>
       </div>
 
       {/* Export */}
@@ -532,12 +532,12 @@ function FeedbackReport({ feedback, criteriaMap, descriptors, ringColors, onExpo
         width: "100%", padding: "13px 0",
         background: exporting ? C.border : C.accent,
         color: exporting ? C.textDim : "#FFFFFF",
-        border: "none", borderRadius: 11, fontFamily: "DM Mono", fontSize: 13,
+        border: "none", borderRadius: 11, fontFamily: "'Inter', sans-serif", fontSize: 15,
         fontWeight: 700, cursor: exporting ? "not-allowed" : "pointer",
         display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
         transition: "all 0.2s",
       }}>
-        {exporting ? "⏳ Preparing Report…" : "⬇ Download Report"}
+        {exporting ? "Preparing Report…" : "Download Report"}
       </button>
     </div>
   );
@@ -550,14 +550,14 @@ function ChartBar({ data }) {
   const { title, xKey, series, data: rows, yMax, yUnit } = data;
   return (
     <div>
-      <div style={{ fontFamily: "DM Mono", fontSize: 10, color: C.textMuted, marginBottom: 10, textAlign: "center" }}>{title}</div>
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, marginBottom: 10, textAlign: "center" }}>{title}</div>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={rows} margin={{ top: 4, right: 10, left: -10, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} />
-          <XAxis dataKey={xKey} tick={{ fill: C.textMuted, fontSize: 10, fontFamily: "DM Mono" }} />
-          <YAxis domain={[0, yMax]} tickFormatter={v => `${v}${yUnit}`} tick={{ fill: C.textMuted, fontSize: 10, fontFamily: "DM Mono" }} />
-          <Tooltip contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "DM Mono", fontSize: 11 }} formatter={(v) => [`${v}${yUnit}`]} />
-          <Legend wrapperStyle={{ fontFamily: "DM Mono", fontSize: 10 }} />
+          <XAxis dataKey={xKey} tick={{ fill: C.textMuted, fontSize: 16, fontFamily: "'Inter', sans-serif" }} />
+          <YAxis domain={[0, yMax]} tickFormatter={v => `${v}${yUnit}`} tick={{ fill: C.textMuted, fontSize: 16, fontFamily: "'Inter', sans-serif" }} />
+          <Tooltip contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "'Inter', sans-serif", fontSize: 11 }} formatter={(v) => [`${v}${yUnit}`]} />
+          <Legend wrapperStyle={{ fontFamily: "'Inter', sans-serif", fontSize: 10 }} />
           {series.map(s => <Bar key={s.key} dataKey={s.key} fill={s.color} radius={[3, 3, 0, 0]} />)}
         </BarChart>
       </ResponsiveContainer>
@@ -569,14 +569,14 @@ function ChartLine({ data }) {
   const { title, xKey, series, data: rows, yMax, yUnit } = data;
   return (
     <div>
-      <div style={{ fontFamily: "DM Mono", fontSize: 10, color: C.textMuted, marginBottom: 10, textAlign: "center" }}>{title}</div>
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, marginBottom: 10, textAlign: "center" }}>{title}</div>
       <ResponsiveContainer width="100%" height={200}>
         <LineChart data={rows} margin={{ top: 4, right: 10, left: -10, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} />
-          <XAxis dataKey={xKey} tick={{ fill: C.textMuted, fontSize: 10, fontFamily: "DM Mono" }} />
-          <YAxis domain={[0, yMax]} tickFormatter={v => `${v}${yUnit}`} tick={{ fill: C.textMuted, fontSize: 10, fontFamily: "DM Mono" }} />
-          <Tooltip contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "DM Mono", fontSize: 11 }} formatter={(v) => [`${v}${yUnit}`]} />
-          <Legend wrapperStyle={{ fontFamily: "DM Mono", fontSize: 10 }} />
+          <XAxis dataKey={xKey} tick={{ fill: C.textMuted, fontSize: 16, fontFamily: "'Inter', sans-serif" }} />
+          <YAxis domain={[0, yMax]} tickFormatter={v => `${v}${yUnit}`} tick={{ fill: C.textMuted, fontSize: 16, fontFamily: "'Inter', sans-serif" }} />
+          <Tooltip contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "'Inter', sans-serif", fontSize: 11 }} formatter={(v) => [`${v}${yUnit}`]} />
+          <Legend wrapperStyle={{ fontFamily: "'Inter', sans-serif", fontSize: 10 }} />
           {series.map(s => <Line key={s.key} type="monotone" dataKey={s.key} stroke={s.color} strokeWidth={2} dot={{ r: 3 }} />)}
         </LineChart>
       </ResponsiveContainer>
@@ -595,17 +595,17 @@ function ChartPie({ data }) {
   };
   return (
     <div>
-      <div style={{ fontFamily: "DM Mono", fontSize: 10, color: C.textMuted, marginBottom: 6, textAlign: "center" }}>{title}</div>
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, marginBottom: 6, textAlign: "center" }}>{title}</div>
       <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
         {series.map(s => (
           <div key={s.year} style={{ flex: 1, minWidth: 130 }}>
-            <div style={{ fontFamily: "DM Mono", fontSize: 10, color: C.accent, textAlign: "center", marginBottom: 4 }}>{s.year}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.accent, textAlign: "center", marginBottom: 4 }}>{s.year}</div>
             <ResponsiveContainer width="100%" height={140}>
               <PieChart>
                 <Pie data={s.data} cx="50%" cy="50%" outerRadius={60} dataKey="value" labelLine={false} label={renderLabel}>
                   {s.data.map((entry, i) => <Cell key={i} fill={entry.color} />)}
                 </Pie>
-                <Tooltip contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "DM Mono", fontSize: 11 }} formatter={v => [`${v}%`]} />
+                <Tooltip contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "'Inter', sans-serif", fontSize: 11 }} formatter={v => [`${v}%`]} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -616,7 +616,7 @@ function ChartPie({ data }) {
         {series[0].data.map(d => (
           <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <span style={{ width: 8, height: 8, borderRadius: 2, background: d.color, display: "inline-block" }} />
-            <span style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textMuted }}>{d.name}</span>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textMuted }}>{d.name}</span>
           </div>
         ))}
       </div>
@@ -628,13 +628,13 @@ function ChartProcess({ data }) {
   const { title, steps } = data;
   return (
     <div>
-      <div style={{ fontFamily: "DM Mono", fontSize: 10, color: C.textMuted, marginBottom: 12, textAlign: "center" }}>{title}</div>
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, marginBottom: 12, textAlign: "center" }}>{title}</div>
       <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 0, justifyContent: "center" }}>
         {steps.map((s, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
               <div style={{ width: 52, height: 52, borderRadius: "50%", background: C.surfaceAlt, border: `2px solid ${C.accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>{s.icon}</div>
-              <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.text, textAlign: "center", maxWidth: 60, whiteSpace: "pre-line", lineHeight: 1.4 }}>{s.label}</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.text, textAlign: "center", maxWidth: 60, whiteSpace: "pre-line", lineHeight: 1.4 }}>{s.label}</div>
             </div>
             {i < steps.length - 1 && (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "0 4px", marginBottom: 20 }}>
@@ -680,17 +680,17 @@ function Task1Visual({ topic, taskType, onBase64Change }) {
     <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 14px 12px", marginBottom: 12 }}>
       {/* Header row */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-        <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.accent, textTransform: "uppercase", letterSpacing: 1 }}>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1 }}>
           {showUploaded ? "Your Uploaded Chart" : showRealImage ? "Task Visual" : `Generated ${topic.label}`}
         </div>
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
           {showUploaded && (
-            <button onClick={clearUpload} style={{ fontFamily: "DM Mono", fontSize: 9, color: C.red, background: "transparent", border: `1px solid ${C.red}44`, borderRadius: 6, padding: "3px 8px", cursor: "pointer" }}>✕ Remove</button>
+            <button onClick={clearUpload} style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.red, background: "transparent", border: `1px solid ${C.red}44`, borderRadius: 6, padding: "3px 8px", cursor: "pointer" }}>✕ Remove</button>
           )}
           {!showUploaded && (
             <>
-              <span style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textDim }}>Upload real image</span>
-              <button onClick={() => fileRef.current?.click()} style={{ fontFamily: "DM Mono", fontSize: 9, color: C.blue, background: "transparent", border: `1px solid ${C.blue}44`, borderRadius: 6, padding: "3px 8px", cursor: "pointer" }}>⬆ Upload</button>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim }}>Upload real image</span>
+              <button onClick={() => fileRef.current?.click()} style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.blue, background: "transparent", border: `1px solid ${C.blue}44`, borderRadius: 6, padding: "3px 8px", cursor: "pointer" }}>⬆ Upload</button>
               <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleUpload} />
             </>
           )}
@@ -712,8 +712,8 @@ function Task1Visual({ topic, taskType, onBase64Change }) {
       {/* Slot hint for real images */}
       {showChart && (
         <div style={{ marginTop: 10, padding: "6px 10px", background: C.surface, borderRadius: 7, display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 11 }}>💡</span>
-          <span style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textDim, lineHeight: 1.5 }}>
+          <span style={{ fontSize: 11 }}></span>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, lineHeight: 1.5 }}>
             Replace with a real past-paper image by setting <code style={{ color: C.accent }}>imageUrl</code> in the topic bank, or upload one above.
           </span>
         </div>
@@ -842,21 +842,21 @@ function WritingPractice() {
       {/* View toggle after feedback */}
       {feedback && !feedback.error && (
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
-          <Pill active={view === "write"} onClick={() => setView("write")} color={C.accent}>✍️ My Response</Pill>
-          <Pill active={view === "feedback"} onClick={() => setView("feedback")} color={C.purple}>📊 Feedback Report</Pill>
+          <Pill active={view === "write"} onClick={() => setView("write")} color={C.accent}>My Response</Pill>
+          <Pill active={view === "feedback"} onClick={() => setView("feedback")} color={C.purple}>Feedback Report</Pill>
         </div>
       )}
 
       {view === "write" && (
         <>
-          <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Task Type</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Task Type</div>
           <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
             {["Task 2", "Task 1 Academic", "Task 1 General"].map(t => (
               <Pill key={t} active={taskType === t} onClick={() => handleTaskChange(t)}>{t}</Pill>
             ))}
           </div>
 
-          <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Topic</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Topic</div>
           <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
             {WRITING_TOPICS[taskType].map(t => (
               <Pill key={t.id} active={topic.id === t.id} onClick={() => { setTopic(t); setEssay(""); setFeedback(null); setView("write"); setUploadedBase64(null); }}>{t.label}</Pill>
@@ -867,33 +867,33 @@ function WritingPractice() {
           <Task1Visual topic={topic} taskType={taskType} onBase64Change={setUploadedBase64} />
 
           <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 12 }}>
-            <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Prompt</div>
-            <p style={{ color: C.text, fontSize: 13.5, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{topic.prompt}</p>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Prompt</div>
+            <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{topic.prompt}</p>
           </div>
 
           <textarea value={essay} onChange={e => setEssay(e.target.value)}
             placeholder={`Write your ${taskType} response here…`}
-            style={{ width: "100%", minHeight: taskType === "Task 2" ? 220 : 160, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "13px 14px", color: C.text, fontSize: 14, lineHeight: 1.72, fontFamily: "'Lora', Georgia, serif", resize: "vertical", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
+            style={{ width: "100%", minHeight: taskType === "Task 2" ? 220 : 160, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "13px 14px", color: C.text, fontSize: 16, lineHeight: 1.72, fontFamily: "'Inter', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
             onFocus={e => e.target.style.borderColor = C.accent}
             onBlur={e => e.target.style.borderColor = C.border}
           />
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 9 }}>
-            <span style={{ fontFamily: "DM Mono", fontSize: 11, color: wordCount >= minWords ? C.green : C.textMuted }}>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: wordCount >= minWords ? C.green : C.textMuted }}>
               {wordCount} / {minWords} words {wordCount >= minWords ? "✓" : ""}
             </span>
             <button onClick={analyze} disabled={wordCount < 50 || loading} style={{
               background: wordCount >= 50 && !loading ? C.accent : C.border,
               color: wordCount >= 50 && !loading ? "#FFFFFF" : C.textDim,
               border: "none", borderRadius: 10, padding: "10px 20px",
-              fontFamily: "DM Mono", fontSize: 12, fontWeight: 700,
+              fontFamily: "'Inter', sans-serif", fontSize: 16, fontWeight: 700,
               cursor: wordCount >= 50 && !loading ? "pointer" : "not-allowed",
             }}>{loading ? "Analysing…" : "Submit & Analyse →"}</button>
           </div>
 
           {loading && (
-            <div style={{ textAlign: "center", padding: "28px 0", color: C.textMuted, fontFamily: "DM Mono", fontSize: 12 }}>
-              <div style={{ fontSize: 20, marginBottom: 8 }}>📝</div>
+            <div style={{ textAlign: "center", padding: "28px 0", color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 12 }}>
+              <div style={{ fontSize: 20, marginBottom: 8 }}></div>
               Extracting language samples and mapping to band descriptors…
             </div>
           )}
@@ -901,15 +901,15 @@ function WritingPractice() {
           {/* Show submitted essay for comparison when feedback exists */}
           {lastEssay && feedback && !feedback.error && (
             <div style={{ marginTop: 14, background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px" }}>
-              <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Your Submitted Response</div>
-              <p style={{ color: C.text, fontSize: 13.5, lineHeight: 1.75, margin: 0, fontFamily: "'Lora', serif", whiteSpace: "pre-line" }}>{lastEssay}</p>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Your Submitted Response</div>
+              <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, fontFamily: "'Inter', sans-serif", whiteSpace: "pre-line" }}>{lastEssay}</p>
             </div>
           )}
 
           {feedback?.error && (
-            <div style={{ marginTop: 12, padding: 12, background: C.red + "15", border: `1px solid ${C.red}33`, borderRadius: 9, color: C.red, fontFamily: "DM Mono", fontSize: 12 }}>
+            <div style={{ marginTop: 12, padding: 12, background: C.red + "15", border: `1px solid ${C.red}33`, borderRadius: 9, color: C.red, fontFamily: "'Inter', sans-serif", fontSize: 12 }}>
               <div style={{ fontWeight: 700, marginBottom: 4 }}>Analysis failed</div>
-              <div style={{ fontSize: 11, opacity: 0.85, wordBreak: "break-all" }}>{feedback.message || "Unknown error — check connection and try again."}</div>
+              <div style={{ fontSize: 15, opacity: 0.85, wordBreak: "break-all" }}>{feedback.message || "Unknown error — check connection and try again."}</div>
             </div>
           )}
         </>
@@ -979,7 +979,7 @@ function AudioPlayer({ audioUrl, color }) {
         width: 34, height: 34, borderRadius: "50%", border: "none",
         background: color, color: "#FFFFFF", cursor: "pointer",
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 14, flexShrink: 0,
+        fontSize: 16, flexShrink: 0,
       }}>{playing ? "⏸" : "▶"}</button>
 
       <div style={{ flex: 1 }}>
@@ -993,8 +993,8 @@ function AudioPlayer({ audioUrl, color }) {
           <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${duration ? (progress / duration) * 100 : 0}%`, background: color, borderRadius: 99, transition: "width 0.1s linear" }} />
         </div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <span style={{ fontFamily: "DM Mono", fontSize: 10, color: C.textMuted }}>{fmt(progress)}</span>
-          <span style={{ fontFamily: "DM Mono", fontSize: 10, color: C.textMuted }}>{fmt(duration)}</span>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted }}>{fmt(progress)}</span>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted }}>{fmt(duration)}</span>
         </div>
       </div>
     </div>
@@ -1117,15 +1117,15 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
               {isRecording && (
                 <span style={{ width: 8, height: 8, borderRadius: "50%", background: C.red, display: "inline-block", animation: "pulse 1s infinite" }} />
               )}
-              <span style={{ fontFamily: "DM Mono", fontSize: 10, color: isRecording ? C.red : isRecorded ? C.green : C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: isRecording ? C.red : isRecorded ? C.green : C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>
                 {isRecording ? "Recording" : isRecorded ? "Recording Complete" : "Ready to Record"}
               </span>
             </div>
             {isRecording && (
-              <span style={{ fontFamily: "DM Mono", fontSize: 18, fontWeight: 700, color: C.red }}>{fmt(timer)}</span>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 18, fontWeight: 700, color: C.red }}>{fmt(timer)}</span>
             )}
             {isRecorded && (
-              <span style={{ fontFamily: "DM Mono", fontSize: 12, color: C.textMuted }}>{fmt(timer)} recorded</span>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted }}>{fmt(timer)} recorded</span>
             )}
           </div>
 
@@ -1143,7 +1143,7 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
 
           {isRecorded && !audioUrl && (
             <div style={{ background: C.surface, border: `1px dashed ${C.border}`, borderRadius: 9, padding: "10px 14px", marginBottom: 14, textAlign: "center" }}>
-              <span style={{ fontFamily: "DM Mono", fontSize: 11, color: C.textDim }}>Audio playback available once backend is connected</span>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim }}>Audio playback available once backend is connected</span>
             </div>
           )}
 
@@ -1153,7 +1153,7 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
               <button onClick={isRecording ? stopRecording : startRecording} style={{
                 flex: 1, padding: "12px 0", border: "none", borderRadius: 10, cursor: "pointer",
                 background: isRecording ? C.red : partColor,
-                color: "#FFFFFF", fontFamily: "DM Mono", fontSize: 13, fontWeight: 700,
+                color: "#FFFFFF", fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700,
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                 transition: "background 0.2s",
               }}>
@@ -1168,13 +1168,13 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
               <>
                 <button onClick={reset} style={{
                   padding: "11px 16px", border: `1.5px solid ${C.border}`, borderRadius: 10,
-                  background: "transparent", color: C.textMuted, fontFamily: "DM Mono",
-                  fontSize: 12, cursor: "pointer",
+                  background: "transparent", color: C.textMuted, fontFamily: "'Inter', sans-serif",
+                  fontSize: 16, cursor: "pointer",
                 }}>↺ Re-record</button>
                 <button onClick={() => transcribeAudio(audioBlobRef.current)} style={{
                   flex: 1, padding: "11px 0", border: "none", borderRadius: 10, cursor: "pointer",
-                  background: partColor, color: "#FFFFFF", fontFamily: "DM Mono",
-                  fontSize: 13, fontWeight: 700,
+                  background: partColor, color: "#FFFFFF", fontFamily: "'Inter', sans-serif",
+                  fontSize: 15, fontWeight: 700,
                 }}>Transcribe →</button>
               </>
             )}
@@ -1188,8 +1188,8 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
           <div style={{ marginBottom: 16 }}>
             <Waveform active={true} color={partColor} />
           </div>
-          <div style={{ fontFamily: "DM Mono", fontSize: 12, color: partColor, marginBottom: 6 }}>Transcribing your response…</div>
-          <div style={{ fontFamily: "DM Mono", fontSize: 10, color: C.textDim }}>Whisper AI is processing your audio</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: partColor, marginBottom: 6 }}>Transcribing your response…</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textDim }}>Whisper AI is processing your audio</div>
           <div style={{ display: "flex", justifyContent: "center", gap: 5, marginTop: 14 }}>
             {[0, 1, 2].map(i => (
               <div key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: partColor, opacity: 0.7, animation: `pulse 1s infinite`, animationDelay: `${i * 0.3}s` }} />
@@ -1201,11 +1201,11 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
       {/* ── ERROR STATE ── */}
       {isError && (
         <div style={{ background: C.red + "0e", border: `1px solid ${C.red}33`, borderRadius: 12, padding: "16px", marginBottom: 12 }}>
-          <div style={{ fontFamily: "DM Mono", fontSize: 10, color: C.red, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>⚠ Recording Error</div>
-          <p style={{ color: C.text, fontSize: 13, lineHeight: 1.6, margin: "0 0 12px" }}>{errorMsg}</p>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.red, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Recording Error</div>
+          <p style={{ color: C.text, fontSize: 15, lineHeight: 1.6, margin: "0 0 12px" }}>{errorMsg}</p>
           <button onClick={reset} style={{
             background: "transparent", border: `1.5px solid ${C.border}`, borderRadius: 8,
-            padding: "8px 16px", color: C.textMuted, fontFamily: "DM Mono", fontSize: 11, cursor: "pointer",
+            padding: "8px 16px", color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 15, cursor: "pointer",
           }}>↺ Try Again</button>
         </div>
       )}
@@ -1216,28 +1216,28 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
           <div style={{ background: C.green + "0e", border: `1px solid ${C.green}33`, borderRadius: 10, padding: "10px 14px", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 14 }}>✅</span>
             <div>
-              <div style={{ fontFamily: "DM Mono", fontSize: 10, color: C.green, textTransform: "uppercase", letterSpacing: 1, marginBottom: 2 }}>Transcription Complete</div>
-              <div style={{ fontFamily: "DM Mono", fontSize: 10, color: C.textMuted }}>Review and correct your transcript before analysis</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.green, textTransform: "uppercase", letterSpacing: 1, marginBottom: 2 }}>Transcription Complete</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted }}>Review and correct your transcript before analysis</div>
             </div>
           </div>
 
-          <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
             Your Transcript — edit if needed
           </div>
           <textarea value={transcript} onChange={e => setTranscript(e.target.value)}
             placeholder="Your transcribed speech will appear here. You can edit it to correct any errors before submitting for analysis…"
-            style={{ width: "100%", minHeight: 150, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "13px 14px", color: C.text, fontSize: 14, lineHeight: 1.72, fontFamily: "'Lora', Georgia, serif", resize: "vertical", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
+            style={{ width: "100%", minHeight: 150, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "13px 14px", color: C.text, fontSize: 16, lineHeight: 1.72, fontFamily: "'Inter', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
             onFocus={e => e.target.style.borderColor = partColor}
             onBlur={e => e.target.style.borderColor = C.border}
           />
-          <div style={{ fontFamily: "DM Mono", fontSize: 10, color: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? C.green : C.textMuted, marginTop: 6 }}>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? C.green : C.textMuted, marginTop: 6 }}>
             {transcript.trim() ? transcript.trim().split(/\s+/).filter(Boolean).length : 0} words — minimum 20 to analyse {transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? "✓" : ""}
           </div>
 
           <div style={{ display: "flex", gap: 8, marginTop: 9 }}>
             <button onClick={reset} style={{
               padding: "10px 14px", border: `1.5px solid ${C.border}`, borderRadius: 10,
-              background: "transparent", color: C.textMuted, fontFamily: "DM Mono", fontSize: 12, cursor: "pointer",
+              background: "transparent", color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 16, cursor: "pointer",
             }}>↺ Re-record</button>
             <button
               onClick={() => onTranscriptReady(transcript)}
@@ -1246,7 +1246,7 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
                 flex: 1, padding: "10px 0", border: "none", borderRadius: 10,
                 background: transcript.trim() && transcript.trim().split(/\s+/).length >= 20 ? partColor : C.border,
                 color: transcript.trim() && transcript.trim().split(/\s+/).length >= 20 ? "#FFFFFF" : C.textDim,
-                fontFamily: "DM Mono", fontSize: 13, fontWeight: 700,
+                fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700,
                 cursor: transcript.trim() ? "pointer" : "not-allowed",
               }}>Submit & Analyse →</button>
           </div>
@@ -1258,18 +1258,18 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
         <div style={{ marginTop: 8 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
             <div style={{ flex: 1, height: 1, background: C.border }} />
-            <span style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>or type / paste</span>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>or type / paste</span>
             <div style={{ flex: 1, height: 1, background: C.border }} />
           </div>
           <textarea value={transcript} onChange={e => setTranscript(e.target.value)}
             placeholder="Paste or type your spoken response here to analyse without recording…"
-            style={{ width: "100%", minHeight: 120, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", color: C.text, fontSize: 14, lineHeight: 1.72, fontFamily: "'Lora', Georgia, serif", resize: "vertical", outline: "none", boxSizing: "border-box" }}
+            style={{ width: "100%", minHeight: 120, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", color: C.text, fontSize: 16, lineHeight: 1.72, fontFamily: "'Inter', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box" }}
             onFocus={e => e.target.style.borderColor = partColor}
             onBlur={e => e.target.style.borderColor = C.border}
           />
           {transcript.trim() && (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
-              <span style={{ fontFamily: "DM Mono", fontSize: 10, color: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? C.green : C.textMuted }}>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? C.green : C.textMuted }}>
                 {transcript.trim().split(/\s+/).filter(Boolean).length} words — min 20 {transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? "✓" : ""}
               </span>
               <button onClick={() => onTranscriptReady(transcript)}
@@ -1278,7 +1278,7 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
                   padding: "10px 20px", border: "none", borderRadius: 10,
                   background: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? partColor : C.border,
                   color: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? "#FFFFFF" : C.textDim,
-                  fontFamily: "DM Mono", fontSize: 12, fontWeight: 700,
+                  fontFamily: "'Inter', sans-serif", fontSize: 16, fontWeight: 700,
                   cursor: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? "pointer" : "not-allowed",
                 }}>Submit & Analyse →</button>
             </div>
@@ -1364,15 +1364,15 @@ function SpeakingPractice() {
       {/* View tabs — only show after feedback */}
       {feedback && !feedback.error && (
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
-          <Pill active={view === "speak"} onClick={() => setView("speak")} color={partColors[part]}>🎙️ My Response</Pill>
-          <Pill active={view === "feedback"} onClick={() => setView("feedback")} color={C.purple}>📊 Feedback Report</Pill>
+          <Pill active={view === "speak"} onClick={() => setView("speak")} color={partColors[part]}>My Response</Pill>
+          <Pill active={view === "feedback"} onClick={() => setView("feedback")} color={C.purple}>Feedback Report</Pill>
         </div>
       )}
 
       {(view === "speak") && (
         <>
           {/* Part selector */}
-          <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Part</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Part</div>
           <div style={{ display: "flex", gap: 6, marginBottom: 13 }}>
             {[1, 2, 3].map(p => (
               <Pill key={p} active={part === p} onClick={() => handlePartChange(p)} color={partColors[p]}>Part {p}</Pill>
@@ -1380,7 +1380,7 @@ function SpeakingPractice() {
           </div>
 
           {/* Topic selector */}
-          <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Topic</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Topic</div>
           <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
             {SPEAKING_TOPICS[part].map(t => (
               <Pill key={t.id} active={topic.id === t.id} onClick={() => { setTopic(t); setFeedback(null); }} color={partColors[part]}>{t.label}</Pill>
@@ -1389,16 +1389,16 @@ function SpeakingPractice() {
 
           {/* Prompt card */}
           <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 6 }}>
-            <div style={{ fontFamily: "DM Mono", fontSize: 9, color: partColors[part], textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: partColors[part], textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
               Part {part} — {partLabels[part]}
             </div>
-            <p style={{ color: C.text, fontSize: 13.5, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{topic.prompt}</p>
+            <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{topic.prompt}</p>
           </div>
 
           {/* Examiner tip */}
           <div style={{ display: "flex", alignItems: "flex-start", gap: 7, padding: "8px 12px", marginBottom: 14 }}>
-            <span style={{ fontSize: 12, marginTop: 1 }}>💡</span>
-            <span style={{ fontFamily: "DM Mono", fontSize: 10, color: C.textMuted, lineHeight: 1.6 }}>{partHints[part]}</span>
+            <span style={{ fontSize: 16, marginTop: 1 }}></span>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, lineHeight: 1.6 }}>{partHints[part]}</span>
           </div>
 
           {/* Voice Recorder */}
@@ -1407,15 +1407,15 @@ function SpeakingPractice() {
           {/* Show last transcript for comparison when feedback exists */}
           {lastTranscript && feedback && !feedback.error && (
             <div style={{ marginTop: 14, background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px" }}>
-              <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Your Submitted Response</div>
-              <p style={{ color: C.text, fontSize: 13.5, lineHeight: 1.75, margin: 0, fontFamily: "'Lora', serif" }}>{lastTranscript}</p>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Your Submitted Response</div>
+              <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, fontFamily: "'Inter', sans-serif" }}>{lastTranscript}</p>
             </div>
           )}
 
           {feedback?.error && (
-            <div style={{ marginTop: 12, padding: 12, background: C.red + "15", border: `1px solid ${C.red}33`, borderRadius: 9, color: C.red, fontFamily: "DM Mono", fontSize: 12 }}>
+            <div style={{ marginTop: 12, padding: 12, background: C.red + "15", border: `1px solid ${C.red}33`, borderRadius: 9, color: C.red, fontFamily: "'Inter', sans-serif", fontSize: 12 }}>
               <div style={{ fontWeight: 700, marginBottom: 4 }}>Analysis failed</div>
-              <div style={{ fontSize: 11, opacity: 0.85, wordBreak: "break-all" }}>{feedback.message || "Unknown error — check connection and try again."}</div>
+              <div style={{ fontSize: 15, opacity: 0.85, wordBreak: "break-all" }}>{feedback.message || "Unknown error — check connection and try again."}</div>
             </div>
           )}
         </>
@@ -1427,10 +1427,10 @@ function SpeakingPractice() {
           <div style={{ marginBottom: 20 }}>
             <Waveform active={true} color={partColors[part]} />
           </div>
-          <div style={{ fontFamily: "DM Mono", fontSize: 12, color: partColors[part], marginBottom: 6 }}>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: partColors[part], marginBottom: 6 }}>
             Extracting language samples…
           </div>
-          <div style={{ fontFamily: "DM Mono", fontSize: 10, color: C.textDim }}>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textDim }}>
             Mapping to band descriptors
           </div>
           <div style={{ display: "flex", justifyContent: "center", gap: 5, marginTop: 16 }}>
@@ -1462,10 +1462,10 @@ function SpeakingPractice() {
 // ─── DASHBOARD ───────────────────────────────────────────────────────────────
 function Dashboard() {
   const stats = [
-    { label: "Sessions", value: "14", icon: "📚", color: C.blue },
-    { label: "Avg Band", value: "6.5", icon: "🎯", color: C.accent },
-    { label: "Writing", value: "6.0", icon: "✍️", color: C.green },
-    { label: "Speaking", value: "7.0", icon: "🎙️", color: C.purple },
+    { label: "Sessions", value: "14", color: C.blue },
+    { label: "Avg Band", value: "6.5", color: C.accent },
+    { label: "Writing", value: "6.0", color: C.green },
+    { label: "Speaking", value: "7.0", color: C.purple },
   ];
   const history = [
     { date: "May 7", type: "Writing", task: "Task 2 — Education", band: 6.5 },
@@ -1479,28 +1479,27 @@ function Dashboard() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, marginBottom: 20 }}>
         {stats.map(s => (
           <div key={s.label} style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 15px" }}>
-            <div style={{ fontSize: 20, marginBottom: 5 }}>{s.icon}</div>
-            <div style={{ fontFamily: "DM Mono", fontSize: 26, fontWeight: 700, color: s.color }}>{s.value}</div>
-            <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1 }}>{s.label}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 30, fontWeight: 700, color: s.color, marginBottom: 4 }}>{s.value}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1 }}>{s.label}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Recent Sessions</div>
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Recent Sessions</div>
       {history.map((h, i) => (
         <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: `1px solid ${C.border}` }}>
           <div>
-            <div style={{ color: C.text, fontSize: 13.5, marginBottom: 2 }}>{h.task}</div>
-            <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.textMuted }}>{h.date} · {h.type}</div>
+            <div style={{ color: C.text, fontSize: 16, marginBottom: 2 }}>{h.task}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textMuted }}>{h.date} · {h.type}</div>
           </div>
-          <span style={{ background: BAND_COLOR(h.band) + "22", color: BAND_COLOR(h.band), border: `1px solid ${BAND_COLOR(h.band)}44`, borderRadius: 6, padding: "2px 9px", fontFamily: "DM Mono", fontSize: 11, fontWeight: 700 }}>Band {h.band}</span>
+          <span style={{ background: BAND_COLOR(h.band) + "22", color: BAND_COLOR(h.band), border: `1px solid ${BAND_COLOR(h.band)}44`, borderRadius: 6, padding: "2px 9px", fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700 }}>Band {h.band}</span>
         </div>
       ))}
 
       <div style={{ marginTop: 16, background: C.accentSoft, border: `1px solid ${C.accent}33`, borderRadius: 12, padding: "13px 14px" }}>
-        <div style={{ fontFamily: "DM Mono", fontSize: 9, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>⚡ Upgrade to Premium</div>
-        <p style={{ color: C.textMuted, fontSize: 13, margin: "0 0 10px", lineHeight: 1.6 }}>Unlock unlimited sessions, Sentence Rewriter, full PDF report history, vocabulary insights, and personalised study plans.</p>
-        <button style={{ background: C.accent, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "8px 15px", fontFamily: "DM Mono", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>Upgrade — $9.99/mo →</button>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Upgrade to Premium</div>
+        <p style={{ color: C.textMuted, fontSize: 15, margin: "0 0 10px", lineHeight: 1.6 }}>Unlock unlimited sessions, Sentence Rewriter, full PDF report history, vocabulary insights, and personalised study plans.</p>
+        <button style={{ background: C.accent, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "8px 15px", fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>Upgrade — $9.99/mo →</button>
       </div>
     </div>
   );
@@ -1510,46 +1509,52 @@ function Dashboard() {
 export default function App() {
   const [tab, setTab] = useState("dashboard");
   const tabs = [
-    { id: "dashboard", label: "Dashboard", icon: "📊" },
-    { id: "writing", label: "Writing", icon: "✍️" },
-    { id: "speaking", label: "Speaking", icon: "🎙️" },
+    { id: "dashboard", label: "Dashboard" },
+    { id: "writing", label: "Writing" },
+    { id: "speaking", label: "Speaking" },
   ];
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&family=Sora:wght@700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: ${C.bg}; color: ${C.text}; font-family: 'Lora', serif; }
+        body { background: ${C.bg}; color: ${C.text}; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: ${C.bg}; }
         ::-webkit-scrollbar-thumb { background: ${C.border}; border-radius: 3px; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
         @keyframes wave { from{height:4px} to{height:40px} }
-        input, textarea, select { color: ${C.text}; }
+        input, textarea, select { color: ${C.text}; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
         textarea::placeholder { color: ${C.textDim}; }
       `}</style>
       <div style={{ maxWidth: "100%", margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
         <div style={{ padding: "16px clamp(18px, 5vw, 120px) 0", borderBottom: `1px solid ${C.border}`, background: C.bg, position: "sticky", top: 0, zIndex: 10, boxShadow: "0 2px 12px rgba(27,42,58,0.08)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 13 }}>
-            <div>
-              <div style={{ fontFamily: "Sora", fontSize: 20, fontWeight: 800, color: C.text, letterSpacing: -0.5 }}>Sound<span style={{ color: C.accent }}>Ready</span></div>
-              <div style={{ fontFamily: "DM Mono", fontSize: 8, color: C.textDim, textTransform: "uppercase", letterSpacing: 3 }}>English · Ascend</div>
+            <div style={{ width: 80 }}>
+              <div style={{ background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "3px 10px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, display: "inline-block" }}>Free</div>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "3px 10px", fontFamily: "DM Mono", fontSize: 9, color: C.green }}>Free Plan</div>
-              <div style={{ width: 30, height: 30, borderRadius: "50%", background: C.accent, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Sora", fontSize: 12, fontWeight: 700, color: "#FFFFFF" }}>S</div>
+            <div style={{ textAlign: "center" }}>
+              <img
+                src="https://github.com/sgvaldezjr-source/soundready-site/raw/0843aac8713647c1cd04503bc55dcdb0c684fab4/soundready-logo-transparent.png"
+                alt="SoundReady"
+                style={{ height: 56, objectFit: "contain" }}
+              />
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 3, marginTop: 2 }}>Ascend</div>
+            </div>
+            <div style={{ width: 80, display: "flex", justifyContent: "flex-end" }}>
+              <div style={{ width: 32, height: 32, borderRadius: "50%", background: C.accent, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Sora', sans-serif", fontSize: 13, fontWeight: 700, color: "#FFFFFF" }}>S</div>
             </div>
           </div>
           <div style={{ display: "flex" }}>
             {tabs.map(t => (
               <button key={t.id} onClick={() => setTab(t.id)} style={{
-                flex: 1, padding: "9px 0", background: "transparent", border: "none",
+                flex: 1, padding: "11px 0", background: "transparent", border: "none",
                 borderBottom: `2px solid ${tab === t.id ? C.accent : "transparent"}`,
                 color: tab === t.id ? C.accent : C.textMuted,
-                fontFamily: "DM Mono", fontSize: 11, cursor: "pointer", transition: "all 0.15s",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
-              }}><span>{t.icon}</span>{t.label}</button>
+                fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: tab === t.id ? 600 : 400,
+                cursor: "pointer", transition: "all 0.15s",
+              }}>{t.label}</button>
             ))}
           </div>
         </div>
@@ -1560,8 +1565,8 @@ export default function App() {
           {tab === "speaking" && <SpeakingPractice />}
         </div>
 
-        <div style={{ padding: "10px 18px", borderTop: `1px solid ${C.border}`, textAlign: "center", fontFamily: "DM Mono", fontSize: 8, color: C.textDim, letterSpacing: 1 }}>
-          SOUNDREADY ASCEND · EVIDENCE-BASED FEEDBACK · FREE & PREMIUM
+        <div style={{ padding: "10px 18px", borderTop: `1px solid ${C.border}`, textAlign: "center", fontFamily: "'Inter', sans-serif", fontSize: 8, color: C.textDim, letterSpacing: 1 }}>
+          SOUNDREADY ASCEND · EVIDENCE-BASED IELTS FEEDBACK
         </div>
       </div>
     </>
