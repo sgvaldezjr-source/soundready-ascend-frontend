@@ -241,17 +241,17 @@ const SPEAKING_TOPICS = {
 
 // ─── AI PROMPT BUILDERS ───────────────────────────────────────────────────────
 function buildWritingPrompt(taskType, topicPrompt, response) {
-  return `You are an IELTS examiner. Score this ${taskType} essay across 4 criteria. Extract short verbatim quotes as evidence. No apostrophes in output. Return ONLY this JSON structure with real values — no markdown:
-{"overall_band":7.0,"cefr":"B2","task_band":7,"coherence_band":7,"lexis_band":6,"grammar_band":7,"task_matched":"one sentence","task_summary":"two sentences","coherence_matched":"one sentence","coherence_summary":"two sentences","lexis_matched":"one sentence","lexis_summary":"two sentences","grammar_matched":"one sentence","grammar_summary":"two sentences","task_evidence_1":"short quote","task_obs_1":"brief observation","task_signal_1":"positive","task_evidence_2":"short quote","task_obs_2":"brief observation","task_signal_2":"negative","task_evidence_3":"short quote","task_obs_3":"brief observation","task_signal_3":"mixed","coherence_evidence_1":"short quote","coherence_obs_1":"brief observation","coherence_signal_1":"positive","coherence_evidence_2":"short quote","coherence_obs_2":"brief observation","coherence_signal_2":"mixed","coherence_evidence_3":"short quote","coherence_obs_3":"brief observation","coherence_signal_3":"negative","lexis_evidence_1":"short quote","lexis_obs_1":"brief observation","lexis_signal_1":"positive","lexis_evidence_2":"short quote","lexis_obs_2":"brief observation","lexis_signal_2":"negative","lexis_evidence_3":"short quote","lexis_obs_3":"brief observation","lexis_signal_3":"mixed","grammar_evidence_1":"short quote","grammar_obs_1":"brief observation","grammar_signal_1":"positive","grammar_evidence_2":"short quote","grammar_obs_2":"brief observation","grammar_signal_2":"negative","grammar_evidence_3":"short quote","grammar_obs_3":"brief observation","grammar_signal_3":"mixed","examiner_comment":"two sentences","next_band_targets":"two improvements","model_rewrite":"one sentence rewrite"}
+  return `You are an IELTS examiner. Score this ${taskType} essay. Be concise. No apostrophes. Return ONLY this JSON with real values:
+{"overall_band":7.0,"cefr":"B2","task_band":7,"coherence_band":7,"lexis_band":6,"grammar_band":7,"task_matched":"one sentence","task_summary":"two sentences","coherence_matched":"one sentence","coherence_summary":"two sentences","lexis_matched":"one sentence","lexis_summary":"two sentences","grammar_matched":"one sentence","grammar_summary":"two sentences","task_evidence_1":"quote","task_obs_1":"observation","task_signal_1":"positive","task_evidence_2":"quote","task_obs_2":"observation","task_signal_2":"negative","coherence_evidence_1":"quote","coherence_obs_1":"observation","coherence_signal_1":"positive","coherence_evidence_2":"quote","coherence_obs_2":"observation","coherence_signal_2":"negative","lexis_evidence_1":"quote","lexis_obs_1":"observation","lexis_signal_1":"positive","lexis_evidence_2":"quote","lexis_obs_2":"observation","lexis_signal_2":"negative","grammar_evidence_1":"quote","grammar_obs_1":"observation","grammar_signal_1":"positive","grammar_evidence_2":"quote","grammar_obs_2":"observation","grammar_signal_2":"negative","examiner_comment":"two sentences","next_band_targets":"two improvements","model_rewrite":"one rewrite sentence"}
 
-TASK TYPE: ${taskType}
+TASK: ${taskType}
 PROMPT: ${topicPrompt}
 ESSAY: ${response}`;
 }
 
 function buildSpeakingPrompt(part, topicPrompt, transcript) {
-  return `You are an IELTS Speaking examiner. Score this Part ${part} transcript across 4 criteria. Extract short verbatim quotes as evidence. No apostrophes in output. Return ONLY this JSON structure with real values — no markdown:
-{"overall_band":6.5,"cefr":"B2","fluency_band":6,"lexis_band":7,"grammar_band":6,"pronunciation_band":7,"fluency_matched":"one sentence","fluency_summary":"two sentences","lexis_matched":"one sentence","lexis_summary":"two sentences","grammar_matched":"one sentence","grammar_summary":"two sentences","pronunciation_matched":"one sentence","pronunciation_summary":"two sentences","fluency_evidence_1":"short quote","fluency_obs_1":"brief observation","fluency_signal_1":"positive","fluency_evidence_2":"short quote","fluency_obs_2":"brief observation","fluency_signal_2":"negative","fluency_evidence_3":"short quote","fluency_obs_3":"brief observation","fluency_signal_3":"mixed","lexis_evidence_1":"short quote","lexis_obs_1":"brief observation","lexis_signal_1":"positive","lexis_evidence_2":"short quote","lexis_obs_2":"brief observation","lexis_signal_2":"negative","lexis_evidence_3":"short quote","lexis_obs_3":"brief observation","lexis_signal_3":"mixed","grammar_evidence_1":"short quote","grammar_obs_1":"brief observation","grammar_signal_1":"positive","grammar_evidence_2":"short quote","grammar_obs_2":"brief observation","grammar_signal_2":"negative","grammar_evidence_3":"short quote","grammar_obs_3":"brief observation","grammar_signal_3":"mixed","pronunciation_evidence_1":"short quote","pronunciation_obs_1":"brief observation","pronunciation_signal_1":"positive","pronunciation_evidence_2":"short quote","pronunciation_obs_2":"brief observation","pronunciation_signal_2":"negative","pronunciation_evidence_3":"short quote","pronunciation_obs_3":"brief observation","pronunciation_signal_3":"mixed","examiner_comment":"two sentences","next_band_targets":"two improvements","model_rewrite":"one sentence rewrite"}
+  return `You are an IELTS Speaking examiner. Score this Part ${part} transcript. Be concise. No apostrophes. Return ONLY this JSON with real values:
+{"overall_band":6.5,"cefr":"B2","fluency_band":6,"lexis_band":7,"grammar_band":6,"pronunciation_band":7,"fluency_matched":"one sentence","fluency_summary":"two sentences","lexis_matched":"one sentence","lexis_summary":"two sentences","grammar_matched":"one sentence","grammar_summary":"two sentences","pronunciation_matched":"one sentence","pronunciation_summary":"two sentences","fluency_evidence_1":"quote","fluency_obs_1":"observation","fluency_signal_1":"positive","fluency_evidence_2":"quote","fluency_obs_2":"observation","fluency_signal_2":"negative","lexis_evidence_1":"quote","lexis_obs_1":"observation","lexis_signal_1":"positive","lexis_evidence_2":"quote","lexis_obs_2":"observation","lexis_signal_2":"negative","grammar_evidence_1":"quote","grammar_obs_1":"observation","grammar_signal_1":"positive","grammar_evidence_2":"quote","grammar_obs_2":"observation","grammar_signal_2":"negative","pronunciation_evidence_1":"quote","pronunciation_obs_1":"observation","pronunciation_signal_1":"positive","pronunciation_evidence_2":"quote","pronunciation_obs_2":"observation","pronunciation_signal_2":"negative","examiner_comment":"two sentences","next_band_targets":"two improvements","model_rewrite":"one rewrite sentence"}
 
 PART: ${part}
 QUESTION: ${topicPrompt}
@@ -809,22 +809,18 @@ function WritingPractice() {
           task: { band: flat.task_band, descriptor_matched: flat.task_matched, quick_summary: flat.task_summary, evidence: [
             { feature: "Task coverage", extract: flat.task_evidence_1, observation: flat.task_obs_1, band_signal: flat.task_signal_1 },
             { feature: "Idea development", extract: flat.task_evidence_2, observation: flat.task_obs_2, band_signal: flat.task_signal_2 },
-            { feature: "Position clarity", extract: flat.task_evidence_3, observation: flat.task_obs_3, band_signal: flat.task_signal_3 },
           ]},
           coherence: { band: flat.coherence_band, descriptor_matched: flat.coherence_matched, quick_summary: flat.coherence_summary, evidence: [
             { feature: "Paragraph organisation", extract: flat.coherence_evidence_1, observation: flat.coherence_obs_1, band_signal: flat.coherence_signal_1 },
             { feature: "Cohesive devices", extract: flat.coherence_evidence_2, observation: flat.coherence_obs_2, band_signal: flat.coherence_signal_2 },
-            { feature: "Logical sequencing", extract: flat.coherence_evidence_3, observation: flat.coherence_obs_3, band_signal: flat.coherence_signal_3 },
           ]},
           lexis: { band: flat.lexis_band, descriptor_matched: flat.lexis_matched, quick_summary: flat.lexis_summary, evidence: [
             { feature: "Vocabulary range", extract: flat.lexis_evidence_1, observation: flat.lexis_obs_1, band_signal: flat.lexis_signal_1 },
             { feature: "Collocations", extract: flat.lexis_evidence_2, observation: flat.lexis_obs_2, band_signal: flat.lexis_signal_2 },
-            { feature: "Topic vocabulary", extract: flat.lexis_evidence_3, observation: flat.lexis_obs_3, band_signal: flat.lexis_signal_3 },
           ]},
           grammar: { band: flat.grammar_band, descriptor_matched: flat.grammar_matched, quick_summary: flat.grammar_summary, evidence: [
             { feature: "Sentence complexity", extract: flat.grammar_evidence_1, observation: flat.grammar_obs_1, band_signal: flat.grammar_signal_1 },
             { feature: "Range of structures", extract: flat.grammar_evidence_2, observation: flat.grammar_obs_2, band_signal: flat.grammar_signal_2 },
-            { feature: "Error frequency", extract: flat.grammar_evidence_3, observation: flat.grammar_obs_3, band_signal: flat.grammar_signal_3 },
           ]},
         }
       };
@@ -1332,22 +1328,18 @@ function SpeakingPractice() {
           fluency: { band: flat.fluency_band, descriptor_matched: flat.fluency_matched, quick_summary: flat.fluency_summary, evidence: [
             { feature: "Speaking pace & flow", extract: flat.fluency_evidence_1, observation: flat.fluency_obs_1, band_signal: flat.fluency_signal_1 },
             { feature: "Discourse markers", extract: flat.fluency_evidence_2, observation: flat.fluency_obs_2, band_signal: flat.fluency_signal_2 },
-            { feature: "Logical sequencing", extract: flat.fluency_evidence_3, observation: flat.fluency_obs_3, band_signal: flat.fluency_signal_3 },
           ]},
           lexis: { band: flat.lexis_band, descriptor_matched: flat.lexis_matched, quick_summary: flat.lexis_summary, evidence: [
             { feature: "Vocabulary range", extract: flat.lexis_evidence_1, observation: flat.lexis_obs_1, band_signal: flat.lexis_signal_1 },
             { feature: "Topic-specific language", extract: flat.lexis_evidence_2, observation: flat.lexis_obs_2, band_signal: flat.lexis_signal_2 },
-            { feature: "Idiomatic language", extract: flat.lexis_evidence_3, observation: flat.lexis_obs_3, band_signal: flat.lexis_signal_3 },
           ]},
           grammar: { band: flat.grammar_band, descriptor_matched: flat.grammar_matched, quick_summary: flat.grammar_summary, evidence: [
             { feature: "Structure variety", extract: flat.grammar_evidence_1, observation: flat.grammar_obs_1, band_signal: flat.grammar_signal_1 },
             { feature: "Complex sentence use", extract: flat.grammar_evidence_2, observation: flat.grammar_obs_2, band_signal: flat.grammar_signal_2 },
-            { feature: "Error frequency", extract: flat.grammar_evidence_3, observation: flat.grammar_obs_3, band_signal: flat.grammar_signal_3 },
           ]},
           pronunciation: { band: flat.pronunciation_band, descriptor_matched: flat.pronunciation_matched, quick_summary: flat.pronunciation_summary, evidence: [
             { feature: "Intelligibility", extract: flat.pronunciation_evidence_1, observation: flat.pronunciation_obs_1, band_signal: flat.pronunciation_signal_1 },
             { feature: "Stress & rhythm", extract: flat.pronunciation_evidence_2, observation: flat.pronunciation_obs_2, band_signal: flat.pronunciation_signal_2 },
-            { feature: "Intonation", extract: flat.pronunciation_evidence_3, observation: flat.pronunciation_obs_3, band_signal: flat.pronunciation_signal_3 },
           ]},
         }
       };
