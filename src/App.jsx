@@ -784,11 +784,10 @@ function WritingPractice() {
           ]
         : buildWritingPrompt(taskType, topic.prompt, essay);
 
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch(`${PROXY}/analyse`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-haiku-4-5-20251001", max_tokens: 2000,
           messages: [{ role: "user", content: userContent }]
         })
       });
@@ -1313,11 +1312,10 @@ function SpeakingPractice() {
     setLastTranscript(transcript);
     setLoading(true); setFeedback(null); setView("loading");
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch(`${PROXY}/analyse`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-haiku-4-5-20251001", max_tokens: 2000,
           messages: [{ role: "user", content: buildSpeakingPrompt(part, topic.prompt, transcript) }]
         })
       });
