@@ -1505,9 +1505,82 @@ function Dashboard() {
   );
 }
 
+// ─── AVATAR MENU ─────────────────────────────────────────────────────────────
+function AvatarMenu({ email, onLogout }) {
+  const [open, setOpen] = useState(false);
+  const initial = email ? email[0].toUpperCase() : "?";
+
+  return (
+    <div style={{ position: "relative" }}>
+      <button onClick={() => setOpen(!open)} style={{
+        width: 36, height: 36, borderRadius: "50%",
+        background: C.accent, border: "none", cursor: "pointer",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontFamily: "'Sora', sans-serif", fontSize: 14, fontWeight: 700, color: "#FFFFFF",
+        boxShadow: open ? `0 0 0 3px ${C.accent}33` : "none",
+        transition: "box-shadow 0.2s",
+      }}>{initial}</button>
+
+      {open && (
+        <>
+          {/* Backdrop */}
+          <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 99 }} />
+          {/* Dropdown */}
+          <div style={{
+            position: "absolute", right: 0, top: 44, zIndex: 100,
+            background: C.surface, border: `1px solid ${C.border}`,
+            borderRadius: 12, padding: "6px 0", minWidth: 220,
+            boxShadow: "0 8px 32px rgba(27,42,58,0.12)",
+          }}>
+            {/* User info */}
+            <div style={{ padding: "12px 16px", borderBottom: `1px solid ${C.border}` }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 3 }}>{email}</div>
+              <div style={{ display: "inline-block", background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "2px 8px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green }}>Free Plan</div>
+            </div>
+            {/* Menu items */}
+            <div style={{ padding: "6px 0" }}>
+              <button onClick={() => setOpen(false)} style={{
+                width: "100%", padding: "9px 16px", background: "transparent",
+                border: "none", textAlign: "left", cursor: "pointer",
+                fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted,
+              }}
+                onMouseOver={e => e.currentTarget.style.background = C.surfaceAlt}
+                onMouseOut={e => e.currentTarget.style.background = "transparent"}
+              >Profile Settings</button>
+              <button onClick={() => setOpen(false)} style={{
+                width: "100%", padding: "9px 16px", background: "transparent",
+                border: "none", textAlign: "left", cursor: "pointer",
+                fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted,
+              }}
+                onMouseOver={e => e.currentTarget.style.background = C.surfaceAlt}
+                onMouseOut={e => e.currentTarget.style.background = "transparent"}
+              >Session History</button>
+              <div style={{ height: 1, background: C.border, margin: "6px 0" }} />
+              <button onClick={() => { setOpen(false); onLogout(); }} style={{
+                width: "100%", padding: "9px 16px", background: "transparent",
+                border: "none", textAlign: "left", cursor: "pointer",
+                fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.red,
+              }}
+                onMouseOver={e => e.currentTarget.style.background = C.red + "0e"}
+                onMouseOut={e => e.currentTarget.style.background = "transparent"}
+              >Log Out</button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 // ─── APP SHELL ───────────────────────────────────────────────────────────────
-export default function App() {
+export default function App({ supabase, session }) {
   const [tab, setTab] = useState("dashboard");
+
+  async function handleLogout() {
+    if (supabase) await supabase.auth.signOut();
+  }
+
+  const userEmail = session?.user?.email || "";
   const tabs = [
     { id: "dashboard", label: "Dashboard" },
     { id: "writing", label: "Writing" },
@@ -1542,8 +1615,8 @@ export default function App() {
               />
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 3, marginTop: 2 }}>Ascend</div>
             </div>
-            <div style={{ width: 80, display: "flex", justifyContent: "flex-end" }}>
-              <div style={{ width: 32, height: 32, borderRadius: "50%", background: C.accent, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Sora', sans-serif", fontSize: 13, fontWeight: 700, color: "#FFFFFF" }}>S</div>
+            <div style={{ width: 80, display: "flex", justifyContent: "flex-end", position: "relative" }}>
+              <AvatarMenu email={userEmail} onLogout={handleLogout} />
             </div>
           </div>
           <div style={{ display: "flex" }}>
