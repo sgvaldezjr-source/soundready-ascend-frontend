@@ -4,10 +4,10 @@ import App from "./App";
 import Auth from "./Auth";
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+// Strip any accidental path from the URL
+const rawUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseUrl = rawUrl.split("/rest")[0].split("/auth")[0].replace(/\/$/, "");
+const supabase = createClient(supabaseUrl, import.meta.env.VITE_SUPABASE_ANON_KEY);
 
 function Root() {
   const [session, setSession] = React.useState(undefined);
