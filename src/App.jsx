@@ -1289,12 +1289,87 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
   );
 }
 
+// ─── PRONUNCIATION REPORT ────────────────────────────────────────────────────
+function ScoreBar({ label, score, color }) {
+  return (
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.text, fontWeight: 500 }}>{label}</span>
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 700, color }}>{score}/100</span>
+      </div>
+      <div style={{ height: 8, background: C.surfaceAlt, borderRadius: 99, overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${score}%`, background: color, borderRadius: 99, transition: "width 1s ease" }} />
+      </div>
+    </div>
+  );
+}
+
+function PronunciationReport({ pronunciation: p, partColor }) {
+  if (!p) return null;
+  const overallColor = p.overall_score >= 75 ? C.green : p.overall_score >= 55 ? C.accent : C.red;
+
+  return (
+    <div>
+      <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 13, padding: "16px 15px", marginBottom: 14 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+          <div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Pronunciation Score</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 40, fontWeight: 700, color: overallColor, lineHeight: 1 }}>{p.overall_score}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, marginTop: 3 }}>Band {p.pronunciation_band} · /100</div>
+          </div>
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <ScoreBar label="Fluency" score={p.fluency_score} color={C.blue} />
+            <ScoreBar label="Word Stress" score={p.stress_score} color={C.accent} />
+            <ScoreBar label="Intonation" score={p.intonation_score} color={C.purple} />
+          </div>
+        </div>
+      </div>
+      <div style={{ background: C.blue + "0e", border: `1px solid ${C.blue}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 12 }}>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.blue, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Assessment</div>
+        <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.summary}</p>
+      </div>
+      <div style={{ background: C.green + "0e", border: `1px solid ${C.green}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 12 }}>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Strength</div>
+        <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.strengths}</p>
+      </div>
+      {p.problem_words && p.problem_words.length > 0 && (
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontWeight: 600 }}>Words to Practise</div>
+          {p.problem_words.map((w, i) => (
+            <div key={i} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 14px", marginBottom: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
+                <span style={{ background: C.red + "15", color: C.red, border: `1px solid ${C.red}33`, borderRadius: 6, padding: "2px 10px", fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 700 }}>{w.word}</span>
+                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textMuted }}>{w.issue}</span>
+              </div>
+              <p style={{ color: C.blue, fontSize: 13, lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>Tip: {w.tip}</p>
+            </div>
+          ))}
+        </div>
+      )}
+      <div style={{ background: C.accent + "0e", border: `1px solid ${C.accent}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 10 }}>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Fluency & Rhythm</div>
+        <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.fluency_comment}</p>
+      </div>
+      <div style={{ background: C.purple + "0e", border: `1px solid ${C.purple}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 10 }}>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.purple, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Intonation</div>
+        <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.intonation_comment}</p>
+      </div>
+      <div style={{ background: C.green + "0e", border: `1px solid ${C.green}28`, borderRadius: 10, padding: "12px 14px" }}>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Practice Plan</div>
+        <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.next_steps}</p>
+      </div>
+    </div>
+  );
+}
+
 // ─── SPEAKING PRACTICE ───────────────────────────────────────────────────────
 function SpeakingPractice() {
   const [part, setPart] = useState(1);
   const [topic, setTopic] = useState(SPEAKING_TOPICS[1][0]);
   const [loading, setLoading] = useState(false);
+  const [loadingStage, setLoadingStage] = useState("");
   const [feedback, setFeedback] = useState(null);
+  const [pronunciation, setPronunciation] = useState(null);
   const [view, setView] = useState("speak");
   const [exporting, setExporting] = useState(false);
   const [lastTranscript, setLastTranscript] = useState("");
@@ -1311,23 +1386,31 @@ function SpeakingPractice() {
 
   function handlePartChange(p) {
     setPart(p); setTopic(SPEAKING_TOPICS[p][0]);
-    setFeedback(null); setView("speak");
+    setFeedback(null); setPronunciation(null); setView("speak");
   }
 
   async function analyze(transcript) {
     setLastTranscript(transcript);
-    setLoading(true); setFeedback(null); setView("loading");
+    setLoading(true); setFeedback(null); setPronunciation(null);
+    setLoadingStage("Analysing your response…");
+    setView("loading");
     try {
-      const res = await fetch(`${PROXY}/analyse`, {
+      // Fire parallel IELTS + pronunciation calls
+      const res = await fetch(`${PROXY}/analyse-speaking`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: [{ role: "user", content: buildSpeakingPrompt(part, topic.prompt, transcript) }]
+          ieltsMessages: [{ role: "user", content: buildSpeakingPrompt(part, topic.prompt, transcript) }],
+          part,
+          question: topic.prompt,
+          transcript,
         })
       });
       const data = await res.json();
-      const raw = data.content.find(b => b.type === "text")?.text || "{}";
-      const flat = safeParseJSON(raw);
+
+      // Parse IELTS feedback
+      const ieltsRaw = data.ielts?.content?.find(b => b.type === "text")?.text || "{}";
+      const flat = safeParseJSON(ieltsRaw);
       const nested = {
         overall_band: flat.overall_band,
         cefr: flat.cefr,
@@ -1354,9 +1437,13 @@ function SpeakingPractice() {
         }
       };
       setFeedback(nested);
+
+      // Parse pronunciation feedback
+      const pronRaw = data.pronunciation?.content?.find(b => b.type === "text")?.text || "{}";
+      setPronunciation(safeParseJSON(pronRaw));
       setView("feedback");
     } catch (err) { setFeedback({ error: true, message: err?.message || String(err) }); setView("speak"); }
-    setLoading(false);
+    setLoading(false); setLoadingStage("");
   }
 
   return (
@@ -1365,7 +1452,8 @@ function SpeakingPractice() {
       {feedback && !feedback.error && (
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
           <Pill active={view === "speak"} onClick={() => setView("speak")} color={partColors[part]}>My Response</Pill>
-          <Pill active={view === "feedback"} onClick={() => setView("feedback")} color={C.purple}>Feedback Report</Pill>
+          <Pill active={view === "feedback"} onClick={() => setView("feedback")} color={C.purple}>IELTS Feedback</Pill>
+          <Pill active={view === "pronunciation"} onClick={() => setView("pronunciation")} color={C.accent}>Pronunciation</Pill>
         </div>
       )}
 
@@ -1427,15 +1515,18 @@ function SpeakingPractice() {
           <div style={{ marginBottom: 20 }}>
             <Waveform active={true} color={partColors[part]} />
           </div>
-          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: partColors[part], marginBottom: 6 }}>
-            Extracting language samples…
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 600, color: partColors[part], marginBottom: 6 }}>
+            Scoring your response…
           </div>
-          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textDim }}>
-            Mapping to band descriptors
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted, marginBottom: 20 }}>
+            Running IELTS assessment and pronunciation analysis in parallel
           </div>
-          <div style={{ display: "flex", justifyContent: "center", gap: 5, marginTop: 16 }}>
-            {[0, 1, 2].map(i => (
-              <div key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: partColors[part], opacity: 0.7, animation: "pulse 1s infinite", animationDelay: `${i * 0.3}s` }} />
+          <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
+            {["IELTS Scoring", "Pronunciation Analysis"].map((stage, i) => (
+              <div key={i} style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 20, padding: "5px 12px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: partColors[part], display: "inline-block", animation: "pulse 1s infinite", animationDelay: `${i * 0.4}s` }} />
+                {stage}
+              </div>
             ))}
           </div>
         </div>
@@ -1454,6 +1545,10 @@ function SpeakingPractice() {
           }}
           exporting={exporting}
         />
+      )}
+
+      {view === "pronunciation" && pronunciation && (
+        <PronunciationReport pronunciation={pronunciation} partColor={partColors[part]} />
       )}
     </div>
   );
