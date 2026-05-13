@@ -1762,7 +1762,7 @@ function Footer({ onLegal }) {
         <a href="mailto:support@sound-ready.com" style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textMuted, textDecoration: "underline" }}>Contact</a>
       </div>
       <p style={{ textAlign: "center", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, margin: 0 }}>
-        © 2026 SoundReady English — IELTSTutor.com. All rights reserved. Reproduction without permission is prohibited.
+        © 2026 SoundReady English—SoundReady Ascend All rights reserved. Reproduction without permission is prohibited.
       </p>
     </div>
   );
