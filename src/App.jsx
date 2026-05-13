@@ -116,12 +116,19 @@ const SPEAKING_DESCRIPTORS = {
 
 // ─── TOPIC BANKS ─────────────────────────────────────────────────────────────
 const WRITING_TOPICS = {
-  "Task 2": [
+  "Task 2 Academic": [
     { id: "t2-1", label: "Education", prompt: "Some people believe that universities should focus on providing academic knowledge only, while others think universities should prepare students for the real world of work.\n\nDiscuss both views and give your own opinion.\n\nWrite at least 250 words." },
     { id: "t2-2", label: "Technology", prompt: "The increasing use of technology in everyday life has made people more isolated from one another.\n\nTo what extent do you agree or disagree?\n\nWrite at least 250 words." },
     { id: "t2-3", label: "Environment", prompt: "Some people think individuals can do very little to help the environment and that it is mainly governments and large companies that should be responsible for reducing environmental damage.\n\nTo what extent do you agree or disagree?\n\nWrite at least 250 words." },
     { id: "t2-4", label: "Health", prompt: "In many countries, the average weight of people is increasing and their levels of health and fitness are decreasing.\n\nWhat are the causes of these problems and what measures could be taken to solve them?\n\nWrite at least 250 words." },
     { id: "t2-5", label: "Media", prompt: "Advertising encourages people to buy things they do not need and has a negative effect on society.\n\nTo what extent do you agree or disagree?\n\nWrite at least 250 words." },
+  ],
+  "Task 2 General": [
+    { id: "t2g-1", label: "Work & Career", prompt: "Some people think it is better to work for yourself than to be employed by a company.\n\nTo what extent do you agree or disagree?\n\nWrite at least 250 words." },
+    { id: "t2g-2", label: "Family & Society", prompt: "In many countries, people are having children later in life than in the past.\n\nWhat are the reasons for this? Is it a positive or negative development?\n\nWrite at least 250 words." },
+    { id: "t2g-3", label: "Education", prompt: "Some parents choose to educate their children at home rather than sending them to school.\n\nDo the advantages of home education outweigh the disadvantages?\n\nWrite at least 250 words." },
+    { id: "t2g-4", label: "Technology", prompt: "Many people today spend a lot of time using their mobile phones for social media, games and entertainment.\n\nDo you think the advantages of mobile phones outweigh the disadvantages?\n\nWrite at least 250 words." },
+    { id: "t2g-5", label: "Health & Lifestyle", prompt: "Many people do not exercise enough in their daily lives.\n\nWhat are the causes of this problem and what can be done to encourage people to be more active?\n\nWrite at least 250 words." },
   ],
   "Task 1 Academic": [
     {
@@ -397,17 +404,20 @@ function Pill({ children, active, onClick, color }) {
 }
 
 function ScoreRing({ score, label, color }) {
-  const r = 27, circ = 2 * Math.PI * r, fill = (score / 9) * circ;
+  const size = 54;
+  const r = size / 2 - 5;
+  const circ = 2 * Math.PI * r;
+  const fill = (score / 9) * circ;
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
-      <svg width={66} height={66}>
-        <circle cx={33} cy={33} r={r} fill="none" stroke={C.border} strokeWidth={4} />
-        <circle cx={33} cy={33} r={r} fill="none" stroke={color} strokeWidth={4}
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, minWidth: 54 }}>
+      <svg width={size} height={size}>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={C.border} strokeWidth={3.5} />
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={3.5}
           strokeDasharray={`${fill} ${circ}`} strokeDashoffset={circ / 4} strokeLinecap="round"
           style={{ transition: "stroke-dasharray 1.2s ease" }} />
-        <text x={33} y={38} textAnchor="middle" fill={color} fontSize={15} fontWeight={700} fontFamily="DM Mono">{score}</text>
+        <text x={size/2} y={size/2 + 5} textAnchor="middle" fill={color} fontSize={13} fontWeight={700} fontFamily="Inter">{score}</text>
       </svg>
-      <span style={{ color: C.textMuted, fontSize: 16, fontFamily: "'Inter', sans-serif", textTransform: "uppercase", letterSpacing: 0.8, textAlign: "center", maxWidth: 66 }}>{label}</span>
+      <span style={{ color: C.textMuted, fontSize: 10, fontFamily: "'Inter', sans-serif", textTransform: "uppercase", letterSpacing: 0.5, textAlign: "center", maxWidth: 60, lineHeight: 1.2 }}>{label}</span>
     </div>
   );
 }
@@ -485,7 +495,7 @@ function FeedbackReport({ feedback, criteriaMap, descriptors, ringColors, onExpo
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 40, fontWeight: 700, color: BAND_COLOR(feedback.overall_band), lineHeight: 1 }}>{feedback.overall_band}</div>
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, marginTop: 3 }}>CEFR {feedback.cefr} · {CEFR(feedback.overall_band)}</div>
           </div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, flex: 1, maxWidth: 280 }}>
             {criteriaMap.map(({ key }, i) => (
               <ScoreRing key={key} score={feedback.criteria[key].band} label={descriptors[key].label.split(" ")[0]} color={ringColors[i]} />
             ))}
@@ -752,8 +762,8 @@ function safeParseJSON(raw) {
 }
 
 function WritingPractice() {
-  const [taskType, setTaskType] = useState("Task 2");
-  const [topic, setTopic] = useState(WRITING_TOPICS["Task 2"][0]);
+  const [taskType, setTaskType] = useState("Task 2 Academic");
+  const [topic, setTopic] = useState(WRITING_TOPICS["Task 2 Academic"][0]);
   const [essay, setEssay] = useState("");
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
@@ -762,7 +772,7 @@ function WritingPractice() {
   const [uploadedBase64, setUploadedBase64] = useState(null);
   const [lastEssay, setLastEssay] = useState("");
   const wordCount = essay.trim() ? essay.trim().split(/\s+/).length : 0;
-  const minWords = taskType === "Task 2" ? 250 : 150;
+  const minWords = taskType === "Task 1 Academic" || taskType === "Task 1 General" ? 150 : 250;
 
   const criteriaMap = [{ key: "task" }, { key: "coherence" }, { key: "lexis" }, { key: "grammar" }];
   const ringColors = [C.blue, C.teal, C.green, C.accent];
@@ -851,7 +861,7 @@ function WritingPractice() {
         <>
           <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Task Type</div>
           <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
-            {["Task 2", "Task 1 Academic", "Task 1 General"].map(t => (
+            {["Task 2 Academic", "Task 2 General", "Task 1 Academic", "Task 1 General"].map(t => (
               <Pill key={t} active={taskType === t} onClick={() => handleTaskChange(t)}>{t}</Pill>
             ))}
           </div>
@@ -1019,15 +1029,28 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
 
   // ── Real Whisper transcription via Railway proxy ───────────────────────────
   async function transcribeAudio(blob) {
+    if (!blob || blob.size < 100) {
+      setErrorMsg("Recording is empty — please try again.");
+      setRecorderState("error");
+      return;
+    }
     setRecorderState("transcribing");
     try {
+      // Use correct extension based on actual blob type
+      const ext = blob.type.includes("mp4") ? "m4a" 
+                : blob.type.includes("ogg") ? "ogg" 
+                : blob.type.includes("webm") ? "webm"
+                : "webm";
       const formData = new FormData();
-      formData.append("audio", blob, "recording.webm");
+      formData.append("audio", new File([blob], `recording.${ext}`, { type: blob.type || "audio/webm" }));
       const res = await fetch(`${PROXY}/transcribe`, {
         method: "POST",
         body: formData,
       });
-      if (!res.ok) throw new Error(`Transcription failed: ${res.status}`);
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Server error: ${res.status}`);
+      }
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setTranscript(data.transcript || "");
@@ -1042,29 +1065,40 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
   async function startRecording() {
     setErrorMsg("");
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: { 
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 16000 
+        } 
+      });
       chunksRef.current = [];
-      // Use webm/opus if supported, fallback to default
-      const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-        ? "audio/webm;codecs=opus"
-        : MediaRecorder.isTypeSupported("audio/webm")
-        ? "audio/webm"
-        : "";
-      const options = mimeType ? { mimeType } : {};
-      const mediaRecorder = new MediaRecorder(stream, options);
+      
+      // Detect best supported format — iOS uses mp4, Chrome uses webm
+      let mimeType = "";
+      const formats = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg"];
+      for (const fmt of formats) {
+        if (MediaRecorder.isTypeSupported(fmt)) { mimeType = fmt; break; }
+      }
+      
+      const mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
       mediaRecorderRef.current = mediaRecorder;
+      
       mediaRecorder.ondataavailable = e => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
+        if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
       };
+      
       mediaRecorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: mimeType || "audio/webm" });
+        const type = mimeType || "audio/webm";
+        const blob = new Blob(chunksRef.current, { type });
         audioBlobRef.current = blob;
         const url = URL.createObjectURL(blob);
         setAudioUrl(url);
-        // Stop all tracks to release microphone
         stream.getTracks().forEach(t => t.stop());
+        setRecorderState("recorded");
       };
-      mediaRecorder.start(250); // collect data every 250ms
+      
+      mediaRecorder.start(500); // collect every 500ms for stability
       setTimer(0); setAudioUrl(null); setTranscript("");
       setRecorderState("recording");
       timerRef.current = setInterval(() => setTimer(t => t + 1), 1000);
@@ -1085,8 +1119,8 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
     clearInterval(timerRef.current);
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
       mediaRecorderRef.current.stop();
+      // State will be set to "recorded" in onstop callback once blob is ready
     }
-    setRecorderState("recorded");
   }
 
   function reset() {
@@ -1600,8 +1634,142 @@ function Dashboard() {
   );
 }
 
+// ─── LEGAL CONTENT ───────────────────────────────────────────────────────────
+const LEGAL = {
+  privacy: {
+    title: "Privacy Policy",
+    content: `Last updated: May 2026
+
+SoundReady English operates SoundReady Ascend ("the App"), an AI-powered IELTS preparation platform. This Privacy Policy explains how we collect, use, and protect your information.
+
+INFORMATION WE COLLECT
+• Account information: your email address and password when you register
+• Voice recordings: audio recorded during Speaking practice sessions, processed solely for transcription and analysis
+• Written responses: essays and written answers submitted for assessment
+• Usage data: session history and performance scores
+
+HOW WE USE YOUR INFORMATION
+• To provide AI-powered IELTS feedback and pronunciation assessment
+• To track your progress and display your session history
+• To communicate important updates about the App
+• We do not sell your personal data to third parties
+
+THIRD-PARTY SERVICES
+The App uses the following third-party services to operate:
+• Supabase — secure user authentication and data storage
+• OpenAI Whisper — voice transcription (audio is processed and not stored permanently)
+• Anthropic Claude — AI feedback generation
+• Netlify — frontend hosting
+
+DATA RETENTION
+Voice recordings are processed in real time and are not permanently stored. Written responses and scores are retained to provide your session history. You may request deletion of your account and data at any time by contacting us.
+
+YOUR RIGHTS
+You have the right to access, correct, or delete your personal data. Contact us at support@sound-ready.com to exercise these rights.
+
+CONTACT
+SoundReady English | support@sound-ready.com`
+  },
+  terms: {
+    title: "Terms of Service",
+    content: `Last updated: May 2026
+
+By using SoundReady Ascend, you agree to these Terms of Service. Please read them carefully.
+
+ELIGIBILITY
+You must be at least 13 years old to use this App. By registering, you confirm that the information you provide is accurate.
+
+ACCEPTABLE USE
+You agree to use SoundReady Ascend only for lawful purposes. You must not:
+• Share your account credentials with others
+• Attempt to reverse-engineer or copy the App
+• Use the App to generate or distribute harmful content
+• Misrepresent your identity or qualifications
+
+AI-GENERATED CONTENT
+SoundReady Ascend uses artificial intelligence to provide IELTS feedback and pronunciation assessment. AI feedback is for educational purposes only and does not constitute a guarantee of exam performance. Scores generated by the App are approximations and may differ from official IELTS examination results.
+
+INTELLECTUAL PROPERTY
+All content, design, and technology within SoundReady Ascend is the property of SoundReady English. Reproduction, redistribution, or commercial use of any part of the App without written permission is prohibited.
+
+FREE AND PREMIUM TIERS
+Free tier users have access to limited sessions. Premium features require a paid subscription. We reserve the right to modify pricing and features with reasonable notice.
+
+TERMINATION
+We reserve the right to suspend or terminate accounts that violate these Terms.
+
+CHANGES TO TERMS
+We may update these Terms at any time. Continued use of the App after changes constitutes acceptance of the new Terms.
+
+CONTACT
+SoundReady English | support@sound-ready.com`
+  },
+  disclaimer: {
+    title: "Disclaimer",
+    content: `Last updated: May 2026
+
+EDUCATIONAL PURPOSE ONLY
+SoundReady Ascend is an AI-powered educational tool designed to help students prepare for the IELTS examination. The feedback, band scores, and pronunciation assessments provided by the App are generated by artificial intelligence and are intended for practice and learning purposes only.
+
+NO GUARANTEE OF EXAM RESULTS
+Band scores and feedback provided within the App are approximations based on AI analysis of your responses. They are not official IELTS scores and should not be relied upon as a prediction of your performance in an official IELTS examination administered by the British Council, IDP, or Cambridge Assessment English.
+
+AI LIMITATIONS
+Artificial intelligence systems, including those used in this App, may make errors in assessment. Pronunciation analysis is inference-based and may not capture all nuances of spoken English. We recommend using SoundReady Ascend as a supplementary practice tool alongside qualified human instruction.
+
+VOICE DATA
+Voice recordings submitted through the App are processed by OpenAI Whisper for transcription. By using the Speaking feature, you consent to this processing. Recordings are not permanently stored by SoundReady English.
+
+IELTS TRADEMARK
+IELTS is a registered trademark of the British Council, IDP: IELTS Australia, and Cambridge Assessment English. SoundReady Ascend is an independent preparation tool and is not affiliated with, endorsed by, or connected to any official IELTS testing body.
+
+LIABILITY
+SoundReady English accepts no liability for any loss or damage arising from reliance on AI-generated feedback or scores produced by the App.
+
+CONTACT
+SoundReady English | support@sound-ready.com`
+  }
+};
+
+// ─── LEGAL MODAL ─────────────────────────────────────────────────────────────
+function LegalModal({ type, onClose }) {
+  const content = LEGAL[type];
+  if (!content) return null;
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+      onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} style={{ background: C.surface, borderRadius: 16, width: "100%", maxWidth: 640, maxHeight: "85vh", display: "flex", flexDirection: "column", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
+        <div style={{ padding: "20px 24px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, color: C.text }}>{content.title}</h2>
+          <button onClick={onClose} style={{ background: "transparent", border: "none", fontSize: 20, color: C.textMuted, cursor: "pointer", lineHeight: 1 }}>×</button>
+        </div>
+        <div style={{ padding: "20px 24px", overflowY: "auto", flex: 1 }}>
+          <pre style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.text, lineHeight: 1.8, whiteSpace: "pre-wrap", margin: 0 }}>{content.content}</pre>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── FOOTER ──────────────────────────────────────────────────────────────────
+function Footer({ onLegal }) {
+  return (
+    <div style={{ borderTop: `1px solid ${C.border}`, padding: "16px 24px", background: C.surface }}>
+      <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap", marginBottom: 8 }}>
+        {[["privacy", "Privacy Policy"], ["terms", "Terms of Service"], ["disclaimer", "Disclaimer"]].map(([type, label]) => (
+          <button key={type} onClick={() => onLegal(type)} style={{ background: "transparent", border: "none", fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textMuted, cursor: "pointer", textDecoration: "underline", padding: 0 }}>{label}</button>
+        ))}
+        <a href="mailto:support@sound-ready.com" style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textMuted, textDecoration: "underline" }}>Contact</a>
+      </div>
+      <p style={{ textAlign: "center", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, margin: 0 }}>
+        © 2026 SoundReady English — IELTSTutor.com. All rights reserved. Reproduction without permission is prohibited.
+      </p>
+    </div>
+  );
+}
+
 // ─── AVATAR MENU ─────────────────────────────────────────────────────────────
-function AvatarMenu({ email, onLogout }) {
+function AvatarMenu({ email, onLogout, onAdmin }) {
   const [open, setOpen] = useState(false);
   const initial = email ? email[0].toUpperCase() : "?";
 
@@ -1650,6 +1818,16 @@ function AvatarMenu({ email, onLogout }) {
                 onMouseOver={e => e.currentTarget.style.background = C.surfaceAlt}
                 onMouseOut={e => e.currentTarget.style.background = "transparent"}
               >Session History</button>
+              {onAdmin && (
+                <button onClick={() => { setOpen(false); onAdmin(); }} style={{
+                  width: "100%", padding: "9px 16px", background: "transparent",
+                  border: "none", textAlign: "left", cursor: "pointer",
+                  fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blue, fontWeight: 600,
+                }}
+                  onMouseOver={e => e.currentTarget.style.background = C.surfaceAlt}
+                  onMouseOut={e => e.currentTarget.style.background = "transparent"}
+                >Admin Panel</button>
+              )}
               <div style={{ height: 1, background: C.border, margin: "6px 0" }} />
               <button onClick={() => { setOpen(false); onLogout(); }} style={{
                 width: "100%", padding: "9px 16px", background: "transparent",
@@ -1668,14 +1846,16 @@ function AvatarMenu({ email, onLogout }) {
 }
 
 // ─── APP SHELL ───────────────────────────────────────────────────────────────
-export default function App({ supabase, session }) {
+export default function App({ supabase, session, onAdmin }) {
   const [tab, setTab] = useState("dashboard");
+  const [legalModal, setLegalModal] = useState(null);
 
   async function handleLogout() {
     if (supabase) await supabase.auth.signOut();
   }
 
   const userEmail = session?.user?.email || "";
+  const isAdmin = userEmail === "sgvaldezjr@gmail.com";
   const tabs = [
     { id: "dashboard", label: "Dashboard" },
     { id: "writing", label: "Writing" },
@@ -1711,7 +1891,7 @@ export default function App({ supabase, session }) {
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 3, marginTop: 2 }}>Ascend</div>
             </div>
             <div style={{ width: 80, display: "flex", justifyContent: "flex-end", position: "relative" }}>
-              <AvatarMenu email={userEmail} onLogout={handleLogout} />
+              <AvatarMenu email={userEmail} onLogout={handleLogout} onAdmin={isAdmin ? onAdmin : null} />
             </div>
           </div>
           <div style={{ display: "flex" }}>
@@ -1733,9 +1913,8 @@ export default function App({ supabase, session }) {
           {tab === "speaking" && <SpeakingPractice />}
         </div>
 
-        <div style={{ padding: "10px 18px", borderTop: `1px solid ${C.border}`, textAlign: "center", fontFamily: "'Inter', sans-serif", fontSize: 8, color: C.textDim, letterSpacing: 1 }}>
-          SOUNDREADY ASCEND · EVIDENCE-BASED IELTS FEEDBACK
-        </div>
+        <Footer onLegal={setLegalModal} />
+        {legalModal && <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />}
       </div>
     </>
   );
