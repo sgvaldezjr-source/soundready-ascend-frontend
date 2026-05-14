@@ -1740,7 +1740,7 @@ function LegalModal({ type, onClose }) {
       onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{ background: C.surface, borderRadius: 16, width: "100%", maxWidth: 640, maxHeight: "85vh", display: "flex", flexDirection: "column", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
         <div style={{ padding: "20px 24px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, color: C.text }}>{content.title}</h2>
+          <h2 style={{ fontFamily: "'system-ui', sans-serif", fontSize: 18, fontWeight: 700, color: C.text }}>{content.title}</h2>
           <button onClick={onClose} style={{ background: "transparent", border: "none", fontSize: 20, color: C.textMuted, cursor: "pointer", lineHeight: 1 }}>×</button>
         </div>
         <div style={{ padding: "20px 24px", overflowY: "auto", flex: 1 }}>
@@ -1779,7 +1779,7 @@ function AvatarMenu({ email, onLogout, onAdmin }) {
         width: 36, height: 36, borderRadius: "50%",
         background: C.accent, border: "none", cursor: "pointer",
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontFamily: "'Sora', sans-serif", fontSize: 14, fontWeight: 700, color: "#FFFFFF",
+        fontFamily: "'system-ui', sans-serif", fontSize: 14, fontWeight: 700, color: "#FFFFFF",
         boxShadow: open ? `0 0 0 3px ${C.accent}33` : "none",
         transition: "box-shadow 0.2s",
       }}>{initial}</button>
