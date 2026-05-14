@@ -1855,7 +1855,7 @@ export default function App({ supabase, session, onAdmin }) {
   }
 
   const userEmail = session?.user?.email || "";
-  const isAdmin = userEmail === "sgvaldezjr@gmail.com";
+  const isAdmin = userEmail === "sergio@soundready.com";
   const tabs = [
     { id: "dashboard", label: "Dashboard" },
     { id: "writing", label: "Writing" },
