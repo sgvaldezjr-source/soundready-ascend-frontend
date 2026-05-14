@@ -424,7 +424,28 @@ function exportToPDF(feedback, meta) {
 
 // ─── SHARED COMPONENTS ────────────────────────────────────────────────────────
 // ─── CUSTOM PROMPT TOGGLE ─────────────────────────────────────────────────────
-function CustomPromptToggle({ useCustom, onToggle, customPrompt, onPromptChange, customCueCard, onCueCardChange, showCueCard, saving, onSave, taskType }) {
+// ─── UPLOAD IMAGE BUTTON ──────────────────────────────────────────────────────
+function UploadImageButton({ onBase64Change }) {
+  const fileRef = useRef(null);
+
+  function handleUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => { onBase64Change && onBase64Change(ev.target.result); };
+    reader.readAsDataURL(file);
+  }
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 12px", background: C.surface, border: `1.5px dashed ${C.border}`, borderRadius: 9, cursor: "pointer" }}
+      onClick={() => fileRef.current?.click()}>
+      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textDim }}>Paste your chart image here or</span>
+      <button style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blue, background: "transparent", border: `1px solid ${C.blue}44`, borderRadius: 6, padding: "3px 10px", cursor: "pointer" }}>⬆ Upload Image</button>
+      <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleUpload} />
+    </div>
+  );
+}
+function CustomPromptToggle({ useCustom, onToggle, customPrompt, onPromptChange, customCueCard, onCueCardChange, showCueCard, saving, onSave, taskType, onBase64Change, uploadedBase64 }) {
   return (
     <div style={{ marginBottom: 13 }}>
       {/* Toggle row */}
@@ -475,6 +496,29 @@ function CustomPromptToggle({ useCustom, onToggle, customPrompt, onPromptChange,
                 onBlur={e => e.target.style.borderColor = C.border}
               />
             </>
+          )}
+
+          {/* Image upload — only for Task 1 Academic */}
+          {taskType === "writing_task1_academic" && onBase64Change && (
+            <div style={{ marginTop: 10 }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Task Visual</div>
+              {uploadedBase64 ? (
+                <div style={{ position: "relative", marginBottom: 6 }}>
+                  <img
+                    src={uploadedBase64}
+                    alt="Uploaded chart"
+                    style={{ width: "100%", borderRadius: 8, maxHeight: 220, objectFit: "contain", background: "#fff", border: `1px solid ${C.border}` }}
+                  />
+                  <button
+                    onClick={() => onBase64Change(null)}
+                    style={{ position: "absolute", top: 6, right: 6, background: C.red, color: "#fff", border: "none", borderRadius: 6, padding: "3px 8px", fontFamily: "'Inter', sans-serif", fontSize: 12, cursor: "pointer" }}>
+                    ✕ Remove
+                  </button>
+                </div>
+              ) : (
+                <UploadImageButton onBase64Change={onBase64Change} />
+              )}
+            </div>
           )}
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 10 }}>
@@ -800,16 +844,9 @@ function Task1Visual({ topic, taskType, onBase64Change }) {
         <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1 }}>
           {showUploaded ? "Your Uploaded Chart" : showRealImage ? "Task Visual" : `Generated ${topic.label}`}
         </div>
-        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
           {showUploaded && (
             <button onClick={clearUpload} style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.red, background: "transparent", border: `1px solid ${C.red}44`, borderRadius: 6, padding: "3px 8px", cursor: "pointer" }}>✕ Remove</button>
-          )}
-          {!showUploaded && (
-            <>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim }}>Upload real image</span>
-              <button onClick={() => fileRef.current?.click()} style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.blue, background: "transparent", border: `1px solid ${C.blue}44`, borderRadius: 6, padding: "3px 8px", cursor: "pointer" }}>⬆ Upload</button>
-              <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleUpload} />
-            </>
           )}
         </div>
       </div>
@@ -990,7 +1027,7 @@ function WritingPractice({ supabase, userId }) {
           </div>
 
           {/* Custom prompt toggle */}
-          <CustomPromptToggle
+        <CustomPromptToggle
             useCustom={cp.useCustom}
             onToggle={cp.setUseCustom}
             customPrompt={cp.customPrompt}
@@ -1000,7 +1037,10 @@ function WritingPractice({ supabase, userId }) {
             showCueCard={false}
             saving={cp.saving}
             onSave={cp.savePrompt}
-            taskType={taskType}
+            taskType={taskKey}
+            onBase64Change={setUploadedBase64}
+            uploadedBase64={uploadedBase64}
+          />
           />
 
           {/* Task 1 Academic chart / image visual — hide when using custom prompt */}
