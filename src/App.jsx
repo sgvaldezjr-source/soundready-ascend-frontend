@@ -397,7 +397,7 @@ function Pill({ children, active, onClick, color }) {
     <button onClick={onClick} style={{
       padding: "6px 13px", borderRadius: 999, border: `1.5px solid ${active ? col : C.border}`,
       background: active ? col + "18" : "transparent", color: active ? col : C.textMuted,
-      fontFamily: "'system-ui', sans-serif", fontSize: 16, cursor: "pointer",
+      fontFamily: "'Inter', sans-serif", fontSize: 16, cursor: "pointer",
       transition: "all 0.15s", fontWeight: active ? 700 : 400, whiteSpace: "nowrap",
     }}>{children}</button>
   );
@@ -417,7 +417,7 @@ function ScoreRing({ score, label, color }) {
           style={{ transition: "stroke-dasharray 1.2s ease" }} />
         <text x={size/2} y={size/2 + 5} textAnchor="middle" fill={color} fontSize={13} fontWeight={700} fontFamily="Inter">{score}</text>
       </svg>
-      <span style={{ color: C.textMuted, fontSize: 10, fontFamily: "'system-ui', sans-serif", textTransform: "uppercase", letterSpacing: 0.5, textAlign: "center", maxWidth: 60, lineHeight: 1.2 }}>{label}</span>
+      <span style={{ color: C.textMuted, fontSize: 11, fontFamily: "'Inter', sans-serif", textTransform: "uppercase", letterSpacing: 0.5, textAlign: "center", maxWidth: 60, lineHeight: 1.2 }}>{label}</span>
     </div>
   );
 }
@@ -439,8 +439,8 @@ function CriterionCard({ label, band, descriptorMatched, quickSummary, evidence,
         padding: "12px 14px", background: C.surfaceAlt, border: "none", cursor: "pointer", textAlign: "left",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-          <span style={{ background: color + "22", color, border: `1px solid ${color}44`, borderRadius: 6, padding: "2px 9px", fontFamily: "'system-ui', sans-serif", fontSize: 15, fontWeight: 700, whiteSpace: "nowrap" }}>Band {band}</span>
-          <span style={{ color: C.text, fontFamily: "'system-ui', sans-serif", fontSize: 11 }}>{label}</span>
+          <span style={{ background: color + "22", color, border: `1px solid ${color}44`, borderRadius: 6, padding: "2px 9px", fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700, whiteSpace: "nowrap" }}>Band {band}</span>
+          <span style={{ color: C.text, fontFamily: "'Inter', sans-serif", fontSize: 11 }}>{label}</span>
         </div>
         <span style={{ color: C.textDim, fontSize: 16, marginLeft: 8 }}>{open ? "▲" : "▼"}</span>
       </button>
@@ -450,7 +450,7 @@ function CriterionCard({ label, band, descriptorMatched, quickSummary, evidence,
           <p style={{ color: C.textMuted, fontSize: 15, lineHeight: 1.65, fontStyle: "italic", margin: "0 0 5px" }}>{descriptorMatched}</p>
           <p style={{ color: C.text, fontSize: 15, lineHeight: 1.65, margin: "0 0 14px" }}>{quickSummary}</p>
 
-          <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>
             Language Evidence from Candidate Response
           </div>
 
@@ -458,11 +458,11 @@ function CriterionCard({ label, band, descriptorMatched, quickSummary, evidence,
             <div key={i} style={{ display: "flex", gap: 9, marginBottom: 11, paddingBottom: 11, borderBottom: i < displayedEvidence.length - 1 ? `1px solid ${C.border}` : "none" }}>
               <BandSignalDot signal={ev.band_signal} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textDim, marginBottom: 4, textTransform: "uppercase", letterSpacing: 0.8 }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, marginBottom: 4, textTransform: "uppercase", letterSpacing: 0.8 }}>
                   {ev.feature}
                 </div>
                 <div style={{ background: C.surfaceAlt, borderLeft: `3px solid ${ev.band_signal === "positive" ? C.green : ev.band_signal === "negative" ? C.red : C.accent}`, borderRadius: "0 7px 7px 0", padding: "7px 10px", marginBottom: 6 }}>
-                  <span style={{ color: C.text, fontFamily: "'system-ui', sans-serif", fontSize: 15, fontStyle: "italic" }}>"{ev.extract}"</span>
+                  <span style={{ color: C.text, fontFamily: "'Inter', sans-serif", fontSize: 15, fontStyle: "italic" }}>"{ev.extract}"</span>
                 </div>
                 <p style={{ color: C.textMuted, fontSize: 15, lineHeight: 1.6, margin: 0 }}>{ev.observation}</p>
               </div>
@@ -472,7 +472,7 @@ function CriterionCard({ label, band, descriptorMatched, quickSummary, evidence,
           {allEvidence.length > 2 && (
             <button onClick={() => setShowAll(!showAll)} style={{
               background: "transparent", border: `1px solid ${C.border}`, borderRadius: 7,
-              padding: "5px 12px", color: C.textMuted, fontFamily: "'system-ui', sans-serif", fontSize: 15,
+              padding: "5px 12px", color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 15,
               cursor: "pointer", marginTop: 4, width: "100%",
             }}>
               {showAll ? "Show less ▲" : `Show all ${allEvidence.length} evidence items ▼`}
@@ -491,9 +491,9 @@ function FeedbackReport({ feedback, criteriaMap, descriptors, ringColors, onExpo
       <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 13, padding: "16px 15px", marginBottom: 14 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
           <div>
-            <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Overall Band</div>
-            <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 40, fontWeight: 700, color: BAND_COLOR(feedback.overall_band), lineHeight: 1 }}>{feedback.overall_band}</div>
-            <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: C.textMuted, marginTop: 3 }}>CEFR {feedback.cefr} · {CEFR(feedback.overall_band)}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Overall Band</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 40, fontWeight: 700, color: BAND_COLOR(feedback.overall_band), lineHeight: 1 }}>{feedback.overall_band}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, marginTop: 3 }}>CEFR {feedback.cefr} · {CEFR(feedback.overall_band)}</div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, flex: "none" }}>
             {criteriaMap.map(({ key }, i) => (
@@ -505,12 +505,12 @@ function FeedbackReport({ feedback, criteriaMap, descriptors, ringColors, onExpo
 
       {/* Examiner comment */}
       <div style={{ background: C.blue + "0e", border: `1px solid ${C.blue}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 12 }}>
-        <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.blue, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Examiner Comment</div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.blue, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Examiner Comment</div>
         <p style={{ color: C.text, fontSize: 16, lineHeight: 1.68, margin: 0 }}>{feedback.examiner_comment}</p>
       </div>
 
       {/* Criterion breakdown */}
-      <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Criterion Breakdown</div>
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Criterion Breakdown</div>
       {criteriaMap.map(({ key }, i) => (
         <CriterionCard
           key={key}
@@ -527,13 +527,13 @@ function FeedbackReport({ feedback, criteriaMap, descriptors, ringColors, onExpo
 
       {/* Next band */}
       <div style={{ background: C.accent + "0e", border: `1px solid ${C.accent}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 10 }}>
-        <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>— To Reach the Next Band</div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>— To Reach the Next Band</div>
         <p style={{ color: C.text, fontSize: 16, lineHeight: 1.68, margin: 0 }}>{feedback.next_band_targets}</p>
       </div>
 
       {/* Model rewrite */}
       <div style={{ background: C.purple + "0e", border: `1px solid ${C.purple}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 16 }}>
-        <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.purple, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Model Rewrite</div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.purple, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Model Rewrite</div>
         <p style={{ color: C.text, fontSize: 16, lineHeight: 1.68, margin: 0 }}>{feedback.model_rewrite}</p>
       </div>
 
@@ -542,7 +542,7 @@ function FeedbackReport({ feedback, criteriaMap, descriptors, ringColors, onExpo
         width: "100%", padding: "13px 0",
         background: exporting ? C.border : C.accent,
         color: exporting ? C.textDim : "#FFFFFF",
-        border: "none", borderRadius: 11, fontFamily: "'system-ui', sans-serif", fontSize: 15,
+        border: "none", borderRadius: 11, fontFamily: "'Inter', sans-serif", fontSize: 15,
         fontWeight: 700, cursor: exporting ? "not-allowed" : "pointer",
         display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
         transition: "all 0.2s",
@@ -560,14 +560,14 @@ function ChartBar({ data }) {
   const { title, xKey, series, data: rows, yMax, yUnit } = data;
   return (
     <div>
-      <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: C.textMuted, marginBottom: 10, textAlign: "center" }}>{title}</div>
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, marginBottom: 10, textAlign: "center" }}>{title}</div>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={rows} margin={{ top: 4, right: 10, left: -10, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} />
-          <XAxis dataKey={xKey} tick={{ fill: C.textMuted, fontSize: 16, fontFamily: "'system-ui', sans-serif" }} />
-          <YAxis domain={[0, yMax]} tickFormatter={v => `${v}${yUnit}`} tick={{ fill: C.textMuted, fontSize: 16, fontFamily: "'system-ui', sans-serif" }} />
-          <Tooltip contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "'system-ui', sans-serif", fontSize: 11 }} formatter={(v) => [`${v}${yUnit}`]} />
-          <Legend wrapperStyle={{ fontFamily: "'system-ui', sans-serif", fontSize: 10 }} />
+          <XAxis dataKey={xKey} tick={{ fill: C.textMuted, fontSize: 16, fontFamily: "'Inter', sans-serif" }} />
+          <YAxis domain={[0, yMax]} tickFormatter={v => `${v}${yUnit}`} tick={{ fill: C.textMuted, fontSize: 16, fontFamily: "'Inter', sans-serif" }} />
+          <Tooltip contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "'Inter', sans-serif", fontSize: 11 }} formatter={(v) => [`${v}${yUnit}`]} />
+          <Legend wrapperStyle={{ fontFamily: "'Inter', sans-serif", fontSize: 10 }} />
           {series.map(s => <Bar key={s.key} dataKey={s.key} fill={s.color} radius={[3, 3, 0, 0]} />)}
         </BarChart>
       </ResponsiveContainer>
@@ -579,14 +579,14 @@ function ChartLine({ data }) {
   const { title, xKey, series, data: rows, yMax, yUnit } = data;
   return (
     <div>
-      <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: C.textMuted, marginBottom: 10, textAlign: "center" }}>{title}</div>
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, marginBottom: 10, textAlign: "center" }}>{title}</div>
       <ResponsiveContainer width="100%" height={200}>
         <LineChart data={rows} margin={{ top: 4, right: 10, left: -10, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} />
-          <XAxis dataKey={xKey} tick={{ fill: C.textMuted, fontSize: 16, fontFamily: "'system-ui', sans-serif" }} />
-          <YAxis domain={[0, yMax]} tickFormatter={v => `${v}${yUnit}`} tick={{ fill: C.textMuted, fontSize: 16, fontFamily: "'system-ui', sans-serif" }} />
-          <Tooltip contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "'system-ui', sans-serif", fontSize: 11 }} formatter={(v) => [`${v}${yUnit}`]} />
-          <Legend wrapperStyle={{ fontFamily: "'system-ui', sans-serif", fontSize: 10 }} />
+          <XAxis dataKey={xKey} tick={{ fill: C.textMuted, fontSize: 16, fontFamily: "'Inter', sans-serif" }} />
+          <YAxis domain={[0, yMax]} tickFormatter={v => `${v}${yUnit}`} tick={{ fill: C.textMuted, fontSize: 16, fontFamily: "'Inter', sans-serif" }} />
+          <Tooltip contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "'Inter', sans-serif", fontSize: 11 }} formatter={(v) => [`${v}${yUnit}`]} />
+          <Legend wrapperStyle={{ fontFamily: "'Inter', sans-serif", fontSize: 10 }} />
           {series.map(s => <Line key={s.key} type="monotone" dataKey={s.key} stroke={s.color} strokeWidth={2} dot={{ r: 3 }} />)}
         </LineChart>
       </ResponsiveContainer>
@@ -605,17 +605,17 @@ function ChartPie({ data }) {
   };
   return (
     <div>
-      <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: C.textMuted, marginBottom: 6, textAlign: "center" }}>{title}</div>
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, marginBottom: 6, textAlign: "center" }}>{title}</div>
       <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
         {series.map(s => (
           <div key={s.year} style={{ flex: 1, minWidth: 130 }}>
-            <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: C.accent, textAlign: "center", marginBottom: 4 }}>{s.year}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.accent, textAlign: "center", marginBottom: 4 }}>{s.year}</div>
             <ResponsiveContainer width="100%" height={140}>
               <PieChart>
                 <Pie data={s.data} cx="50%" cy="50%" outerRadius={60} dataKey="value" labelLine={false} label={renderLabel}>
                   {s.data.map((entry, i) => <Cell key={i} fill={entry.color} />)}
                 </Pie>
-                <Tooltip contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "'system-ui', sans-serif", fontSize: 11 }} formatter={v => [`${v}%`]} />
+                <Tooltip contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "'Inter', sans-serif", fontSize: 11 }} formatter={v => [`${v}%`]} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -626,7 +626,7 @@ function ChartPie({ data }) {
         {series[0].data.map(d => (
           <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <span style={{ width: 8, height: 8, borderRadius: 2, background: d.color, display: "inline-block" }} />
-            <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textMuted }}>{d.name}</span>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textMuted }}>{d.name}</span>
           </div>
         ))}
       </div>
@@ -638,13 +638,13 @@ function ChartProcess({ data }) {
   const { title, steps } = data;
   return (
     <div>
-      <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: C.textMuted, marginBottom: 12, textAlign: "center" }}>{title}</div>
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, marginBottom: 12, textAlign: "center" }}>{title}</div>
       <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 0, justifyContent: "center" }}>
         {steps.map((s, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
               <div style={{ width: 52, height: 52, borderRadius: "50%", background: C.surfaceAlt, border: `2px solid ${C.accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>{s.icon}</div>
-              <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.text, textAlign: "center", maxWidth: 60, whiteSpace: "pre-line", lineHeight: 1.4 }}>{s.label}</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.text, textAlign: "center", maxWidth: 60, whiteSpace: "pre-line", lineHeight: 1.4 }}>{s.label}</div>
             </div>
             {i < steps.length - 1 && (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "0 4px", marginBottom: 20 }}>
@@ -690,17 +690,17 @@ function Task1Visual({ topic, taskType, onBase64Change }) {
     <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 14px 12px", marginBottom: 12 }}>
       {/* Header row */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-        <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1 }}>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1 }}>
           {showUploaded ? "Your Uploaded Chart" : showRealImage ? "Task Visual" : `Generated ${topic.label}`}
         </div>
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
           {showUploaded && (
-            <button onClick={clearUpload} style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.red, background: "transparent", border: `1px solid ${C.red}44`, borderRadius: 6, padding: "3px 8px", cursor: "pointer" }}>✕ Remove</button>
+            <button onClick={clearUpload} style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.red, background: "transparent", border: `1px solid ${C.red}44`, borderRadius: 6, padding: "3px 8px", cursor: "pointer" }}>✕ Remove</button>
           )}
           {!showUploaded && (
             <>
-              <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textDim }}>Upload real image</span>
-              <button onClick={() => fileRef.current?.click()} style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.blue, background: "transparent", border: `1px solid ${C.blue}44`, borderRadius: 6, padding: "3px 8px", cursor: "pointer" }}>⬆ Upload</button>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim }}>Upload real image</span>
+              <button onClick={() => fileRef.current?.click()} style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.blue, background: "transparent", border: `1px solid ${C.blue}44`, borderRadius: 6, padding: "3px 8px", cursor: "pointer" }}>⬆ Upload</button>
               <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleUpload} />
             </>
           )}
@@ -723,7 +723,7 @@ function Task1Visual({ topic, taskType, onBase64Change }) {
       {showChart && (
         <div style={{ marginTop: 10, padding: "6px 10px", background: C.surface, borderRadius: 7, display: "flex", alignItems: "center", gap: 6 }}>
           <span style={{ fontSize: 11 }}></span>
-          <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textDim, lineHeight: 1.5 }}>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, lineHeight: 1.5 }}>
             Replace with a real past-paper image by setting <code style={{ color: C.accent }}>imageUrl</code> in the topic bank, or upload one above.
           </span>
         </div>
@@ -859,14 +859,14 @@ function WritingPractice() {
 
       {view === "write" && (
         <>
-          <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Task Type</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Task Type</div>
           <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
             {["Task 2 Academic", "Task 2 General", "Task 1 Academic", "Task 1 General"].map(t => (
               <Pill key={t} active={taskType === t} onClick={() => handleTaskChange(t)}>{t}</Pill>
             ))}
           </div>
 
-          <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Topic</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Topic</div>
           <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
             {WRITING_TOPICS[taskType].map(t => (
               <Pill key={t.id} active={topic.id === t.id} onClick={() => { setTopic(t); setEssay(""); setFeedback(null); setView("write"); setUploadedBase64(null); }}>{t.label}</Pill>
@@ -877,32 +877,32 @@ function WritingPractice() {
           <Task1Visual topic={topic} taskType={taskType} onBase64Change={setUploadedBase64} />
 
           <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 12 }}>
-            <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Prompt</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Prompt</div>
             <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{topic.prompt}</p>
           </div>
 
           <textarea value={essay} onChange={e => setEssay(e.target.value)}
             placeholder={`Write your ${taskType} response here…`}
-            style={{ width: "100%", minHeight: taskType === "Task 2" ? 220 : 160, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "13px 14px", color: C.text, fontSize: 16, lineHeight: 1.72, fontFamily: "'system-ui', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
+            style={{ width: "100%", minHeight: taskType === "Task 2" ? 220 : 160, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "13px 14px", color: C.text, fontSize: 16, lineHeight: 1.72, fontFamily: "'Inter', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
             onFocus={e => e.target.style.borderColor = C.accent}
             onBlur={e => e.target.style.borderColor = C.border}
           />
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 9 }}>
-            <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: wordCount >= minWords ? C.green : C.textMuted }}>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: wordCount >= minWords ? C.green : C.textMuted }}>
               {wordCount} / {minWords} words {wordCount >= minWords ? "✓" : ""}
             </span>
             <button onClick={analyze} disabled={wordCount < 50 || loading} style={{
               background: wordCount >= 50 && !loading ? C.accent : C.border,
               color: wordCount >= 50 && !loading ? "#FFFFFF" : C.textDim,
               border: "none", borderRadius: 10, padding: "10px 20px",
-              fontFamily: "'system-ui', sans-serif", fontSize: 16, fontWeight: 700,
+              fontFamily: "'Inter', sans-serif", fontSize: 16, fontWeight: 700,
               cursor: wordCount >= 50 && !loading ? "pointer" : "not-allowed",
             }}>{loading ? "Analysing…" : "Submit & Analyse →"}</button>
           </div>
 
           {loading && (
-            <div style={{ textAlign: "center", padding: "28px 0", color: C.textMuted, fontFamily: "'system-ui', sans-serif", fontSize: 12 }}>
+            <div style={{ textAlign: "center", padding: "28px 0", color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 12 }}>
               <div style={{ fontSize: 20, marginBottom: 8 }}></div>
               Extracting language samples and mapping to band descriptors…
             </div>
@@ -911,13 +911,13 @@ function WritingPractice() {
           {/* Show submitted essay for comparison when feedback exists */}
           {lastEssay && feedback && !feedback.error && (
             <div style={{ marginTop: 14, background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px" }}>
-              <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Your Submitted Response</div>
-              <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, fontFamily: "'system-ui', sans-serif", whiteSpace: "pre-line" }}>{lastEssay}</p>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Your Submitted Response</div>
+              <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, fontFamily: "'Inter', sans-serif", whiteSpace: "pre-line" }}>{lastEssay}</p>
             </div>
           )}
 
           {feedback?.error && (
-            <div style={{ marginTop: 12, padding: 12, background: C.red + "15", border: `1px solid ${C.red}33`, borderRadius: 9, color: C.red, fontFamily: "'system-ui', sans-serif", fontSize: 12 }}>
+            <div style={{ marginTop: 12, padding: 12, background: C.red + "15", border: `1px solid ${C.red}33`, borderRadius: 9, color: C.red, fontFamily: "'Inter', sans-serif", fontSize: 12 }}>
               <div style={{ fontWeight: 700, marginBottom: 4 }}>Analysis failed</div>
               <div style={{ fontSize: 15, opacity: 0.85, wordBreak: "break-all" }}>{feedback.message || "Unknown error — check connection and try again."}</div>
             </div>
@@ -1003,8 +1003,8 @@ function AudioPlayer({ audioUrl, color }) {
           <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${duration ? (progress / duration) * 100 : 0}%`, background: color, borderRadius: 99, transition: "width 0.1s linear" }} />
         </div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: C.textMuted }}>{fmt(progress)}</span>
-          <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: C.textMuted }}>{fmt(duration)}</span>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted }}>{fmt(progress)}</span>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted }}>{fmt(duration)}</span>
         </div>
       </div>
     </div>
@@ -1151,15 +1151,15 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
               {isRecording && (
                 <span style={{ width: 8, height: 8, borderRadius: "50%", background: C.red, display: "inline-block", animation: "pulse 1s infinite" }} />
               )}
-              <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: isRecording ? C.red : isRecorded ? C.green : C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: isRecording ? C.red : isRecorded ? C.green : C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>
                 {isRecording ? "Recording" : isRecorded ? "Recording Complete" : "Ready to Record"}
               </span>
             </div>
             {isRecording && (
-              <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 18, fontWeight: 700, color: C.red }}>{fmt(timer)}</span>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 18, fontWeight: 700, color: C.red }}>{fmt(timer)}</span>
             )}
             {isRecorded && (
-              <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: C.textMuted }}>{fmt(timer)} recorded</span>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted }}>{fmt(timer)} recorded</span>
             )}
           </div>
 
@@ -1177,7 +1177,7 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
 
           {isRecorded && !audioUrl && (
             <div style={{ background: C.surface, border: `1px dashed ${C.border}`, borderRadius: 9, padding: "10px 14px", marginBottom: 14, textAlign: "center" }}>
-              <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textDim }}>Audio playback available once backend is connected</span>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim }}>Audio playback available once backend is connected</span>
             </div>
           )}
 
@@ -1187,7 +1187,7 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
               <button onClick={isRecording ? stopRecording : startRecording} style={{
                 flex: 1, padding: "12px 0", border: "none", borderRadius: 10, cursor: "pointer",
                 background: isRecording ? C.red : partColor,
-                color: "#FFFFFF", fontFamily: "'system-ui', sans-serif", fontSize: 15, fontWeight: 700,
+                color: "#FFFFFF", fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700,
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                 transition: "background 0.2s",
               }}>
@@ -1202,12 +1202,12 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
               <>
                 <button onClick={reset} style={{
                   padding: "11px 16px", border: `1.5px solid ${C.border}`, borderRadius: 10,
-                  background: "transparent", color: C.textMuted, fontFamily: "'system-ui', sans-serif",
+                  background: "transparent", color: C.textMuted, fontFamily: "'Inter', sans-serif",
                   fontSize: 16, cursor: "pointer",
                 }}>↺ Re-record</button>
                 <button onClick={() => transcribeAudio(audioBlobRef.current)} style={{
                   flex: 1, padding: "11px 0", border: "none", borderRadius: 10, cursor: "pointer",
-                  background: partColor, color: "#FFFFFF", fontFamily: "'system-ui', sans-serif",
+                  background: partColor, color: "#FFFFFF", fontFamily: "'Inter', sans-serif",
                   fontSize: 15, fontWeight: 700,
                 }}>Transcribe →</button>
               </>
@@ -1222,8 +1222,8 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
           <div style={{ marginBottom: 16 }}>
             <Waveform active={true} color={partColor} />
           </div>
-          <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: partColor, marginBottom: 6 }}>Transcribing your response…</div>
-          <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: C.textDim }}>Whisper AI is processing your audio</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: partColor, marginBottom: 6 }}>Transcribing your response…</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textDim }}>Whisper AI is processing your audio</div>
           <div style={{ display: "flex", justifyContent: "center", gap: 5, marginTop: 14 }}>
             {[0, 1, 2].map(i => (
               <div key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: partColor, opacity: 0.7, animation: `pulse 1s infinite`, animationDelay: `${i * 0.3}s` }} />
@@ -1235,11 +1235,11 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
       {/* ── ERROR STATE ── */}
       {isError && (
         <div style={{ background: C.red + "0e", border: `1px solid ${C.red}33`, borderRadius: 12, padding: "16px", marginBottom: 12 }}>
-          <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: C.red, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Recording Error</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.red, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Recording Error</div>
           <p style={{ color: C.text, fontSize: 15, lineHeight: 1.6, margin: "0 0 12px" }}>{errorMsg}</p>
           <button onClick={reset} style={{
             background: "transparent", border: `1.5px solid ${C.border}`, borderRadius: 8,
-            padding: "8px 16px", color: C.textMuted, fontFamily: "'system-ui', sans-serif", fontSize: 15, cursor: "pointer",
+            padding: "8px 16px", color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 15, cursor: "pointer",
           }}>↺ Try Again</button>
         </div>
       )}
@@ -1250,28 +1250,28 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
           <div style={{ background: C.green + "0e", border: `1px solid ${C.green}33`, borderRadius: 10, padding: "10px 14px", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 14 }}>✅</span>
             <div>
-              <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: C.green, textTransform: "uppercase", letterSpacing: 1, marginBottom: 2 }}>Transcription Complete</div>
-              <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: C.textMuted }}>Review and correct your transcript before analysis</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.green, textTransform: "uppercase", letterSpacing: 1, marginBottom: 2 }}>Transcription Complete</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted }}>Review and correct your transcript before analysis</div>
             </div>
           </div>
 
-          <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
             Your Transcript — edit if needed
           </div>
           <textarea value={transcript} onChange={e => setTranscript(e.target.value)}
             placeholder="Your transcribed speech will appear here. You can edit it to correct any errors before submitting for analysis…"
-            style={{ width: "100%", minHeight: 150, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "13px 14px", color: C.text, fontSize: 16, lineHeight: 1.72, fontFamily: "'system-ui', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
+            style={{ width: "100%", minHeight: 150, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "13px 14px", color: C.text, fontSize: 16, lineHeight: 1.72, fontFamily: "'Inter', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
             onFocus={e => e.target.style.borderColor = partColor}
             onBlur={e => e.target.style.borderColor = C.border}
           />
-          <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? C.green : C.textMuted, marginTop: 6 }}>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? C.green : C.textMuted, marginTop: 6 }}>
             {transcript.trim() ? transcript.trim().split(/\s+/).filter(Boolean).length : 0} words — minimum 20 to analyse {transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? "✓" : ""}
           </div>
 
           <div style={{ display: "flex", gap: 8, marginTop: 9 }}>
             <button onClick={reset} style={{
               padding: "10px 14px", border: `1.5px solid ${C.border}`, borderRadius: 10,
-              background: "transparent", color: C.textMuted, fontFamily: "'system-ui', sans-serif", fontSize: 16, cursor: "pointer",
+              background: "transparent", color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 16, cursor: "pointer",
             }}>↺ Re-record</button>
             <button
               onClick={() => onTranscriptReady(transcript)}
@@ -1280,7 +1280,7 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
                 flex: 1, padding: "10px 0", border: "none", borderRadius: 10,
                 background: transcript.trim() && transcript.trim().split(/\s+/).length >= 20 ? partColor : C.border,
                 color: transcript.trim() && transcript.trim().split(/\s+/).length >= 20 ? "#FFFFFF" : C.textDim,
-                fontFamily: "'system-ui', sans-serif", fontSize: 15, fontWeight: 700,
+                fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700,
                 cursor: transcript.trim() ? "pointer" : "not-allowed",
               }}>Submit & Analyse →</button>
           </div>
@@ -1292,18 +1292,18 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
         <div style={{ marginTop: 8 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
             <div style={{ flex: 1, height: 1, background: C.border }} />
-            <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>or type / paste</span>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>or type / paste</span>
             <div style={{ flex: 1, height: 1, background: C.border }} />
           </div>
           <textarea value={transcript} onChange={e => setTranscript(e.target.value)}
             placeholder="Paste or type your spoken response here to analyse without recording…"
-            style={{ width: "100%", minHeight: 120, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", color: C.text, fontSize: 16, lineHeight: 1.72, fontFamily: "'system-ui', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box" }}
+            style={{ width: "100%", minHeight: 120, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", color: C.text, fontSize: 16, lineHeight: 1.72, fontFamily: "'Inter', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box" }}
             onFocus={e => e.target.style.borderColor = partColor}
             onBlur={e => e.target.style.borderColor = C.border}
           />
           {transcript.trim() && (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
-              <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? C.green : C.textMuted }}>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? C.green : C.textMuted }}>
                 {transcript.trim().split(/\s+/).filter(Boolean).length} words — min 20 {transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? "✓" : ""}
               </span>
               <button onClick={() => onTranscriptReady(transcript)}
@@ -1312,7 +1312,7 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
                   padding: "10px 20px", border: "none", borderRadius: 10,
                   background: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? partColor : C.border,
                   color: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? "#FFFFFF" : C.textDim,
-                  fontFamily: "'system-ui', sans-serif", fontSize: 16, fontWeight: 700,
+                  fontFamily: "'Inter', sans-serif", fontSize: 16, fontWeight: 700,
                   cursor: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? "pointer" : "not-allowed",
                 }}>Submit & Analyse →</button>
             </div>
@@ -1328,8 +1328,8 @@ function ScoreBar({ label, score, color }) {
   return (
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
-        <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 13, color: C.text, fontWeight: 500 }}>{label}</span>
-        <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 13, fontWeight: 700, color }}>{score}/100</span>
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.text, fontWeight: 500 }}>{label}</span>
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 700, color }}>{score}/100</span>
       </div>
       <div style={{ height: 8, background: C.surfaceAlt, borderRadius: 99, overflow: "hidden" }}>
         <div style={{ height: "100%", width: `${score}%`, background: color, borderRadius: 99, transition: "width 1s ease" }} />
@@ -1347,9 +1347,9 @@ function PronunciationReport({ pronunciation: p, partColor }) {
       <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 13, padding: "16px 15px", marginBottom: 14 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
           <div>
-            <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Pronunciation Score</div>
-            <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 40, fontWeight: 700, color: overallColor, lineHeight: 1 }}>{p.overall_score}</div>
-            <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 11, color: C.textMuted, marginTop: 3 }}>Band {p.pronunciation_band} · /100</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Pronunciation Score</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 40, fontWeight: 700, color: overallColor, lineHeight: 1 }}>{p.overall_score}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, marginTop: 3 }}>Band {p.pronunciation_band} · /100</div>
           </div>
           <div style={{ flex: 1, minWidth: 200 }}>
             <ScoreBar label="Fluency" score={p.fluency_score} color={C.blue} />
@@ -1359,21 +1359,21 @@ function PronunciationReport({ pronunciation: p, partColor }) {
         </div>
       </div>
       <div style={{ background: C.blue + "0e", border: `1px solid ${C.blue}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 12 }}>
-        <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 11, color: C.blue, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Assessment</div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.blue, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Assessment</div>
         <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.summary}</p>
       </div>
       <div style={{ background: C.green + "0e", border: `1px solid ${C.green}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 12 }}>
-        <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 11, color: C.green, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Strength</div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Strength</div>
         <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.strengths}</p>
       </div>
       {p.problem_words && p.problem_words.length > 0 && (
         <div style={{ marginBottom: 12 }}>
-          <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontWeight: 600 }}>Words to Practise</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontWeight: 600 }}>Words to Practise</div>
           {p.problem_words.map((w, i) => (
             <div key={i} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 14px", marginBottom: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
-                <span style={{ background: C.red + "15", color: C.red, border: `1px solid ${C.red}33`, borderRadius: 6, padding: "2px 10px", fontFamily: "'system-ui', sans-serif", fontSize: 13, fontWeight: 700 }}>{w.word}</span>
-                <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 12, color: C.textMuted }}>{w.issue}</span>
+                <span style={{ background: C.red + "15", color: C.red, border: `1px solid ${C.red}33`, borderRadius: 6, padding: "2px 10px", fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 700 }}>{w.word}</span>
+                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textMuted }}>{w.issue}</span>
               </div>
               <p style={{ color: C.blue, fontSize: 13, lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>Tip: {w.tip}</p>
             </div>
@@ -1381,15 +1381,15 @@ function PronunciationReport({ pronunciation: p, partColor }) {
         </div>
       )}
       <div style={{ background: C.accent + "0e", border: `1px solid ${C.accent}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 10 }}>
-        <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Fluency & Rhythm</div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Fluency & Rhythm</div>
         <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.fluency_comment}</p>
       </div>
       <div style={{ background: C.purple + "0e", border: `1px solid ${C.purple}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 10 }}>
-        <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 11, color: C.purple, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Intonation</div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.purple, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Intonation</div>
         <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.intonation_comment}</p>
       </div>
       <div style={{ background: C.green + "0e", border: `1px solid ${C.green}28`, borderRadius: 10, padding: "12px 14px" }}>
-        <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 11, color: C.green, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Practice Plan</div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Practice Plan</div>
         <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.next_steps}</p>
       </div>
     </div>
@@ -1494,7 +1494,7 @@ function SpeakingPractice() {
       {(view === "speak") && (
         <>
           {/* Part selector */}
-          <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Part</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Part</div>
           <div style={{ display: "flex", gap: 6, marginBottom: 13 }}>
             {[1, 2, 3].map(p => (
               <Pill key={p} active={part === p} onClick={() => handlePartChange(p)} color={partColors[p]}>Part {p}</Pill>
@@ -1502,7 +1502,7 @@ function SpeakingPractice() {
           </div>
 
           {/* Topic selector */}
-          <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Topic</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Topic</div>
           <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
             {SPEAKING_TOPICS[part].map(t => (
               <Pill key={t.id} active={topic.id === t.id} onClick={() => { setTopic(t); setFeedback(null); }} color={partColors[part]}>{t.label}</Pill>
@@ -1511,7 +1511,7 @@ function SpeakingPractice() {
 
           {/* Prompt card */}
           <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 6 }}>
-            <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: partColors[part], textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: partColors[part], textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
               Part {part} — {partLabels[part]}
             </div>
             <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{topic.prompt}</p>
@@ -1520,7 +1520,7 @@ function SpeakingPractice() {
           {/* Examiner tip */}
           <div style={{ display: "flex", alignItems: "flex-start", gap: 7, padding: "8px 12px", marginBottom: 14 }}>
             <span style={{ fontSize: 16, marginTop: 1 }}></span>
-            <span style={{ fontFamily: "'system-ui', sans-serif", fontSize: 16, color: C.textMuted, lineHeight: 1.6 }}>{partHints[part]}</span>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, lineHeight: 1.6 }}>{partHints[part]}</span>
           </div>
 
           {/* Voice Recorder */}
@@ -1529,13 +1529,13 @@ function SpeakingPractice() {
           {/* Show last transcript for comparison when feedback exists */}
           {lastTranscript && feedback && !feedback.error && (
             <div style={{ marginTop: 14, background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px" }}>
-              <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Your Submitted Response</div>
-              <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, fontFamily: "'system-ui', sans-serif" }}>{lastTranscript}</p>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Your Submitted Response</div>
+              <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, fontFamily: "'Inter', sans-serif" }}>{lastTranscript}</p>
             </div>
           )}
 
           {feedback?.error && (
-            <div style={{ marginTop: 12, padding: 12, background: C.red + "15", border: `1px solid ${C.red}33`, borderRadius: 9, color: C.red, fontFamily: "'system-ui', sans-serif", fontSize: 12 }}>
+            <div style={{ marginTop: 12, padding: 12, background: C.red + "15", border: `1px solid ${C.red}33`, borderRadius: 9, color: C.red, fontFamily: "'Inter', sans-serif", fontSize: 12 }}>
               <div style={{ fontWeight: 700, marginBottom: 4 }}>Analysis failed</div>
               <div style={{ fontSize: 15, opacity: 0.85, wordBreak: "break-all" }}>{feedback.message || "Unknown error — check connection and try again."}</div>
             </div>
@@ -1549,15 +1549,15 @@ function SpeakingPractice() {
           <div style={{ marginBottom: 20 }}>
             <Waveform active={true} color={partColors[part]} />
           </div>
-          <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, fontWeight: 600, color: partColors[part], marginBottom: 6 }}>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 600, color: partColors[part], marginBottom: 6 }}>
             Scoring your response…
           </div>
-          <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 13, color: C.textMuted, marginBottom: 20 }}>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted, marginBottom: 20 }}>
             Running IELTS assessment and pronunciation analysis in parallel
           </div>
           <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
             {["IELTS Scoring", "Pronunciation Analysis"].map((stage, i) => (
-              <div key={i} style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 20, padding: "5px 12px", fontFamily: "'system-ui', sans-serif", fontSize: 11, color: C.textMuted, display: "flex", alignItems: "center", gap: 5 }}>
+              <div key={i} style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 20, padding: "5px 12px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, display: "flex", alignItems: "center", gap: 5 }}>
                 <span style={{ width: 6, height: 6, borderRadius: "50%", background: partColors[part], display: "inline-block", animation: "pulse 1s infinite", animationDelay: `${i * 0.4}s` }} />
                 {stage}
               </div>
@@ -1608,27 +1608,27 @@ function Dashboard() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, marginBottom: 20 }}>
         {stats.map(s => (
           <div key={s.label} style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 15px" }}>
-            <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 30, fontWeight: 700, color: s.color, marginBottom: 4 }}>{s.value}</div>
-            <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 13, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1 }}>{s.label}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 30, fontWeight: 700, color: s.color, marginBottom: 4 }}>{s.value}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1 }}>{s.label}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Recent Sessions</div>
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Recent Sessions</div>
       {history.map((h, i) => (
         <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: `1px solid ${C.border}` }}>
           <div>
             <div style={{ color: C.text, fontSize: 16, marginBottom: 2 }}>{h.task}</div>
-            <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.textMuted }}>{h.date} · {h.type}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textMuted }}>{h.date} · {h.type}</div>
           </div>
-          <span style={{ background: BAND_COLOR(h.band) + "22", color: BAND_COLOR(h.band), border: `1px solid ${BAND_COLOR(h.band)}44`, borderRadius: 6, padding: "2px 9px", fontFamily: "'system-ui', sans-serif", fontSize: 15, fontWeight: 700 }}>Band {h.band}</span>
+          <span style={{ background: BAND_COLOR(h.band) + "22", color: BAND_COLOR(h.band), border: `1px solid ${BAND_COLOR(h.band)}44`, borderRadius: 6, padding: "2px 9px", fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700 }}>Band {h.band}</span>
         </div>
       ))}
 
       <div style={{ marginTop: 16, background: C.accentSoft, border: `1px solid ${C.accent}33`, borderRadius: 12, padding: "13px 14px" }}>
-        <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Upgrade to Premium</div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Upgrade to Premium</div>
         <p style={{ color: C.textMuted, fontSize: 15, margin: "0 0 10px", lineHeight: 1.6 }}>Unlock unlimited sessions, Sentence Rewriter, full PDF report history, vocabulary insights, and personalised study plans.</p>
-        <button style={{ background: C.accent, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "8px 15px", fontFamily: "'system-ui', sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>Upgrade — $9.99/mo →</button>
+        <button style={{ background: C.accent, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "8px 15px", fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>Upgrade — $9.99/mo →</button>
       </div>
     </div>
   );
@@ -1740,11 +1740,11 @@ function LegalModal({ type, onClose }) {
       onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{ background: C.surface, borderRadius: 16, width: "100%", maxWidth: 640, maxHeight: "85vh", display: "flex", flexDirection: "column", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
         <div style={{ padding: "20px 24px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <h2 style={{ fontFamily: "'system-ui', sans-serif", fontSize: 18, fontWeight: 700, color: C.text }}>{content.title}</h2>
+          <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, color: C.text }}>{content.title}</h2>
           <button onClick={onClose} style={{ background: "transparent", border: "none", fontSize: 20, color: C.textMuted, cursor: "pointer", lineHeight: 1 }}>×</button>
         </div>
         <div style={{ padding: "20px 24px", overflowY: "auto", flex: 1 }}>
-          <pre style={{ fontFamily: "'system-ui', sans-serif", fontSize: 13, color: C.text, lineHeight: 1.8, whiteSpace: "pre-wrap", margin: 0 }}>{content.content}</pre>
+          <pre style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.text, lineHeight: 1.8, whiteSpace: "pre-wrap", margin: 0 }}>{content.content}</pre>
         </div>
       </div>
     </div>
@@ -1757,12 +1757,12 @@ function Footer({ onLegal }) {
     <div style={{ borderTop: `1px solid ${C.border}`, padding: "16px 24px", background: C.surface }}>
       <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap", marginBottom: 8 }}>
         {[["privacy", "Privacy Policy"], ["terms", "Terms of Service"], ["disclaimer", "Disclaimer"]].map(([type, label]) => (
-          <button key={type} onClick={() => onLegal(type)} style={{ background: "transparent", border: "none", fontFamily: "'system-ui', sans-serif", fontSize: 12, color: C.textMuted, cursor: "pointer", textDecoration: "underline", padding: 0 }}>{label}</button>
+          <button key={type} onClick={() => onLegal(type)} style={{ background: "transparent", border: "none", fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textMuted, cursor: "pointer", textDecoration: "underline", padding: 0 }}>{label}</button>
         ))}
-        <a href="mailto:support@sound-ready.com" style={{ fontFamily: "'system-ui', sans-serif", fontSize: 12, color: C.textMuted, textDecoration: "underline" }}>Contact</a>
+        <a href="mailto:support@sound-ready.com" style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textMuted, textDecoration: "underline" }}>Contact</a>
       </div>
-      <p style={{ textAlign: "center", fontFamily: "'system-ui', sans-serif", fontSize: 11, color: C.textDim, margin: 0 }}>
-        © 2026 SoundReady English—SoundReady Ascend All rights reserved. Reproduction without permission is prohibited.
+      <p style={{ textAlign: "center", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, margin: 0 }}>
+        © 2026 SoundReady English — IELTSTutor.com. All rights reserved. Reproduction without permission is prohibited.
       </p>
     </div>
   );
@@ -1779,7 +1779,7 @@ function AvatarMenu({ email, onLogout, onAdmin }) {
         width: 36, height: 36, borderRadius: "50%",
         background: C.accent, border: "none", cursor: "pointer",
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontFamily: "'system-ui', sans-serif", fontSize: 14, fontWeight: 700, color: "#FFFFFF",
+        fontFamily: "'Sora', sans-serif", fontSize: 14, fontWeight: 700, color: "#FFFFFF",
         boxShadow: open ? `0 0 0 3px ${C.accent}33` : "none",
         transition: "box-shadow 0.2s",
       }}>{initial}</button>
@@ -1797,15 +1797,15 @@ function AvatarMenu({ email, onLogout, onAdmin }) {
           }}>
             {/* User info */}
             <div style={{ padding: "12px 16px", borderBottom: `1px solid ${C.border}` }}>
-              <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 3 }}>{email}</div>
-              <div style={{ display: "inline-block", background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "2px 8px", fontFamily: "'system-ui', sans-serif", fontSize: 11, color: C.green }}>Free Plan</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 3 }}>{email}</div>
+              <div style={{ display: "inline-block", background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "2px 8px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green }}>Free Plan</div>
             </div>
             {/* Menu items */}
             <div style={{ padding: "6px 0" }}>
               <button onClick={() => setOpen(false)} style={{
                 width: "100%", padding: "9px 16px", background: "transparent",
                 border: "none", textAlign: "left", cursor: "pointer",
-                fontFamily: "'system-ui', sans-serif", fontSize: 13, color: C.textMuted,
+                fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted,
               }}
                 onMouseOver={e => e.currentTarget.style.background = C.surfaceAlt}
                 onMouseOut={e => e.currentTarget.style.background = "transparent"}
@@ -1813,7 +1813,7 @@ function AvatarMenu({ email, onLogout, onAdmin }) {
               <button onClick={() => setOpen(false)} style={{
                 width: "100%", padding: "9px 16px", background: "transparent",
                 border: "none", textAlign: "left", cursor: "pointer",
-                fontFamily: "'system-ui', sans-serif", fontSize: 13, color: C.textMuted,
+                fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted,
               }}
                 onMouseOver={e => e.currentTarget.style.background = C.surfaceAlt}
                 onMouseOut={e => e.currentTarget.style.background = "transparent"}
@@ -1822,7 +1822,7 @@ function AvatarMenu({ email, onLogout, onAdmin }) {
                 <button onClick={() => { setOpen(false); onAdmin(); }} style={{
                   width: "100%", padding: "9px 16px", background: "transparent",
                   border: "none", textAlign: "left", cursor: "pointer",
-                  fontFamily: "'system-ui', sans-serif", fontSize: 13, color: C.blue, fontWeight: 600,
+                  fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blue, fontWeight: 600,
                 }}
                   onMouseOver={e => e.currentTarget.style.background = C.surfaceAlt}
                   onMouseOut={e => e.currentTarget.style.background = "transparent"}
@@ -1832,7 +1832,7 @@ function AvatarMenu({ email, onLogout, onAdmin }) {
               <button onClick={() => { setOpen(false); onLogout(); }} style={{
                 width: "100%", padding: "9px 16px", background: "transparent",
                 border: "none", textAlign: "left", cursor: "pointer",
-                fontFamily: "'system-ui', sans-serif", fontSize: 13, color: C.red,
+                fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.red,
               }}
                 onMouseOver={e => e.currentTarget.style.background = C.red + "0e"}
                 onMouseOut={e => e.currentTarget.style.background = "transparent"}
@@ -1864,22 +1864,23 @@ export default function App({ supabase, session, onAdmin }) {
 
   return (
     <>
-      <style>{`     
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: ${C.bg}; color: ${C.text}; font-family: 'system-ui', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; }
+        body { background: ${C.bg}; color: ${C.text}; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: ${C.bg}; }
         ::-webkit-scrollbar-thumb { background: ${C.border}; border-radius: 3px; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
         @keyframes wave { from{height:4px} to{height:40px} }
-        input, textarea, select { color: ${C.text}; font-family: 'system-ui', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        input, textarea, select { color: ${C.text}; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
         textarea::placeholder { color: ${C.textDim}; }
       `}</style>
       <div style={{ maxWidth: "100%", margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
         <div style={{ padding: "16px clamp(18px, 5vw, 120px) 0", borderBottom: `1px solid ${C.border}`, background: C.bg, position: "sticky", top: 0, zIndex: 10, boxShadow: "0 2px 12px rgba(27,42,58,0.08)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 13 }}>
             <div style={{ width: 80 }}>
-              <div style={{ background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "3px 10px", fontFamily: "'system-ui', sans-serif", fontSize: 11, color: C.green, display: "inline-block" }}>Free</div>
+              <div style={{ background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "3px 10px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, display: "inline-block" }}>Free</div>
             </div>
             <div style={{ textAlign: "center" }}>
               <img
@@ -1887,7 +1888,7 @@ export default function App({ supabase, session, onAdmin }) {
                 alt="SoundReady"
                 style={{ height: 56, objectFit: "contain" }}
               />
-              <div style={{ fontFamily: "'system-ui', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 3, marginTop: 2 }}>Ascend</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 3, marginTop: 2 }}>Ascend</div>
             </div>
             <div style={{ width: 80, display: "flex", justifyContent: "flex-end", position: "relative" }}>
               <AvatarMenu email={userEmail} onLogout={handleLogout} onAdmin={isAdmin ? onAdmin : null} />
@@ -1899,7 +1900,7 @@ export default function App({ supabase, session, onAdmin }) {
                 flex: 1, padding: "11px 0", background: "transparent", border: "none",
                 borderBottom: `2px solid ${tab === t.id ? C.accent : "transparent"}`,
                 color: tab === t.id ? C.accent : C.textMuted,
-                fontFamily: "'system-ui', sans-serif", fontSize: 15, fontWeight: tab === t.id ? 600 : 400,
+                fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: tab === t.id ? 600 : 400,
                 cursor: "pointer", transition: "all 0.15s",
               }}>{t.label}</button>
             ))}
