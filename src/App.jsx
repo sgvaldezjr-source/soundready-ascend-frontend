@@ -1006,13 +1006,13 @@ function WritingPractice({ supabase, userId }) {
           {/* Task 1 Academic chart / image visual — hide when using custom prompt */}
           {!cp.useCustom && <Task1Visual topic={topic} taskType={taskType} onBase64Change={setUploadedBase64} />}
 
-          {/* Prompt card — show preset or custom */}
-          <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 12 }}>
-            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
-              {cp.useCustom ? "Your Prompt" : "Prompt"}
+         {/* Prompt card — only show when using preset topic */}
+          {!cp.useCustom && (
+            <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 12 }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Prompt</div>
+              <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{topic.prompt}</p>
             </div>
-            <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{activePrompt}</p>
-          </div>
+          )}
 
           {/* Task 1 Academic chart / image visual */}
           <Task1Visual topic={topic} taskType={taskType} onBase64Change={setUploadedBase64} />
@@ -1674,13 +1674,15 @@ function handlePartChange(p) {
             taskType={`speaking_part${part}`}
           />
 
-          {/* Prompt card */}
-          <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 6 }}>
-            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: partColors[part], textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
-              Part {part} — {cp.useCustom ? "Your Prompt" : partLabels[part]}
+         {/* Prompt card — only show when using preset topic */}
+          {!cp.useCustom && (
+            <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 6 }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: partColors[part], textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
+                Part {part} — {partLabels[part]}
+              </div>
+              <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{topic.prompt}</p>
             </div>
-            <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{activePrompt}</p>
-          </div>
+          )}
 
           {/* Examiner tip */}
           <div style={{ display: "flex", alignItems: "flex-start", gap: 7, padding: "8px 12px", marginBottom: 14 }}>
