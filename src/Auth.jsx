@@ -40,7 +40,7 @@ export default function Auth({ supabase }) {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif", padding: 20 }}>
+    <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'system-ui', 'Helvetica Neue', Helvetica, Arial, sans-serif", padding: 20 }}>
       <div style={{ width: "100%", maxWidth: 420 }}>
 
         {/* Logo */}
