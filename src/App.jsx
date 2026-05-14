@@ -1019,15 +1019,14 @@ function WritingPractice({ supabase, userId }) {
             ))}
           </div>
 
-       <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Topic</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Topic</div>
           <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
             {WRITING_TOPICS[taskType].map(t => (
               <Pill key={t.id} active={topic.id === t.id} onClick={() => { setTopic(t); setEssay(""); setFeedback(null); setView("write"); setUploadedBase64(null); }}>{t.label}</Pill>
             ))}
           </div>
 
-          {/* Custom prompt toggle */}
-        <CustomPromptToggle
+          <CustomPromptToggle
             useCustom={cp.useCustom}
             onToggle={cp.setUseCustom}
             customPrompt={cp.customPrompt}
@@ -1040,19 +1039,17 @@ function WritingPractice({ supabase, userId }) {
             taskType={taskKey}
             onBase64Change={setUploadedBase64}
             uploadedBase64={uploadedBase64}
-         
-          {/* Task 1 Academic chart / image visual — hide when using custom prompt */}
+          />
+
           {!cp.useCustom && <Task1Visual topic={topic} taskType={taskType} onBase64Change={setUploadedBase64} />}
 
-         {/* Prompt card — only show when using preset topic */}
           {!cp.useCustom && (
             <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 12 }}>
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Prompt</div>
               <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{topic.prompt}</p>
             </div>
           )}
-     
-      
+
           <textarea value={essay} onChange={e => setEssay(e.target.value)}
             placeholder={`Write your ${taskType} response here…`}
             style={{ width: "100%", minHeight: taskType === "Task 2" ? 220 : 160, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "13px 14px", color: C.text, fontSize: 16, lineHeight: 1.72, fontFamily: "'Inter', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
@@ -1080,7 +1077,6 @@ function WritingPractice({ supabase, userId }) {
             </div>
           )}
 
-          {/* Show submitted essay for comparison when feedback exists */}
           {lastEssay && feedback && !feedback.error && (
             <div style={{ marginTop: 14, background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px" }}>
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Your Submitted Response</div>
