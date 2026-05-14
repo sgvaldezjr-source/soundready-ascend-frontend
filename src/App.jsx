@@ -1013,15 +1013,8 @@ function WritingPractice({ supabase, userId }) {
               <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{topic.prompt}</p>
             </div>
           )}
-
-          {/* Task 1 Academic chart / image visual */}
-          <Task1Visual topic={topic} taskType={taskType} onBase64Change={setUploadedBase64} />
-
-          <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 12 }}>
-            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Prompt</div>
-            <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{topic.prompt}</p>
-          </div>
-
+     
+      
           <textarea value={essay} onChange={e => setEssay(e.target.value)}
             placeholder={`Write your ${taskType} response here…`}
             style={{ width: "100%", minHeight: taskType === "Task 2" ? 220 : 160, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "13px 14px", color: C.text, fontSize: 16, lineHeight: 1.72, fontFamily: "'Inter', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
