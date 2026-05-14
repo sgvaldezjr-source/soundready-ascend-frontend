@@ -1040,9 +1040,7 @@ function WritingPractice({ supabase, userId }) {
             taskType={taskKey}
             onBase64Change={setUploadedBase64}
             uploadedBase64={uploadedBase64}
-          />
-          />
-
+         
           {/* Task 1 Academic chart / image visual — hide when using custom prompt */}
           {!cp.useCustom && <Task1Visual topic={topic} taskType={taskType} onBase64Change={setUploadedBase64} />}
 
