@@ -1864,8 +1864,7 @@ export default function App({ supabase, session, onAdmin }) {
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap');
+      <style>{`     
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: ${C.bg}; color: ${C.text}; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; }
         ::-webkit-scrollbar { width: 5px; }
