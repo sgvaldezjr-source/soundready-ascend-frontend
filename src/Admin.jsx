@@ -14,7 +14,7 @@ const C = {
   textDim: "#A0B4C8",
 };
 
-const ADMIN_EMAIL = "sgvaldezjr@gmail.com"; // Change to your email
+const ADMIN_EMAIL = "sergio@soundready.com"; // Change to your email
 
 const TOPIC_TYPES = [
   { value: "writing-task2-academic", label: "Writing Task 2 Academic" },
