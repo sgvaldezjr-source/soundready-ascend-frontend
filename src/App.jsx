@@ -23,7 +23,39 @@ const C = {
   textMuted: "#5A7A9A",    // muted text
   textDim: "#A0B4C8",      // dim text
 };
+// ─── CUSTOM PROMPT HOOK ───────────────────────────────────────────────────────
+function useCustomPrompt(supabase, taskType, userId) {
+  const [customPrompt, setCustomPrompt] = useState("");
+  const [customCueCard, setCustomCueCard] = useState("");
+  const [useCustom, setUseCustom] = useState(false);
+  const [saving, setSaving] = useState(false);
 
+  // Load saved prompt for this task type on mount / task change
+  useState(() => {
+    if (!supabase || !userId || !taskType) return;
+    supabase
+      .from("custom_prompts")
+      .select("prompt, cue_card")
+      .eq("user_id", userId)
+      .eq("task_type", taskType)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.prompt) { setCustomPrompt(data.prompt); setCustomCueCard(data.cue_card || ""); }
+      });
+  }, [taskType, userId]);
+
+  async function savePrompt(prompt, cueCard) {
+    if (!supabase || !userId) return;
+    setSaving(true);
+    await supabase.from("custom_prompts").upsert(
+      { user_id: userId, task_type: taskType, prompt, cue_card: cueCard || null, updated_at: new Date().toISOString() },
+      { onConflict: "user_id,task_type" }
+    );
+    setSaving(false);
+  }
+
+  return { customPrompt, setCustomPrompt, customCueCard, setCustomCueCard, useCustom, setUseCustom, saving, savePrompt };
+}
 const BAND_COLOR = b => b >= 7 ? C.green : b >= 5.5 ? C.accent : b >= 4 ? C.blue : C.red;
 const CEFR = b => b >= 8.5 ? "C2" : b >= 7 ? "C1" : b >= 5.5 ? "B2" : b >= 4 ? "B1" : b >= 3 ? "A2" : "A1";
 
@@ -391,6 +423,81 @@ function exportToPDF(feedback, meta) {
 }
 
 // ─── SHARED COMPONENTS ────────────────────────────────────────────────────────
+// ─── CUSTOM PROMPT TOGGLE ─────────────────────────────────────────────────────
+function CustomPromptToggle({ useCustom, onToggle, customPrompt, onPromptChange, customCueCard, onCueCardChange, showCueCard, saving, onSave, taskType }) {
+  return (
+    <div style={{ marginBottom: 13 }}>
+      {/* Toggle row */}
+      <div style={{ display: "flex", alignItems: "center", gap: 0, background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 10, padding: 3, width: "fit-content", marginBottom: useCustom ? 12 : 0 }}>
+        {[false, true].map((val) => (
+          <button key={String(val)} onClick={() => onToggle(val)} style={{
+            padding: "6px 14px", borderRadius: 8, border: "none", cursor: "pointer",
+            background: useCustom === val ? C.surface : "transparent",
+            color: useCustom === val ? C.accent : C.textMuted,
+            fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: useCustom === val ? 700 : 400,
+            boxShadow: useCustom === val ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+            transition: "all 0.15s", whiteSpace: "nowrap",
+          }}>
+            {val ? "✏️ My Own Prompt" : "📚 Preset Topic"}
+          </button>
+        ))}
+      </div>
+
+      {useCustom && (
+        <div style={{ background: C.surfaceAlt, border: `1px solid ${C.accent}44`, borderRadius: 12, padding: "14px 14px 12px" }}>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
+            {showCueCard ? "Part 2 — Main Question" : "Your Custom Prompt"}
+          </div>
+          <textarea
+            value={customPrompt}
+            onChange={e => onPromptChange(e.target.value)}
+            placeholder={showCueCard
+              ? "Paste the main Part 2 question here…"
+              : taskType?.includes("Task 1 Academic")
+                ? "Paste the Task 1 Academic prompt here, e.g. 'The chart shows… Summarise the information…'"
+                : taskType?.includes("Task 1 General")
+                  ? "Paste the Task 1 General letter prompt here…"
+                  : "Paste your Task 2 essay question here…"}
+            style={{ width: "100%", minHeight: 110, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 10, padding: "11px 13px", color: C.text, fontSize: 14, lineHeight: 1.72, fontFamily: "'Inter', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box" }}
+            onFocus={e => e.target.style.borderColor = C.accent}
+            onBlur={e => e.target.style.borderColor = C.border}
+          />
+
+          {showCueCard && (
+            <>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, margin: "10px 0 7px" }}>Cue Card Bullet Points</div>
+              <textarea
+                value={customCueCard}
+                onChange={e => onCueCardChange(e.target.value)}
+                placeholder={"You should say:\n— where it was\n— when you went there\n— what you did\n— and explain why it was memorable."}
+                style={{ width: "100%", minHeight: 100, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 10, padding: "11px 13px", color: C.text, fontSize: 14, lineHeight: 1.72, fontFamily: "'Inter', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box" }}
+                onFocus={e => e.target.style.borderColor = C.accent}
+                onBlur={e => e.target.style.borderColor = C.border}
+              />
+            </>
+          )}
+
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 10 }}>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textDim }}>
+              {customPrompt.trim() ? `${customPrompt.trim().split(/\s+/).length} words` : "Paste your prompt above"}
+            </span>
+            <button
+              onClick={() => onSave(customPrompt, customCueCard)}
+              disabled={!customPrompt.trim() || saving}
+              style={{
+                padding: "6px 14px", borderRadius: 8, border: "none", cursor: customPrompt.trim() ? "pointer" : "not-allowed",
+                background: customPrompt.trim() && !saving ? C.accent : C.border,
+                color: customPrompt.trim() && !saving ? "#FFFFFF" : C.textDim,
+                fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 700, transition: "all 0.15s",
+              }}>
+              {saving ? "Saving…" : "Save Prompt ✓"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 function Pill({ children, active, onClick, color }) {
   const col = color || C.accent;
   return (
@@ -761,7 +868,7 @@ function safeParseJSON(raw) {
   return JSON.parse(result);
 }
 
-function WritingPractice() {
+function WritingPractice({ supabase, userId }) {
   const [taskType, setTaskType] = useState("Task 2 Academic");
   const [topic, setTopic] = useState(WRITING_TOPICS["Task 2 Academic"][0]);
   const [essay, setEssay] = useState("");
@@ -774,12 +881,21 @@ function WritingPractice() {
   const wordCount = essay.trim() ? essay.trim().split(/\s+/).length : 0;
   const minWords = taskType === "Task 1 Academic" || taskType === "Task 1 General" ? 150 : 250;
 
+  // Custom prompt
+  const taskKey = taskType === "Task 2 Academic" ? "writing_task2_academic"
+    : taskType === "Task 2 General" ? "writing_task2_general"
+    : taskType === "Task 1 Academic" ? "writing_task1_academic"
+    : "writing_task1_general";
+  const cp = useCustomPrompt(supabase, taskKey, userId);
+  const activePrompt = cp.useCustom && cp.customPrompt.trim() ? cp.customPrompt.trim() : topic.prompt;
+
   const criteriaMap = [{ key: "task" }, { key: "coherence" }, { key: "lexis" }, { key: "grammar" }];
   const ringColors = [C.blue, C.teal, C.green, C.accent];
 
-  function handleTaskChange(t) {
+ function handleTaskChange(t) {
     setTaskType(t); setTopic(WRITING_TOPICS[t][0]);
     setEssay(""); setFeedback(null); setView("write");
+    cp.setUseCustom(false);
   }
 
   async function analyze() {
@@ -788,13 +904,13 @@ function WritingPractice() {
     setLoading(true); setFeedback(null);
     try {
       // Build message content — include image if student uploaded one
-      const textContent = { type: "text", content: buildWritingPrompt(taskType, topic.prompt, essay) };
+    const textContent = { type: "text", content: buildWritingPrompt(taskType, activePrompt, essay) };
       const userContent = uploadedBase64
         ? [
             { type: "image", source: { type: "base64", media_type: "image/jpeg", data: uploadedBase64.split(",")[1] } },
-            { type: "text", text: buildWritingPrompt(taskType, topic.prompt, essay) },
+            { type: "text", text: buildWritingPrompt(taskType, activePrompt, essay) },
           ]
-        : buildWritingPrompt(taskType, topic.prompt, essay);
+        : buildWritingPrompt(taskType, activePrompt, essay);
 
       const res = await fetch(`${PROXY}/analyse`, {
         method: "POST",
@@ -866,11 +982,36 @@ function WritingPractice() {
             ))}
           </div>
 
-          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Topic</div>
+       <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Topic</div>
           <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
             {WRITING_TOPICS[taskType].map(t => (
               <Pill key={t.id} active={topic.id === t.id} onClick={() => { setTopic(t); setEssay(""); setFeedback(null); setView("write"); setUploadedBase64(null); }}>{t.label}</Pill>
             ))}
+          </div>
+
+          {/* Custom prompt toggle */}
+          <CustomPromptToggle
+            useCustom={cp.useCustom}
+            onToggle={cp.setUseCustom}
+            customPrompt={cp.customPrompt}
+            onPromptChange={cp.setCustomPrompt}
+            customCueCard={cp.customCueCard}
+            onCueCardChange={cp.setCustomCueCard}
+            showCueCard={false}
+            saving={cp.saving}
+            onSave={cp.savePrompt}
+            taskType={taskType}
+          />
+
+          {/* Task 1 Academic chart / image visual — hide when using custom prompt */}
+          {!cp.useCustom && <Task1Visual topic={topic} taskType={taskType} onBase64Change={setUploadedBase64} />}
+
+          {/* Prompt card — show preset or custom */}
+          <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 12 }}>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
+              {cp.useCustom ? "Your Prompt" : "Prompt"}
+            </div>
+            <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{activePrompt}</p>
           </div>
 
           {/* Task 1 Academic chart / image visual */}
@@ -1397,7 +1538,7 @@ function PronunciationReport({ pronunciation: p, partColor }) {
 }
 
 // ─── SPEAKING PRACTICE ───────────────────────────────────────────────────────
-function SpeakingPractice() {
+function SpeakingPractice({ supabase, userId }) {
   const [part, setPart] = useState(1);
   const [topic, setTopic] = useState(SPEAKING_TOPICS[1][0]);
   const [loading, setLoading] = useState(false);
@@ -1407,6 +1548,15 @@ function SpeakingPractice() {
   const [view, setView] = useState("speak");
   const [exporting, setExporting] = useState(false);
   const [lastTranscript, setLastTranscript] = useState("");
+
+  // Custom prompt
+  const partKey = part === 1 ? "speaking_part1" : part === 2 ? "speaking_part2" : "speaking_part3";
+  const cp = useCustomPrompt(supabase, partKey, userId);
+  const activePrompt = cp.useCustom && cp.customPrompt.trim()
+    ? (part === 2 && cp.customCueCard.trim()
+        ? `${cp.customPrompt.trim()}\n\n${cp.customCueCard.trim()}`
+        : cp.customPrompt.trim())
+    : topic.prompt;
 
   const partColors = { 1: C.blue, 2: C.green, 3: C.purple };
   const partLabels = { 1: "Introduction & Interview", 2: "Long Turn", 3: "Discussion" };
@@ -1418,9 +1568,10 @@ function SpeakingPractice() {
   const criteriaMap = [{ key: "fluency" }, { key: "lexis" }, { key: "grammar" }, { key: "pronunciation" }];
   const ringColors = [C.blue, C.green, C.accent, C.purple];
 
-  function handlePartChange(p) {
+function handlePartChange(p) {
     setPart(p); setTopic(SPEAKING_TOPICS[p][0]);
     setFeedback(null); setPronunciation(null); setView("speak");
+    cp.setUseCustom(false);
   }
 
   async function analyze(transcript) {
@@ -1434,9 +1585,9 @@ function SpeakingPractice() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ieltsMessages: [{ role: "user", content: buildSpeakingPrompt(part, topic.prompt, transcript) }],
+          ieltsMessages: [{ role: "user", content: buildSpeakingPrompt(part, activePrompt, transcript) }],
           part,
-          question: topic.prompt,
+          question: activePrompt,
           transcript,
         })
       });
@@ -1509,12 +1660,26 @@ function SpeakingPractice() {
             ))}
           </div>
 
+         {/* Custom prompt toggle */}
+          <CustomPromptToggle
+            useCustom={cp.useCustom}
+            onToggle={cp.setUseCustom}
+            customPrompt={cp.customPrompt}
+            onPromptChange={cp.setCustomPrompt}
+            customCueCard={cp.customCueCard}
+            onCueCardChange={cp.setCustomCueCard}
+            showCueCard={part === 2}
+            saving={cp.saving}
+            onSave={cp.savePrompt}
+            taskType={`speaking_part${part}`}
+          />
+
           {/* Prompt card */}
           <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 6 }}>
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: partColors[part], textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
-              Part {part} — {partLabels[part]}
+              Part {part} — {cp.useCustom ? "Your Prompt" : partLabels[part]}
             </div>
-            <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{topic.prompt}</p>
+            <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{activePrompt}</p>
           </div>
 
           {/* Examiner tip */}
@@ -1909,8 +2074,8 @@ export default function App({ supabase, session, onAdmin }) {
 
         <div style={{ padding: "18px clamp(18px, 5vw, 120px)", flex: 1 }}>
           {tab === "dashboard" && <Dashboard />}
-          {tab === "writing" && <WritingPractice />}
-          {tab === "speaking" && <SpeakingPractice />}
+          {tab === "writing" && <WritingPractice supabase={supabase} userId={session?.user?.id} />}
+          {tab === "speaking" && <SpeakingPractice supabase={supabase} userId={session?.user?.id} />}
         </div>
 
         <Footer onLegal={setLegalModal} />
