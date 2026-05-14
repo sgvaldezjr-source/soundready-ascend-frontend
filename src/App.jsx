@@ -495,9 +495,9 @@ function FeedbackReport({ feedback, criteriaMap, descriptors, ringColors, onExpo
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 40, fontWeight: 700, color: BAND_COLOR(feedback.overall_band), lineHeight: 1 }}>{feedback.overall_band}</div>
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, marginTop: 3 }}>CEFR {feedback.cefr} · {CEFR(feedback.overall_band)}</div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, flex: "none" }}>
+          <div style={{ display: "grid", gridTemplateColumns: window.innerWidth > 600 ? "repeat(4, auto)" : "repeat(2, 1fr)", gap: window.innerWidth > 600 ? 20 : 10, flex: "none" }}>
             {criteriaMap.map(({ key }, i) => (
-              <ScoreRing key={key} score={feedback.criteria[key].band} label={descriptors[key].label.split(" ")[0]} color={ringColors[i]} />
+              <ScoreRing key={key} score={feedback.criteria[key].band} label={descriptors[key].label} color={ringColors[i]} />
             ))}
           </div>
         </div>
