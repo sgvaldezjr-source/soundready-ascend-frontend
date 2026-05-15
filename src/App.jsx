@@ -97,6 +97,22 @@ async function saveSession(supabase, userId, { taskType, topicLabel, prompt, res
     // Silent fail — never block the student from seeing their feedback
   }
 }
+// ─── PORTFOLIO / HISTORY LOADER ───────────────────────────────────────────
+async function loadSessions(supabase, userId) {
+  if (!supabase || !userId) return [];
+  try {
+    const { data, error } = await supabase
+      .from("sessions")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    return data || [];
+  } catch (err) {
+    console.error("Failed to load sessions:", err);
+    return [];
+  }
+}
 const BAND_COLOR = b => b >= 7 ? C.green : b >= 5.5 ? C.accent : b >= 4 ? C.blue : C.red;
 const CEFR = b => b >= 8.5 ? "C2" : b >= 7 ? "C1" : b >= 5.5 ? "B2" : b >= 4 ? "B1" : b >= 3 ? "A2" : "A1";
 
@@ -603,6 +619,86 @@ function CustomPromptToggle({ useCustom, onToggle, customPrompt, onPromptChange,
               {saving ? "Saving…" : "Save Prompt ✓"}
             </button>
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+// ─── HISTORY CARD ─────────────────────────────────────────────────────────
+function HistoryCard({ session, onViewReport }) {
+  const [expanded, setExpanded] = useState(false);
+  const dateObj = new Date(session.created_at);
+  const dateStr = dateObj.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  const timeStr = dateObj.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+  const taskType = session.task_type || "Unknown";
+  const topicLabel = session.topic_label || "—";
+  const band = session.overall_band || "—";
+
+  return (
+    <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden", marginBottom: 10 }}>
+      {/* Header — always visible, clickable to expand */}
+      <button onClick={() => setExpanded(!expanded)} style={{
+        width: "100%", padding: "13px 14px", background: "transparent", border: "none",
+        cursor: "pointer", textAlign: "left", display: "flex", alignItems: "center",
+        justifyContent: "space-between", transition: "background 0.15s",
+      }}
+        onMouseOver={e => e.currentTarget.style.background = C.surfaceAlt}
+        onMouseOut={e => e.currentTarget.style.background = "transparent"}
+      >
+        <div style={{ flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
+            <span style={{ background: BAND_COLOR(band) + "22", color: BAND_COLOR(band), border: `1px solid ${BAND_COLOR(band)}44`, borderRadius: 6, padding: "2px 9px", fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700, whiteSpace: "nowrap" }}>Band {band}</span>
+            <span style={{ color: C.text, fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 600 }}>{taskType}</span>
+            <span style={{ color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 13 }}>· {topicLabel}</span>
+          </div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textDim }}>{dateStr} at {timeStr}</div>
+        </div>
+        <span style={{ color: C.textMuted, fontSize: 16, marginLeft: 8, flexShrink: 0 }}>{expanded ? "▲" : "▼"}</span>
+      </button>
+
+      {/* Expanded content */}
+      {expanded && (
+        <div style={{ padding: "13px 14px", background: C.bg, borderTop: `1px solid ${C.border}` }}>
+          {/* Prompt card */}
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Prompt</div>
+            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px", fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.text, lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-word", maxHeight: 150, overflowY: "auto" }}>
+              {session.prompt || "—"}
+            </div>
+          </div>
+
+          {/* Image (if Task 1 Academic) */}
+          {session.image_url && (
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Chart / Image</div>
+              <img src={session.image_url} alt="Task visual" style={{ width: "100%", borderRadius: 8, maxHeight: 220, objectFit: "contain", background: "#fff", border: `1px solid ${C.border}` }} />
+            </div>
+          )}
+
+          {/* Response card */}
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Your Response</div>
+            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px", fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.text, lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-word", maxHeight: 150, overflowY: "auto" }}>
+              {session.response || "—"}
+            </div>
+          </div>
+
+          {/* Feedback summary */}
+          {session.feedback && (
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Examiner Comment</div>
+              <div style={{ background: C.blue + "0e", border: `1px solid ${C.blue}28`, borderRadius: 8, padding: "10px 12px", fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.text, lineHeight: 1.6 }}>
+                {session.feedback.examiner_comment || "—"}
+              </div>
+            </div>
+          )}
+
+          {/* View full report button */}
+          <button onClick={() => onViewReport(session)} style={{
+            width: "100%", padding: "10px 0", border: "none", borderRadius: 8,
+            background: C.accent, color: "#FFFFFF", fontFamily: "'Inter', sans-serif",
+            fontSize: 13, fontWeight: 700, cursor: "pointer",
+          }}>View Full Report</button>
         </div>
       )}
     </div>
@@ -1642,6 +1738,82 @@ function PronunciationReport({ pronunciation: p, partColor }) {
 }
 
 // ─── SPEAKING PRACTICE ───────────────────────────────────────────────────────
+// ─── PORTFOLIO / MY HISTORY ───────────────────────────────────────────────
+function Portfolio({ supabase, userId }) {
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedSession, setSelectedSession] = useState(null);
+
+  // Load sessions on mount
+  useState(() => {
+    setLoading(true);
+    loadSessions(supabase, userId).then(setSessions).finally(() => setLoading(false));
+  }, [userId]);
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: "center", padding: "48px 20px", color: C.textMuted }}>
+        <div style={{ fontSize: 20, marginBottom: 12 }}>⏳</div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15 }}>Loading your session history…</div>
+      </div>
+    );
+  }
+
+  if (sessions.length === 0) {
+    return (
+      <div style={{ textAlign: "center", padding: "48px 20px" }}>
+        <div style={{ fontSize: 40, marginBottom: 12 }}>📚</div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.text, marginBottom: 6 }}>No sessions yet</div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted, marginBottom: 16 }}>Complete a Writing or Speaking practice session to build your history.</div>
+      </div>
+    );
+  }
+
+  // If viewing a report
+  if (selectedSession && selectedSession.feedback) {
+    const isWriting = !!selectedSession.feedback.criteria?.task;
+    const descriptors = isWriting ? WRITING_DESCRIPTORS : SPEAKING_DESCRIPTORS;
+    const criteriaMap = isWriting
+      ? [{ key: "task" }, { key: "coherence" }, { key: "lexis" }, { key: "grammar" }]
+      : [{ key: "fluency" }, { key: "lexis" }, { key: "grammar" }, { key: "pronunciation" }];
+    const ringColors = isWriting ? [C.blue, C.teal, C.green, C.accent] : [C.blue, C.green, C.accent, C.purple];
+
+    return (
+      <div>
+        <button onClick={() => setSelectedSession(null)} style={{
+          padding: "8px 14px", background: "transparent", border: `1px solid ${C.border}`,
+          borderRadius: 8, color: C.textMuted, fontFamily: "'Inter', sans-serif",
+          fontSize: 13, cursor: "pointer", marginBottom: 14,
+        }}>← Back to History</button>
+        <FeedbackReport
+          feedback={selectedSession.feedback}
+          criteriaMap={criteriaMap}
+          descriptors={descriptors}
+          ringColors={ringColors}
+          onExport={() => {
+            exportToPDF(selectedSession.feedback, {
+              taskType: selectedSession.task_type,
+              topicLabel: selectedSession.topic_label,
+            });
+          }}
+          exporting={false}
+        />
+      </div>
+    );
+  }
+
+  // History list view
+  return (
+    <div>
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 12 }}>
+        {sessions.length} Session{sessions.length !== 1 ? "s" : ""}
+      </div>
+      {sessions.map(s => (
+        <HistoryCard key={s.id} session={s} onViewReport={setSelectedSession} />
+      ))}
+    </div>
+  );
+}
 function SpeakingPractice({ supabase, userId }) {
   const [part, setPart] = useState(1);
   const [topic, setTopic] = useState(SPEAKING_TOPICS[1][0]);
@@ -2138,10 +2310,11 @@ export default function App({ supabase, session, onAdmin }) {
 
   const userEmail = session?.user?.email || "";
   const isAdmin = userEmail === "sergio@sound-ready.com";
-  const tabs = [
+const tabs = [
     { id: "dashboard", label: "Dashboard" },
     { id: "writing", label: "Writing" },
     { id: "speaking", label: "Speaking" },
+    { id: "history", label: "My History" },
   ];
 
   return (
@@ -2189,10 +2362,11 @@ export default function App({ supabase, session, onAdmin }) {
           </div>
         </div>
 
-        <div style={{ padding: "18px clamp(18px, 5vw, 120px)", flex: 1 }}>
+      <div style={{ padding: "18px clamp(18px, 5vw, 120px)", flex: 1 }}>
           {tab === "dashboard" && <Dashboard />}
           {tab === "writing" && <WritingPractice supabase={supabase} userId={session?.user?.id} />}
           {tab === "speaking" && <SpeakingPractice supabase={supabase} userId={session?.user?.id} />}
+          {tab === "history" && <Portfolio supabase={supabase} userId={session?.user?.id} />}
         </div>
 
         <Footer onLegal={setLegalModal} />
