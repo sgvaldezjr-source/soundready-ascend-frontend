@@ -56,6 +56,44 @@ function useCustomPrompt(supabase, taskType, userId) {
 
   return { customPrompt, setCustomPrompt, customCueCard, setCustomCueCard, useCustom, setUseCustom, saving, savePrompt };
 }
+// ─── SESSION SAVER ────────────────────────────────────────────────────────────
+async function saveSession(supabase, userId, { taskType, topicLabel, prompt, response, imageBase64, feedback, overallBand }) {
+  if (!supabase || !userId) return;
+  try {
+    let imageUrl = null;
+
+    // Upload image to Supabase Storage if present
+    if (imageBase64) {
+      const base64Data = imageBase64.split(",")[1];
+      const byteArray = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+      const blob = new Blob([byteArray], { type: "image/jpeg" });
+      const fileName = `${userId}/${Date.now()}.jpg`;
+      const { data, error } = await supabase.storage
+        .from("task-images")
+        .upload(fileName, blob, { contentType: "image/jpeg", upsert: false });
+      if (!error) {
+        const { data: urlData } = supabase.storage
+          .from("task-images")
+          .getPublicUrl(fileName);
+        imageUrl = urlData.publicUrl;
+      }
+    }
+
+    await supabase.from("sessions").insert({
+      user_id: userId,
+      task_type: taskType,
+      topic_label: topicLabel,
+      prompt,
+      response,
+      image_url: imageUrl,
+      feedback,
+      overall_band: overallBand,
+    });
+  } catch (err) {
+    console.error("Session save failed:", err);
+    // Silent fail — never block the student from seeing their feedback
+  }
+}
 const BAND_COLOR = b => b >= 7 ? C.green : b >= 5.5 ? C.accent : b >= 4 ? C.blue : C.red;
 const CEFR = b => b >= 8.5 ? "C2" : b >= 7 ? "C1" : b >= 5.5 ? "B2" : b >= 4 ? "B1" : b >= 3 ? "A2" : "A1";
 
@@ -1014,8 +1052,19 @@ function WritingPractice({ supabase, userId }) {
           ]},
         }
       };
-      setFeedback(nested);
+     setFeedback(nested);
       setView("feedback");
+
+      // Save session to Supabase
+      saveSession(supabase, userId, {
+        taskType,
+        topicLabel: cp.useCustom ? "Custom Prompt" : topic.label,
+        prompt: activePrompt,
+        response: essay,
+        imageBase64: uploadedBase64,
+        feedback: nested,
+        overallBand: nested.overall_band,
+      });
     } catch (err) { 
       const pos = err.message.match(/position (\d+)/)?.[1];
       const snippet = pos ? `…${(data?.content?.[0]?.text || "").slice(Math.max(0, parseInt(pos)-30), parseInt(pos)+30)}…` : "";
@@ -1679,6 +1728,17 @@ function handlePartChange(p) {
       const pronRaw = data.pronunciation?.content?.find(b => b.type === "text")?.text || "{}";
       setPronunciation(safeParseJSON(pronRaw));
       setView("feedback");
+
+      // Save session to Supabase
+      saveSession(supabase, userId, {
+        taskType: `Speaking Part ${part}`,
+        topicLabel: cp.useCustom ? "Custom Prompt" : topic.label,
+        prompt: activePrompt,
+        response: transcript,
+        imageBase64: null,
+        feedback: nested,
+        overallBand: nested.overall_band,
+      });
     } catch (err) { setFeedback({ error: true, message: err?.message || String(err) }); setView("speak"); }
     setLoading(false); setLoadingStage("");
   }
