@@ -1010,7 +1010,7 @@ function WritingPractice({ supabase, userId }) {
     const textContent = { type: "text", content: buildWritingPrompt(taskType, activePrompt, essay) };
       const userContent = uploadedBase64
         ? [
-            { type: "image", source: { type: "base64", media_type: "image/jpeg", data: uploadedBase64.split(",")[1] } },
+            { type: "image", source: { type: "base64", media_type: uploadedBase64.startsWith("data:image/png") ? "image/png" : "image/jpeg", data: uploadedBase64.split(",")[1] } },
             { type: "text", text: buildWritingPrompt(taskType, activePrompt, essay) },
           ]
         : buildWritingPrompt(taskType, activePrompt, essay);
