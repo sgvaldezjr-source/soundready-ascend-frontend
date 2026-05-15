@@ -62,12 +62,15 @@ async function saveSession(supabase, userId, { taskType, topicLabel, prompt, res
   try {
     let imageUrl = null;
 
-    // Upload image to Supabase Storage if present
+  // Upload image to Supabase Storage if present
     if (imageBase64) {
       const base64Data = imageBase64.split(",")[1];
       const byteArray = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-      const blob = new Blob([byteArray], { type: "image/jpeg" });
-      const fileName = `${userId}/${Date.now()}.jpg`;
+      // Detect actual image type from base64 header
+      const mimeType = imageBase64.startsWith("data:image/png") ? "image/png" : "image/jpeg";
+      const ext = mimeType === "image/png" ? "png" : "jpg";
+      const blob = new Blob([byteArray], { type: mimeType });
+      const fileName = `${userId}/${Date.now()}.${ext}`;
       const { data, error } = await supabase.storage
         .from("task-images")
         .upload(fileName, blob, { contentType: "image/jpeg", upsert: false });
