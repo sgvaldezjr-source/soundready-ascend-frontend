@@ -71,9 +71,9 @@ async function saveSession(supabase, userId, { taskType, topicLabel, prompt, res
       const ext = mimeType === "image/png" ? "png" : "jpg";
       const blob = new Blob([byteArray], { type: mimeType });
       const fileName = `${userId}/${Date.now()}.${ext}`;
-      const { data, error } = await supabase.storage
+     const { data, error } = await supabase.storage
         .from("task-images")
-        .upload(fileName, blob, { contentType: "image/jpeg", upsert: false });
+        .upload(fileName, blob, { contentType: mimeType, upsert: false });
       if (!error) {
         const { data: urlData } = supabase.storage
           .from("task-images")
