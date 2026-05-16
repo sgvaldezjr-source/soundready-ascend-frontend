@@ -2705,12 +2705,12 @@ const tabs = [
             </div>
           </div>
           <div style={{ display: "flex" }}>
-            {tabs.map(t => (
+       {tabs.map(t => (
               <button key={t.id} onClick={() => setTab(t.id)} style={{
                 flex: 1, padding: "11px 0", background: "transparent", border: "none",
                 borderBottom: `2px solid ${tab === t.id ? C.accent : "transparent"}`,
                 color: tab === t.id ? C.accent : C.textMuted,
-                fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: tab === t.id ? 600 : 400,
+                fontFamily: "'Inter', sans-serif", fontSize: "clamp(11px, 2.8vw, 15px)", fontWeight: tab === t.id ? 600 : 400,
                 cursor: "pointer", transition: "all 0.15s",
               }}>{t.label}</button>
             ))}
