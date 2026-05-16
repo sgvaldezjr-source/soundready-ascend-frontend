@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 
 // ─── BACKEND PROXY ───────────────────────────────────────────────────────────
@@ -1796,7 +1796,7 @@ function Portfolio({ supabase, userId }) {
   const [selectedSession, setSelectedSession] = useState(null);
 
   // Load sessions on mount
-  useState(() => {
+useEffect(() => {
     setLoading(true);
     loadSessions(supabase, userId).then(setSessions).finally(() => setLoading(false));
   }, [userId]);
@@ -2092,7 +2092,157 @@ function handlePartChange(p) {
     </div>
   );
 }
+// ─── BAND PROGRESS CHART ─────────────────────────────────────────────────────
+const SAMPLE_DATA = [
+  { date: "Jan 1",  band: 5.0, type: "Writing" },
+  { date: "Jan 8",  band: 5.5, type: "Speaking" },
+  { date: "Jan 15", band: 5.5, type: "Writing" },
+  { date: "Jan 22", band: 6.0, type: "Speaking" },
+  { date: "Jan 29", band: 6.5, type: "Writing" },
+  { date: "Feb 5",  band: 6.5, type: "Speaking" },
+  { date: "Feb 12", band: 7.0, type: "Writing" },
+];
 
+function BandProgressChart({ supabase, userId }) {
+  const [allSessions, setAllSessions] = useState([]);
+  const [filter, setFilter] = useState("Both");       // "Both" | "Writing" | "Speaking"
+  const [range, setRange] = useState("30");            // "7" | "30"
+  const [loading, setLoading] = useState(true);
+  const isEmpty = allSessions.length === 0;
+
+  useEffect(() => {
+    if (!supabase || !userId) { setLoading(false); return; }
+    supabase
+      .from("sessions")
+      .select("created_at, overall_band, task_type")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: true })
+      .then(({ data }) => {
+        setAllSessions(data || []);
+        setLoading(false);
+      });
+  }, [userId]);
+
+  // Filter by time range
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - parseInt(range));
+
+  const chartData = (isEmpty ? SAMPLE_DATA : allSessions
+    .filter(s => new Date(s.created_at) >= cutoff)
+    .map(s => ({
+      date: new Date(s.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
+      band: s.overall_band,
+      type: s.task_type?.includes("Task") ? "Writing" : "Speaking",
+    }))
+  ).filter(s => filter === "Both" || s.type === filter);
+
+  const filterColor = filter === "Writing" ? C.blue : filter === "Speaking" ? C.purple : C.accent;
+  const lineColor   = filter === "Writing" ? C.blue : filter === "Speaking" ? C.purple : C.accent;
+
+  if (loading) return null;
+
+  return (
+    <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: "16px 15px", marginBottom: 20 }}>
+      {/* Header row */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, flexWrap: "wrap", gap: 8 }}>
+        <div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>Band Progress</div>
+          {isEmpty && (
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, marginTop: 2 }}>
+              ✦ Sample data — complete a session to track your real progress
+            </div>
+          )}
+        </div>
+        <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+          {/* Type filter */}
+          {["Both", "Writing", "Speaking"].map(f => {
+            const col = f === "Writing" ? C.blue : f === "Speaking" ? C.purple : C.accent;
+            return (
+              <button key={f} onClick={() => setFilter(f)} style={{
+                padding: "4px 11px", borderRadius: 999, border: `1.5px solid ${filter === f ? col : C.border}`,
+                background: filter === f ? col + "18" : "transparent",
+                color: filter === f ? col : C.textMuted,
+                fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: filter === f ? 700 : 400,
+                cursor: "pointer", transition: "all 0.15s",
+              }}>{f}</button>
+            );
+          })}
+          <div style={{ width: 1, background: C.border, margin: "0 3px" }} />
+          {/* Range filter */}
+          {[["7", "7d"], ["30", "30d"]].map(([val, label]) => (
+            <button key={val} onClick={() => setRange(val)} style={{
+              padding: "4px 11px", borderRadius: 999, border: `1.5px solid ${range === val ? C.teal : C.border}`,
+              background: range === val ? C.teal + "18" : "transparent",
+              color: range === val ? C.teal : C.textMuted,
+              fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: range === val ? 700 : 400,
+              cursor: "pointer", transition: "all 0.15s",
+            }}>{label}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Chart */}
+      <div style={{ opacity: isEmpty ? 0.45 : 1, filter: isEmpty ? "grayscale(30%)" : "none", transition: "opacity 0.3s" }}>
+        {chartData.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "28px 0", color: C.textDim, fontFamily: "'Inter', sans-serif", fontSize: 13 }}>
+            No sessions in this time range
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={180}>
+            <LineChart data={chartData} margin={{ top: 8, right: 8, left: -28, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false} />
+              <XAxis
+                dataKey="date"
+                tick={{ fill: C.textDim, fontSize: 10, fontFamily: "'Inter', sans-serif" }}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis
+                domain={[3, 9]}
+                ticks={[4, 5, 5.5, 6, 6.5, 7, 7.5, 8, 9]}
+                tick={{ fill: C.textDim, fontSize: 10, fontFamily: "'Inter', sans-serif" }}
+                tickLine={false}
+                axisLine={false}
+                width={40}
+              />
+              <Tooltip
+                contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "'Inter', sans-serif", fontSize: 11 }}
+                formatter={(v, _, props) => [`Band ${v} · ${props.payload.type}`, ""]}
+                labelFormatter={l => l}
+              />
+              <Line
+                type="monotone"
+                dataKey="band"
+                stroke={lineColor}
+                strokeWidth={2.5}
+                dot={({ cx, cy, payload }) => (
+                  <circle
+                    key={`dot-${cx}-${cy}`}
+                    cx={cx} cy={cy} r={4}
+                    fill={payload.type === "Writing" ? C.blue : C.purple}
+                    stroke={C.surface}
+                    strokeWidth={2}
+                  />
+                )}
+                activeDot={{ r: 6, stroke: lineColor, strokeWidth: 2, fill: C.surface }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
+      {/* Dot legend */}
+      <div style={{ display: "flex", gap: 14, marginTop: 10, justifyContent: "flex-end" }}>
+        {[["Writing", C.blue], ["Speaking", C.purple]].map(([label, col]) => (
+          <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: col, display: "inline-block" }} />
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: C.textDim }}>{label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 // ─── DASHBOARD ───────────────────────────────────────────────────────────────
 function Dashboard({ supabase, userId }) {
   const [stats, setStats] = useState([]);
@@ -2100,7 +2250,7 @@ function Dashboard({ supabase, userId }) {
   const [loading, setLoading] = useState(true);
 
   // Load dashboard data on mount
-  useState(() => {
+ useEffect(() => {
     setLoading(true);
     loadDashboardStats(supabase, userId).then(({ stats: s, recentSessions: h }) => {
       setStats(s);
@@ -2147,11 +2297,7 @@ function Dashboard({ supabase, userId }) {
         </>
       )}
 
-      <div style={{ marginTop: 16, background: C.accentSoft, border: `1px solid ${C.accent}33`, borderRadius: 12, padding: "13px 14px" }}>
-        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Upgrade to Premium</div>
-        <p style={{ color: C.textMuted, fontSize: 15, margin: "0 0 10px", lineHeight: 1.6 }}>Unlock unlimited sessions, Sentence Rewriter, full PDF report history, vocabulary insights, and personalised study plans.</p>
-        <button style={{ background: C.accent, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "8px 15px", fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>Upgrade — $9.99/mo →</button>
-      </div>
+     <BandProgressChart supabase={supabase} userId={userId} />
     </div>
   );
 }
@@ -2349,6 +2495,14 @@ function AvatarMenu({ email, onLogout, onAdmin }) {
                   onMouseOut={e => e.currentTarget.style.background = "transparent"}
                 >Admin Panel</button>
               )}
+            <button onClick={() => setOpen(false)} style={{
+                width: "100%", padding: "9px 16px", background: "transparent",
+                border: "none", textAlign: "left", cursor: "pointer",
+                fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.accent, fontWeight: 700,
+              }}
+                onMouseOver={e => e.currentTarget.style.background = C.accentSoft}
+                onMouseOut={e => e.currentTarget.style.background = "transparent"}
+              >⭐ Upgrade to Premium</button>
               <div style={{ height: 1, background: C.border, margin: "6px 0" }} />
               <button onClick={() => { setOpen(false); onLogout(); }} style={{
                 width: "100%", padding: "9px 16px", background: "transparent",
