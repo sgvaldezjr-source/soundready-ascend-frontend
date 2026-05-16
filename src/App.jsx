@@ -142,10 +142,55 @@ async function loadDashboardStats(supabase, userId) {
       band: s.overall_band || "—",
     }));
 
-    return { stats, recentSessions };
+// ── Streak calculation ──────────────────────────────────────────────────
+    let streak = 0;
+    if (allSessions.length > 0) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const sessionDays = new Set(
+        allSessions.map(s => {
+          const d = new Date(s.created_at);
+          d.setHours(0, 0, 0, 0);
+          return d.getTime();
+        })
+      );
+      let cursor = new Date(today);
+      // Allow streak to count if user already did something today
+      while (sessionDays.has(cursor.getTime())) {
+        streak++;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+      // If no session today, check if yesterday keeps the streak alive
+      if (streak === 0) {
+        cursor = new Date(today);
+        cursor.setDate(cursor.getDate() - 1);
+        while (sessionDays.has(cursor.getTime())) {
+          streak++;
+          cursor.setDate(cursor.getDate() - 1);
+        }
+      }
+    }
+
+    // ── Best session ────────────────────────────────────────────────────────
+    const bestSession = allSessions.length > 0
+      ? allSessions.reduce((best, s) => (!best || (s.overall_band || 0) > (best.overall_band || 0)) ? s : best, null)
+      : null;
+
+    // ── Next target band ────────────────────────────────────────────────────
+    const currentAvg = totalSessions > 0
+      ? allSessions.reduce((sum, s) => sum + (s.overall_band || 0), 0) / totalSessions
+      : null;
+    const nextTarget = currentAvg !== null
+      ? Math.ceil(currentAvg * 2) / 2 + (currentAvg === Math.ceil(currentAvg * 2) / 2 ? 0.5 : 0)
+      : null;
+    const targetProgress = currentAvg !== null && nextTarget !== null
+      ? Math.min(((currentAvg - (nextTarget - 0.5)) / 0.5) * 100, 100)
+      : 0;
+
+    return { stats, recentSessions, streak, bestSession, currentAvg, nextTarget, targetProgress };
   } catch (err) {
     console.error("Failed to load dashboard stats:", err);
-    return { stats: [], recentSessions: [] };
+    return { stats: [], recentSessions: [], streak: 0, bestSession: null, currentAvg: null, nextTarget: null, targetProgress: 0 };
   }
 }
 // ─── PORTFOLIO / HISTORY LOADER ───────────────────────────────────────────
@@ -2247,14 +2292,23 @@ function BandProgressChart({ supabase, userId }) {
 function Dashboard({ supabase, userId }) {
   const [stats, setStats] = useState([]);
   const [history, setHistory] = useState([]);
+  const [streak, setStreak] = useState(0);
+  const [bestSession, setBestSession] = useState(null);
+  const [currentAvg, setCurrentAvg] = useState(null);
+  const [nextTarget, setNextTarget] = useState(null);
+  const [targetProgress, setTargetProgress] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // Load dashboard data on mount
- useEffect(() => {
+  useEffect(() => {
     setLoading(true);
-    loadDashboardStats(supabase, userId).then(({ stats: s, recentSessions: h }) => {
+    loadDashboardStats(supabase, userId).then(({ stats: s, recentSessions: h, streak: st, bestSession: bs, currentAvg: ca, nextTarget: nt, targetProgress: tp }) => {
       setStats(s);
       setHistory(h);
+      setStreak(st);
+      setBestSession(bs);
+      setCurrentAvg(ca);
+      setNextTarget(nt);
+      setTargetProgress(tp);
     }).finally(() => setLoading(false));
   }, [userId]);
 
@@ -2265,14 +2319,91 @@ function Dashboard({ supabase, userId }) {
       </div>
     );
   }
+return (
+    <div>
 
-  return (
-  <div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, marginBottom: 20 }}>
+      {/* ── ROW 1: Streak + Best Session ────────────────────────────────── */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+
+        {/* Streak card */}
+        <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: "16px 15px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+          <div style={{ fontSize: 32, marginBottom: 4 }}>🔥</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 34, fontWeight: 800, color: streak > 0 ? C.accent : C.textDim, lineHeight: 1 }}>{streak}</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginTop: 4 }}>Day Streak</div>
+          {streak === 0 && (
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, marginTop: 5, lineHeight: 1.4 }}>Complete a session today to start your streak</div>
+          )}
+        </div>
+
+        {/* Best session card */}
+        <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: "16px 15px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+          <div style={{ fontSize: 32, marginBottom: 4 }}>🏆</div>
+          {bestSession ? (
+            <>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 34, fontWeight: 800, color: BAND_COLOR(bestSession.overall_band), lineHeight: 1 }}>
+                {bestSession.overall_band}
+              </div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginTop: 4 }}>Personal Best</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, marginTop: 4, lineHeight: 1.4 }}>
+                {bestSession.task_type?.includes("Task") ? "Writing" : "Speaking"} · {new Date(bestSession.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+              </div>
+            </>
+          ) : (
+            <>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 34, fontWeight: 800, color: C.textDim, lineHeight: 1 }}>—</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginTop: 4 }}>Personal Best</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, marginTop: 5, lineHeight: 1.4 }}>No sessions yet</div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* ── ROW 2: Next Target Band ──────────────────────────────────────── */}
+      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: "14px 15px", marginBottom: 10 }}>
+        {currentAvg !== null ? (
+          <>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>Next Target</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textMuted }}>
+                <span style={{ fontWeight: 700, color: BAND_COLOR(currentAvg), fontSize: 14 }}>Band {parseFloat(currentAvg).toFixed(1)}</span>
+                <span style={{ color: C.textDim }}> → </span>
+                <span style={{ fontWeight: 700, color: BAND_COLOR(nextTarget), fontSize: 14 }}>Band {nextTarget}</span>
+              </div>
+            </div>
+            <div style={{ height: 8, background: C.surfaceAlt, borderRadius: 99, overflow: "hidden", marginBottom: 6 }}>
+              <div style={{
+                height: "100%",
+                width: `${targetProgress}%`,
+                background: `linear-gradient(90deg, ${BAND_COLOR(currentAvg)}, ${BAND_COLOR(nextTarget)})`,
+                borderRadius: 99,
+                transition: "width 1.2s ease",
+              }} />
+            </div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim }}>
+              {targetProgress >= 80
+                ? "Almost there — one strong session could push you over"
+                : targetProgress >= 40
+                ? "Good momentum — keep practising consistently"
+                : "Every session moves you closer — keep going"}
+            </div>
+          </>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Next Target Band</div>
+              <div style={{ height: 8, background: C.surfaceAlt, borderRadius: 99 }} />
+            </div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim }}>Complete a session to unlock</div>
+          </div>
+        )}
+      </div>
+
+      {/* ── ROW 3: Stat cards ────────────────────────────────────────────── */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, marginBottom: 10 }}>
         {stats.length > 0 ? stats.map(s => (
           <div key={s.label} style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 15px" }}>
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 30, fontWeight: 700, color: s.color, marginBottom: 4 }}>{s.value}</div>
-            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1 }}>{s.label}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1 }}>{s.label}</div>
           </div>
         )) : (
           <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "24px 0", color: C.textMuted }}>
@@ -2282,22 +2413,25 @@ function Dashboard({ supabase, userId }) {
         )}
       </div>
 
+      {/* ── ROW 4: Progress chart ────────────────────────────────────────── */}
+      <BandProgressChart supabase={supabase} userId={userId} />
+
+      {/* ── ROW 5: Recent sessions ───────────────────────────────────────── */}
       {history.length > 0 && (
         <>
-          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Recent Sessions</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Recent Sessions</div>
           {history.map((h, i) => (
             <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: `1px solid ${C.border}` }}>
               <div>
-                <div style={{ color: C.text, fontSize: 16, marginBottom: 2 }}>{h.task}</div>
-                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textMuted }}>{h.date} · {h.type}</div>
+                <div style={{ color: C.text, fontSize: 14, marginBottom: 2 }}>{h.task}</div>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textMuted }}>{h.date} · {h.type}</div>
               </div>
-              <span style={{ background: BAND_COLOR(h.band) + "22", color: BAND_COLOR(h.band), border: `1px solid ${BAND_COLOR(h.band)}44`, borderRadius: 6, padding: "2px 9px", fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700 }}>Band {h.band}</span>
+              <span style={{ background: BAND_COLOR(h.band) + "22", color: BAND_COLOR(h.band), border: `1px solid ${BAND_COLOR(h.band)}44`, borderRadius: 6, padding: "2px 9px", fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 700 }}>Band {h.band}</span>
             </div>
           ))}
         </>
       )}
 
-     <BandProgressChart supabase={supabase} userId={userId} />
     </div>
   );
 }
@@ -2552,7 +2686,7 @@ const tabs = [
         input, textarea, select { color: ${C.text}; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
         textarea::placeholder { color: ${C.textDim}; }
       `}</style>
-      <div style={{ maxWidth: "100%", margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+     <div style={{ maxWidth: 720, margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column", width: "100%" }}>
         <div style={{ padding: "16px clamp(18px, 5vw, 120px) 0", borderBottom: `1px solid ${C.border}`, background: C.bg, position: "sticky", top: 0, zIndex: 10, boxShadow: "0 2px 12px rgba(27,42,58,0.08)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 13 }}>
             <div style={{ width: 80 }}>
@@ -2583,7 +2717,7 @@ const tabs = [
           </div>
         </div>
 
-    <div style={{ padding: "18px clamp(18px, 5vw, 120px)", flex: 1 }}>
+    <div style={{ padding: "18px 20px", flex: 1 }}>
           {tab === "dashboard" && <Dashboard supabase={supabase} userId={session?.user?.id} />}
           {tab === "writing" && <WritingPractice supabase={supabase} userId={session?.user?.id} />}
           {tab === "speaking" && <SpeakingPractice supabase={supabase} userId={session?.user?.id} />}
