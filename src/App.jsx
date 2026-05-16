@@ -2677,7 +2677,7 @@ const tabs = [
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: radial-gradient(ellipse at 20% 50%, ${C.blue}18 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, ${C.accent}12 0%, transparent 55%), ${C.bg}; color: ${C.text}; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; min-height: 100vh; }
+        body { background: radial-gradient(ellipse at 12% 50%, ${C.blue}55 0%, transparent 45%), radial-gradient(ellipse at 88% 30%, ${C.accent}45 0%, transparent 45%), ${C.bg}; color: ${C.text}; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; min-height: 100vh; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: ${C.bg}; }
         ::-webkit-scrollbar-thumb { background: ${C.border}; border-radius: 3px; }
