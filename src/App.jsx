@@ -1847,8 +1847,9 @@ const tabs = [
       <div style={{ maxWidth: 720, margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column", width: "100%" }}>
         <div style={{ padding: "16px clamp(18px, 5vw, 120px) 0", borderBottom: `1px solid ${C.border}`, background: C.bg, position: "sticky", top: 0, zIndex: 10, boxShadow: "0 2px 12px rgba(27,42,58,0.08)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 13 }}>
-            <div style={{ width: 80 }}>
+            <div style={{ width: 80, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 6 }}>
               <div style={{ background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "3px 10px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, display: "inline-block" }}>Free</div>
+              <LanguageSwitcher lang={lang} setLang={setLang} />
             </div>
             <div style={{ textAlign: "center" }}>
               <img src="/soundready-logo-transparent.png" alt="SoundReady" style={{ height: 56, objectFit: "contain" }} />
