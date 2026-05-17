@@ -1082,9 +1082,6 @@ function WritingPractice({ supabase, userId, onLimitReached }) {
     </div>
   );
 }
-import { useState, useRef, useEffect } from "react";
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
-import UpgradeModal from "./UpgradeModal";
 
 // ─── BACKEND PROXY ───────────────────────────────────────────────────────────
 const PROXY = "https://web-production-e43ad.up.railway.app";
