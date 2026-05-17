@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, createContext, useContext } from "react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 
 // ─── BACKEND PROXY ───────────────────────────────────────────────────────────
@@ -23,6 +23,196 @@ const C = {
   textMuted: "#5A7A9A",    // muted text
   textDim: "#A0B4C8",      // dim text
 };
+// ─── LANGUAGE CONTEXT ────────────────────────────────────────────────────────
+const TRANSLATIONS = {
+  en: {
+    myResponse: "My Response", feedbackReport: "Feedback Report", taskType: "Task Type",
+    topic: "Topic", prompt: "Prompt",
+    writeResponseHere: (tt) => `Write your ${tt} response here…`,
+    analysing: "Analysing…", submitAnalyse: "Submit & Analyse →",
+    extractingLanguage: "Extracting language samples and mapping to band descriptors…",
+    yourSubmittedResponse: "Your Submitted Response",
+    analysisFailed: "Analysis failed", unknownError: "Unknown error — check connection and try again.",
+    partIntro: "Introduction & Interview", partLongTurn: "Long Turn", partDiscussion: "Discussion",
+    partHint1: "Answer naturally as you would in a conversation. Aim for 2–3 sentences per question.",
+    partHint2: "Use your 1 minute of preparation time. Speak for the full 1–2 minutes without stopping.",
+    partHint3: "Give extended answers with reasons and examples. Show abstract thinking.",
+    ieltsFeedback: "IELTS Feedback", pronunciation: "Pronunciation", part: "Part",
+    scoringResponse: "Scoring your response…",
+    runningAssessment: "Running IELTS assessment and pronunciation analysis in parallel",
+    recording: "Recording", recordingComplete: "Recording Complete", readyToRecord: "Ready to Record",
+    stopRecording: "Stop Recording", startRecording: "Start Recording",
+    reRecord: "↺ Re-record", transcribe: "Transcribe →",
+    transcribing: "Transcribing your response…", whisperProcessing: "Whisper AI is processing your audio",
+    recordingError: "Recording Error", tryAgain: "↺ Try Again",
+    transcriptionComplete: "Transcription Complete",
+    reviewTranscript: "Review and correct your transcript before analysis",
+    yourTranscript: "Your Transcript — edit if needed", orTypePaste: "or type / paste",
+    pasteSpokenResponse: "Paste or type your spoken response here to analyse without recording…",
+    overallBand: "Overall Band", examinerComment: "Examiner Comment",
+    criterionBreakdown: "Criterion Breakdown", toReachNextBand: "— To Reach the Next Band",
+    modelRewrite: "Model Rewrite", preparingReport: "Preparing Report…", downloadReport: "Download Report",
+    languageEvidence: "Language Evidence",
+    showLess: "Show less ▲", showAll: (n) => `Show all ${n} evidence items ▼`,
+    loadingDashboard: "Loading your dashboard…", dayStreak: "Day Streak",
+    startStreakToday: "Complete a session today to start your streak",
+    personalBest: "Personal Best", writing_label: "Writing", speaking_label: "Speaking",
+    noSessionsYet: "No sessions yet", nextTarget: "Next Target",
+    almostThere: "Almost there — one strong session could push you over",
+    goodMomentum: "Good momentum — keep practising consistently",
+    keepGoing: "Every session moves you closer — keep going",
+    nextTargetBand: "Next Target Band", completeToUnlock: "Complete a session to unlock",
+    noSessionsFirst: "Complete your first Writing or Speaking session to see your stats",
+    recentSessions: "Recent Sessions", bandProgress: "Band Progress",
+    sampleData: "✦ Sample data — complete a session to track your real progress",
+    both: "Both", noSessionsRange: "No sessions in this time range",
+    loadingHistory: "Loading your session history…",
+    noSessionsYetTitle: "No sessions yet",
+    noSessionsYetSub: "Complete a Writing or Speaking session to build your history.",
+    backToHistory: "← Back to History", sessionCount: (n) => `${n} Session${n !== 1 ? "s" : ""}`,
+    chartImage: "Chart / Image", viewFullReport: "View Full Report",
+    freePlan: "Free Plan", adminPanel: "Admin Panel",
+    upgradePremium: "⭐ Upgrade to Premium", logOut: "Log Out",
+    privacyPolicy: "Privacy Policy", termsOfService: "Terms of Service",
+    disclaimer: "Disclaimer", contact: "Contact",
+    copyright: "© 2026 SoundReady English — SoundReady-Ascend. All rights reserved. Reproduction without permission is prohibited.",
+    myOwnPrompt: "✏️ My Own Prompt", presetTopic: "📚 Preset Topic",
+    part2MainQuestion: "Part 2 — Main Question", yourCustomPrompt: "Your Custom Prompt",
+    cueCardBullets: "Cue Card Bullet Points", taskVisual: "Task Visual",
+    saving: "Saving…", savePrompt: "Save Prompt ✓",
+  },
+  es: {
+    myResponse: "Mi Respuesta", feedbackReport: "Informe de Retroalimentación",
+    taskType: "Tipo de Tarea", topic: "Tema", prompt: "Enunciado",
+    writeResponseHere: (tt) => `Escribe tu respuesta de ${tt} aquí…`,
+    analysing: "Analizando…", submitAnalyse: "Enviar y Analizar →",
+    extractingLanguage: "Extrayendo muestras de idioma y mapeando a descriptores de banda…",
+    yourSubmittedResponse: "Tu Respuesta Enviada",
+    analysisFailed: "Análisis fallido", unknownError: "Error desconocido — verifica la conexión e intenta de nuevo.",
+    partIntro: "Introducción y Entrevista", partLongTurn: "Turno Largo", partDiscussion: "Discusión",
+    partHint1: "Responde de forma natural como en una conversación. Apunta a 2–3 oraciones por pregunta.",
+    partHint2: "Usa tu minuto de preparación. Habla durante 1–2 minutos completos sin parar.",
+    partHint3: "Da respuestas extensas con razones y ejemplos. Muestra pensamiento abstracto.",
+    ieltsFeedback: "Retroalimentación IELTS", pronunciation: "Pronunciación", part: "Parte",
+    scoringResponse: "Puntuando tu respuesta…",
+    runningAssessment: "Ejecutando evaluación IELTS y análisis de pronunciación en paralelo",
+    recording: "Grabando", recordingComplete: "Grabación Completa", readyToRecord: "Listo para Grabar",
+    stopRecording: "Detener Grabación", startRecording: "Iniciar Grabación",
+    reRecord: "↺ Re-grabar", transcribe: "Transcribir →",
+    transcribing: "Transcribiendo tu respuesta…", whisperProcessing: "Whisper AI está procesando tu audio",
+    recordingError: "Error de Grabación", tryAgain: "↺ Intentar de Nuevo",
+    transcriptionComplete: "Transcripción Completa",
+    reviewTranscript: "Revisa y corrige tu transcripción antes del análisis",
+    yourTranscript: "Tu Transcripción — edita si es necesario", orTypePaste: "o escribe / pega",
+    pasteSpokenResponse: "Pega o escribe tu respuesta hablada aquí para analizar sin grabar…",
+    overallBand: "Banda General", examinerComment: "Comentario del Examinador",
+    criterionBreakdown: "Desglose por Criterio", toReachNextBand: "— Para Alcanzar la Siguiente Banda",
+    modelRewrite: "Reescritura Modelo", preparingReport: "Preparando Informe…", downloadReport: "Descargar Informe",
+    languageEvidence: "Evidencia Lingüística",
+    showLess: "Ver menos ▲", showAll: (n) => `Ver los ${n} elementos de evidencia ▼`,
+    loadingDashboard: "Cargando tu panel…", dayStreak: "Racha Diaria",
+    startStreakToday: "Completa una sesión hoy para iniciar tu racha",
+    personalBest: "Mejor Marca Personal", writing_label: "Escritura", speaking_label: "Expresión Oral",
+    noSessionsYet: "Sin sesiones aún", nextTarget: "Próximo Objetivo",
+    almostThere: "Casi ahí — una sesión sólida podría hacerte avanzar",
+    goodMomentum: "Buen impulso — sigue practicando con constancia",
+    keepGoing: "Cada sesión te acerca — sigue adelante",
+    nextTargetBand: "Próxima Banda Objetivo", completeToUnlock: "Completa una sesión para desbloquear",
+    noSessionsFirst: "Completa tu primera sesión de Escritura o Expresión Oral para ver tus estadísticas",
+    recentSessions: "Sesiones Recientes", bandProgress: "Progreso de Banda",
+    sampleData: "✦ Datos de muestra — completa una sesión para rastrear tu progreso real",
+    both: "Ambos", noSessionsRange: "Sin sesiones en este rango de tiempo",
+    loadingHistory: "Cargando tu historial de sesiones…",
+    noSessionsYetTitle: "Sin sesiones aún",
+    noSessionsYetSub: "Completa una sesión de Escritura o Expresión Oral para construir tu historial.",
+    backToHistory: "← Volver al Historial", sessionCount: (n) => `${n} Sesión${n !== 1 ? "es" : ""}`,
+    chartImage: "Gráfico / Imagen", viewFullReport: "Ver Informe Completo",
+    freePlan: "Plan Gratuito", adminPanel: "Panel de Administración",
+    upgradePremium: "⭐ Mejorar a Premium", logOut: "Cerrar Sesión",
+    privacyPolicy: "Política de Privacidad", termsOfService: "Términos de Servicio",
+    disclaimer: "Aviso Legal", contact: "Contacto",
+    copyright: "© 2026 SoundReady English — SoundReady-Ascend. Todos los derechos reservados.",
+    myOwnPrompt: "✏️ Mi Propio Enunciado", presetTopic: "📚 Tema Preestablecido",
+    part2MainQuestion: "Parte 2 — Pregunta Principal", yourCustomPrompt: "Tu Enunciado Personalizado",
+    cueCardBullets: "Puntos de la Tarjeta de Apoyo", taskVisual: "Visual de Tarea",
+    saving: "Guardando…", savePrompt: "Guardar Enunciado ✓",
+  },
+  zh: {
+    myResponse: "我的回答", feedbackReport: "反馈报告", taskType: "任务类型",
+    topic: "题目", prompt: "题目提示",
+    writeResponseHere: (tt) => `在此填写您的${tt}回答…`,
+    analysing: "分析中…", submitAnalyse: "提交并分析 →",
+    extractingLanguage: "正在提取语言样本并映射到评分标准…",
+    yourSubmittedResponse: "您提交的回答",
+    analysisFailed: "分析失败", unknownError: "未知错误 — 请检查网络连接后重试。",
+    partIntro: "简介与访谈", partLongTurn: "长篇独白", partDiscussion: "讨论",
+    partHint1: "像日常对话一样自然回答，每题目标2–3句话。",
+    partHint2: "利用1分钟准备时间，连续流畅地讲满1–2分钟。",
+    partHint3: "给出详细回答，提供理由和例子，展现抽象思维。",
+    ieltsFeedback: "雅思反馈", pronunciation: "发音", part: "部分",
+    scoringResponse: "正在评分…",
+    runningAssessment: "并行运行雅思评估与发音分析",
+    recording: "录音中", recordingComplete: "录音完成", readyToRecord: "准备录音",
+    stopRecording: "停止录音", startRecording: "开始录音",
+    reRecord: "↺ 重新录音", transcribe: "转录 →",
+    transcribing: "正在转录您的回答…", whisperProcessing: "Whisper AI 正在处理您的音频",
+    recordingError: "录音错误", tryAgain: "↺ 重试",
+    transcriptionComplete: "转录完成",
+    reviewTranscript: "分析前请检查并更正转录内容",
+    yourTranscript: "您的转录 — 如需请编辑", orTypePaste: "或输入 / 粘贴",
+    pasteSpokenResponse: "在此粘贴或输入您的口语回答以进行分析…",
+    overallBand: "总体评分", examinerComment: "考官评语",
+    criterionBreakdown: "各项评分", toReachNextBand: "— 达到下一个评分段",
+    modelRewrite: "范文改写", preparingReport: "正在准备报告…", downloadReport: "下载报告",
+    languageEvidence: "语言证据",
+    showLess: "收起 ▲", showAll: (n) => `展开全部 ${n} 条证据 ▼`,
+    loadingDashboard: "正在加载您的仪表盘…", dayStreak: "连续天数",
+    startStreakToday: "今天完成一次练习以开始连续记录",
+    personalBest: "个人最佳", writing_label: "写作", speaking_label: "口语",
+    noSessionsYet: "暂无记录", nextTarget: "下一目标",
+    almostThere: "即将达成 — 一次出色的练习就能突破",
+    goodMomentum: "势头良好 — 保持持续练习",
+    keepGoing: "每次练习都让您更近一步 — 继续加油",
+    nextTargetBand: "下一目标评分段", completeToUnlock: "完成一次练习以解锁",
+    noSessionsFirst: "完成第一次写作或口语练习以查看统计数据",
+    recentSessions: "近期练习", bandProgress: "评分进度",
+    sampleData: "✦ 示例数据 — 完成一次练习以追踪您的真实进度",
+    both: "全部", noSessionsRange: "该时间段内暂无记录",
+    loadingHistory: "正在加载您的练习记录…",
+    noSessionsYetTitle: "暂无记录",
+    noSessionsYetSub: "完成一次写作或口语练习以建立您的历史记录。",
+    backToHistory: "← 返回历史", sessionCount: (n) => `共 ${n} 次练习`,
+    chartImage: "图表 / 图片", viewFullReport: "查看完整报告",
+    freePlan: "免费计划", adminPanel: "管理面板",
+    upgradePremium: "⭐ 升级到高级版", logOut: "退出登录",
+    privacyPolicy: "隐私政策", termsOfService: "服务条款",
+    disclaimer: "免责声明", contact: "联系我们",
+    copyright: "© 2026 SoundReady English — SoundReady-Ascend. 保留所有权利。",
+    myOwnPrompt: "✏️ 自定义题目", presetTopic: "📚 预设题目",
+    part2MainQuestion: "第2部分 — 主要问题", yourCustomPrompt: "您的自定义题目",
+    cueCardBullets: "提示卡要点", taskVisual: "任务图表",
+    saving: "保存中…", savePrompt: "保存题目 ✓",
+  },
+};
+
+const LangContext = createContext("en");
+
+function LangProvider({ children }) {
+  const [lang, setLang] = useState(() => {
+    try { return localStorage.getItem("sr_lang") || "en"; } catch { return "en"; }
+  });
+  function switchLang(l) {
+    setLang(l);
+    try { localStorage.setItem("sr_lang", l); } catch {}
+  }
+  return <LangContext.Provider value={{ lang, switchLang }}>{children}</LangContext.Provider>;
+}
+
+function useLang() {
+  const { lang } = useContext(LangContext);
+  return TRANSLATIONS[lang] || TRANSLATIONS.en;
+}
+
 // ─── CUSTOM PROMPT HOOK ───────────────────────────────────────────────────────
 function useCustomPrompt(supabase, taskType, userId) {
   const [customPrompt, setCustomPrompt] = useState("");
@@ -2669,6 +2859,7 @@ const tabs = [
   ];
 
   return (
+    <LangProvider>
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap');
@@ -2724,5 +2915,6 @@ const tabs = [
         {legalModal && <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />}
       </div>
     </>
+    </LangProvider>
   );
 }
