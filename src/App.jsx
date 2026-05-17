@@ -1,4 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, createContext, useContext } from "react";
+import T from "./translations";
+import LanguageSwitcher from "./LanguageSwitcher";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 import UpgradeModal from "./UpgradeModal";
 
@@ -24,7 +26,12 @@ const C = {
   textMuted: "#5A7A9A",
   textDim: "#A0B4C8",
 };
-
+// ─── LANGUAGE CONTEXT ────────────────────────────────────────────────────────
+export const LangContext = createContext("en");
+export function useLang() {
+  const lang = useContext(LangContext);
+  return T[lang] || T.en;
+}
 // ─── CUSTOM PROMPT HOOK ───────────────────────────────────────────────────────
 function useCustomPrompt(supabase, taskType, userId) {
   const [customPrompt, setCustomPrompt] = useState("");
@@ -2913,8 +2920,9 @@ export default function App({ supabase, session, onAdmin }) {
       <div style={{ maxWidth: 720, margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column", width: "100%" }}>
         <div style={{ padding: "16px clamp(18px, 5vw, 120px) 0", borderBottom: `1px solid ${C.border}`, background: C.bg, position: "sticky", top: 0, zIndex: 10, boxShadow: "0 2px 12px rgba(27,42,58,0.08)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 13 }}>
-            <div style={{ width: 80 }}>
-              <div style={{ background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "3px 10px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, display: "inline-block" }}>Free</div>
+        <div style={{ width: 80, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 6 }}>
+              <div style={{ background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "3px 10px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, display: "inline-block" }}>{t.free}</div>
+              <LanguageSwitcher lang={lang} setLang={setLang} />
             </div>
             <div style={{ textAlign: "center" }}>
               <img src="/soundready-logo-transparent.png" alt="SoundReady" style={{ height: 56, objectFit: "contain" }} />
@@ -3677,7 +3685,8 @@ export default function App({ supabase, session, onAdmin }) {
   const [legalModal, setLegalModal] = useState(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeType, setUpgradeType] = useState("");
-
+  const [lang, setLang] = useState(() => localStorage.getItem("soundready_lang") || "en");
+  const t = T[lang] || T.en;
   async function handleLogout() { if (supabase) await supabase.auth.signOut(); }
 
   const userEmail = session?.user?.email || "";
@@ -3690,6 +3699,7 @@ export default function App({ supabase, session, onAdmin }) {
   ];
 
   return (
+   <LangContext.Provider value={lang}>
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap');
@@ -3735,7 +3745,8 @@ export default function App({ supabase, session, onAdmin }) {
         {legalModal && <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />}
         {showUpgradeModal && <UpgradeModal type={upgradeType} onClose={() => setShowUpgradeModal(false)} supabase={supabase} userEmail={userEmail} />}
       </div>
-    </>
+   </>
+    </LangContext.Provider>
   );
 }
 
@@ -4475,11 +4486,11 @@ export default function App({ supabase, session, onAdmin }) {
 
   const userEmail = session?.user?.email || "";
   const isAdmin = userEmail === "sergio@sound-ready.com";
-  const tabs = [
-    { id: "dashboard", label: "Dashboard" },
-    { id: "writing", label: "Writing" },
-    { id: "speaking", label: "Speaking" },
-    { id: "history", label: "My History" },
+ const tabs = [
+    { id: "dashboard", label: t.dashboard },
+    { id: "writing", label: t.writing },
+    { id: "speaking", label: t.speaking },
+    { id: "history", label: t.history },
   ];
 
   return (
