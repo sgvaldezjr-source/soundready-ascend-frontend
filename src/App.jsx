@@ -1810,11 +1810,14 @@ function AvatarMenu({ email, onLogout, onAdmin }) {
 
 // ─── APP SHELL ────────────────────────────────────────────────────────────────
 export default function App({ supabase, session, onAdmin }) {
+  
   const [tab, setTab] = useState("dashboard");
   const [legalModal, setLegalModal] = useState(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeType, setUpgradeType] = useState("");
-
+  const [lang, setLang] = useState(() => localStorage.getItem("soundready_lang") || "en");
+  const t = T[lang] || T.en;
+  
   async function handleLogout() { if (supabase) await supabase.auth.signOut(); }
 
   const userEmail = session?.user?.email || "";
