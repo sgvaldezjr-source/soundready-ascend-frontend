@@ -1082,3 +1082,796 @@ function WritingPractice({ supabase, userId, onLimitReached }) {
     </div>
   );
 }
+
+// ─── WAVEFORM ─────────────────────────────────────────────────────────────────
+function Waveform({ active, color }) {
+  const bars = 28;
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, height: 48 }}>
+      {Array.from({ length: bars }).map((_, i) => (
+        <div key={i} style={{ width: 3, borderRadius: 99, background: color, opacity: active ? 0.85 : 0.2, height: active ? undefined : 6, minHeight: 4, animation: active ? `wave ${0.8 + (i % 5) * 0.15}s ease-in-out infinite alternate` : "none", animationDelay: `${(i * 0.06) % 0.8}s` }} />
+      ))}
+    </div>
+  );
+}
+
+// ─── AUDIO PLAYER ─────────────────────────────────────────────────────────────
+function AudioPlayer({ audioUrl, color }) {
+  const audioRef = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const fmt = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+  function togglePlay() {
+    if (!audioRef.current) return;
+    if (playing) { audioRef.current.pause(); setPlaying(false); }
+    else { audioRef.current.play(); setPlaying(true); }
+  }
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10, background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 10, padding: "10px 14px" }}>
+      <audio ref={audioRef} src={audioUrl} onTimeUpdate={e => setProgress(e.target.currentTime)} onLoadedMetadata={e => setDuration(e.target.duration)} onEnded={() => { setPlaying(false); setProgress(0); }} />
+      <button onClick={togglePlay} style={{ width: 34, height: 34, borderRadius: "50%", border: "none", background: color, color: "#FFFFFF", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>{playing ? "⏸" : "▶"}</button>
+      <div style={{ flex: 1 }}>
+        <div style={{ position: "relative", height: 4, background: C.border, borderRadius: 99, cursor: "pointer", marginBottom: 5 }}
+          onClick={e => { if (!audioRef.current || !duration) return; const rect = e.currentTarget.getBoundingClientRect(); audioRef.current.currentTime = ((e.clientX - rect.left) / rect.width) * duration; }}>
+          <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${duration ? (progress / duration) * 100 : 0}%`, background: color, borderRadius: 99, transition: "width 0.1s linear" }} />
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted }}>{fmt(progress)}</span>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted }}>{fmt(duration)}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── VOICE RECORDER ───────────────────────────────────────────────────────────
+function VoiceRecorder({ partColor, onTranscriptReady }) {
+  const [recorderState, setRecorderState] = useState("idle");
+  const [timer, setTimer] = useState(0);
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [transcript, setTranscript] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const timerRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const chunksRef = useRef([]);
+  const audioBlobRef = useRef(null);
+  const fmt = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+
+  async function transcribeAudio(blob) {
+    if (!blob || blob.size < 100) { setErrorMsg("Recording is empty — please try again."); setRecorderState("error"); return; }
+    setRecorderState("transcribing");
+    try {
+      const ext = blob.type.includes("mp4") ? "m4a" : blob.type.includes("ogg") ? "ogg" : "webm";
+      const formData = new FormData();
+      formData.append("audio", new File([blob], `recording.${ext}`, { type: blob.type || "audio/webm" }));
+      const res = await fetch(`${PROXY}/transcribe`, { method: "POST", body: formData });
+      if (!res.ok) { const errData = await res.json().catch(() => ({})); throw new Error(errData.error || `Server error: ${res.status}`); }
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setTranscript(data.transcript || ""); setRecorderState("review");
+    } catch (err) { setErrorMsg(err.message || "Transcription failed."); setRecorderState("error"); }
+  }
+
+  async function startRecording() {
+    setErrorMsg("");
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 16000 } });
+      chunksRef.current = [];
+      let mimeType = "";
+      for (const fmt of ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg"]) {
+        if (MediaRecorder.isTypeSupported(fmt)) { mimeType = fmt; break; }
+      }
+      const mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
+      mediaRecorderRef.current = mediaRecorder;
+      mediaRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunksRef.current.push(e.data); };
+      mediaRecorder.onstop = () => {
+        const type = mimeType || "audio/webm";
+        const blob = new Blob(chunksRef.current, { type });
+        audioBlobRef.current = blob;
+        setAudioUrl(URL.createObjectURL(blob));
+        stream.getTracks().forEach(t => t.stop());
+        setRecorderState("recorded");
+      };
+      mediaRecorder.start(500);
+      setTimer(0); setAudioUrl(null); setTranscript(""); setRecorderState("recording");
+      timerRef.current = setInterval(() => setTimer(t => t + 1), 1000);
+    } catch (err) {
+      if (err.name === "NotAllowedError") setErrorMsg("Microphone access denied.");
+      else if (err.name === "NotFoundError") setErrorMsg("No microphone found.");
+      else setErrorMsg(err.message || "Could not start recording.");
+      setRecorderState("error");
+    }
+  }
+
+  function stopRecording() { clearInterval(timerRef.current); if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") mediaRecorderRef.current.stop(); }
+  function reset() { clearInterval(timerRef.current); if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") mediaRecorderRef.current.stop(); audioBlobRef.current = null; setRecorderState("idle"); setTimer(0); setAudioUrl(null); setTranscript(""); setErrorMsg(""); }
+
+  const isRecording = recorderState === "recording";
+  const isRecorded = recorderState === "recorded";
+  const isTranscribing = recorderState === "transcribing";
+  const isReview = recorderState === "review";
+  const isError = recorderState === "error";
+
+  return (
+    <div>
+      {(recorderState === "idle" || isRecording || isRecorded) && (
+        <div style={{ background: C.surfaceAlt, border: `1.5px solid ${isRecording ? partColor + "66" : C.border}`, borderRadius: 14, padding: "20px 16px", marginBottom: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {isRecording && <span style={{ width: 8, height: 8, borderRadius: "50%", background: C.red, display: "inline-block", animation: "pulse 1s infinite" }} />}
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: isRecording ? C.red : isRecorded ? C.green : C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>
+                {isRecording ? "Recording" : isRecorded ? "Recording Complete" : "Ready to Record"}
+              </span>
+            </div>
+            {isRecording && <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 18, fontWeight: 700, color: C.red }}>{fmt(timer)}</span>}
+            {isRecorded && <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted }}>{fmt(timer)} recorded</span>}
+          </div>
+          <div style={{ marginBottom: 18 }}><Waveform active={isRecording} color={isRecording ? C.red : isRecorded ? C.green : C.textDim} /></div>
+          {isRecorded && audioUrl && <div style={{ marginBottom: 14 }}><AudioPlayer audioUrl={audioUrl} color={partColor} /></div>}
+          <div style={{ display: "flex", gap: 8 }}>
+            {!isRecorded && (
+              <button onClick={isRecording ? stopRecording : startRecording} style={{ flex: 1, padding: "12px 0", border: "none", borderRadius: 10, cursor: "pointer", background: isRecording ? C.red : partColor, color: "#FFFFFF", fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                {isRecording ? <><span style={{ width: 10, height: 10, borderRadius: 2, background: "#FFFFFF", display: "inline-block" }} /> Stop Recording</> : <><span style={{ width: 10, height: 10, borderRadius: "50%", background: "#FFFFFF", display: "inline-block" }} /> Start Recording</>}
+              </button>
+            )}
+            {isRecorded && (
+              <>
+                <button onClick={reset} style={{ padding: "11px 16px", border: `1.5px solid ${C.border}`, borderRadius: 10, background: "transparent", color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 16, cursor: "pointer" }}>↺ Re-record</button>
+                <button onClick={() => transcribeAudio(audioBlobRef.current)} style={{ flex: 1, padding: "11px 0", border: "none", borderRadius: 10, cursor: "pointer", background: partColor, color: "#FFFFFF", fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700 }}>Transcribe →</button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+      {isTranscribing && (
+        <div style={{ background: C.surfaceAlt, border: `1.5px solid ${partColor}44`, borderRadius: 14, padding: "32px 16px", marginBottom: 12, textAlign: "center" }}>
+          <div style={{ marginBottom: 16 }}><Waveform active={true} color={partColor} /></div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: partColor, marginBottom: 6 }}>Transcribing your response…</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textDim }}>Whisper AI is processing your audio</div>
+        </div>
+      )}
+      {isError && (
+        <div style={{ background: C.red + "0e", border: `1px solid ${C.red}33`, borderRadius: 12, padding: "16px", marginBottom: 12 }}>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.red, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Recording Error</div>
+          <p style={{ color: C.text, fontSize: 15, lineHeight: 1.6, margin: "0 0 12px" }}>{errorMsg}</p>
+          <button onClick={reset} style={{ background: "transparent", border: `1.5px solid ${C.border}`, borderRadius: 8, padding: "8px 16px", color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 15, cursor: "pointer" }}>↺ Try Again</button>
+        </div>
+      )}
+      {isReview && (
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ background: C.green + "0e", border: `1px solid ${C.green}33`, borderRadius: 10, padding: "10px 14px", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 14 }}>✅</span>
+            <div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.green, textTransform: "uppercase", letterSpacing: 1, marginBottom: 2 }}>Transcription Complete</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted }}>Review and correct your transcript before analysis</div>
+            </div>
+          </div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Your Transcript — edit if needed</div>
+          <textarea value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Your transcribed speech will appear here…"
+            style={{ width: "100%", minHeight: 150, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "13px 14px", color: C.text, fontSize: 16, lineHeight: 1.72, fontFamily: "'Inter', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box" }}
+            onFocus={e => e.target.style.borderColor = partColor} onBlur={e => e.target.style.borderColor = C.border}
+          />
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? C.green : C.textMuted, marginTop: 6 }}>
+            {transcript.trim() ? transcript.trim().split(/\s+/).filter(Boolean).length : 0} words — minimum 20 {transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? "✓" : ""}
+          </div>
+          <div style={{ display: "flex", gap: 8, marginTop: 9 }}>
+            <button onClick={reset} style={{ padding: "10px 14px", border: `1.5px solid ${C.border}`, borderRadius: 10, background: "transparent", color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 16, cursor: "pointer" }}>↺ Re-record</button>
+            <button onClick={() => onTranscriptReady(transcript)} disabled={!transcript.trim() || transcript.trim().split(/\s+/).length < 20}
+              style={{ flex: 1, padding: "10px 0", border: "none", borderRadius: 10, background: transcript.trim() && transcript.trim().split(/\s+/).length >= 20 ? partColor : C.border, color: transcript.trim() && transcript.trim().split(/\s+/).length >= 20 ? "#FFFFFF" : C.textDim, fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>Submit & Analyse →</button>
+          </div>
+        </div>
+      )}
+      {recorderState === "idle" && (
+        <div style={{ marginTop: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+            <div style={{ flex: 1, height: 1, background: C.border }} />
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>or type / paste</span>
+            <div style={{ flex: 1, height: 1, background: C.border }} />
+          </div>
+          <textarea value={transcript} onChange={e => setTranscript(e.target.value)} placeholder="Paste or type your spoken response here…"
+            style={{ width: "100%", minHeight: 120, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", color: C.text, fontSize: 16, lineHeight: 1.72, fontFamily: "'Inter', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box" }}
+            onFocus={e => e.target.style.borderColor = partColor} onBlur={e => e.target.style.borderColor = C.border}
+          />
+          {transcript.trim() && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? C.green : C.textMuted }}>
+                {transcript.trim().split(/\s+/).filter(Boolean).length} words {transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? "✓" : ""}
+              </span>
+              <button onClick={() => onTranscriptReady(transcript)} disabled={transcript.trim().split(/\s+/).filter(Boolean).length < 20}
+                style={{ padding: "10px 20px", border: "none", borderRadius: 10, background: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? partColor : C.border, color: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? "#FFFFFF" : C.textDim, fontFamily: "'Inter', sans-serif", fontSize: 16, fontWeight: 700, cursor: "pointer" }}>Submit & Analyse →</button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── PRONUNCIATION REPORT ─────────────────────────────────────────────────────
+function ScoreBar({ label, score, color }) {
+  return (
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.text, fontWeight: 500 }}>{label}</span>
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 700, color }}>{score}/100</span>
+      </div>
+      <div style={{ height: 8, background: C.surfaceAlt, borderRadius: 99, overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${score}%`, background: color, borderRadius: 99, transition: "width 1s ease" }} />
+      </div>
+    </div>
+  );
+}
+
+function PronunciationReport({ pronunciation: p, partColor }) {
+  if (!p) return null;
+  const overallColor = p.overall_score >= 75 ? C.green : p.overall_score >= 55 ? C.accent : C.red;
+  return (
+    <div>
+      <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 13, padding: "16px 15px", marginBottom: 14 }}>
+        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 24 }}>
+          <div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Pronunciation Score</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 40, fontWeight: 700, color: overallColor, lineHeight: 1 }}>{p.overall_score}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, marginTop: 3 }}>Band {p.pronunciation_band} · /100</div>
+          </div>
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <ScoreBar label="Fluency" score={p.fluency_score} color={C.blue} />
+            <ScoreBar label="Word Stress" score={p.stress_score} color={C.accent} />
+            <ScoreBar label="Intonation" score={p.intonation_score} color={C.purple} />
+          </div>
+        </div>
+      </div>
+      <div style={{ background: C.blue + "0e", border: `1px solid ${C.blue}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 12 }}>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.blue, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Assessment</div>
+        <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.summary}</p>
+      </div>
+      <div style={{ background: C.green + "0e", border: `1px solid ${C.green}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 12 }}>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Strength</div>
+        <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.strengths}</p>
+      </div>
+      {p.problem_words?.length > 0 && (
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Words to Practise</div>
+          {p.problem_words.map((w, i) => (
+            <div key={i} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 14px", marginBottom: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
+                <span style={{ background: C.red + "15", color: C.red, border: `1px solid ${C.red}33`, borderRadius: 6, padding: "2px 10px", fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 700 }}>{w.word}</span>
+                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textMuted }}>{w.issue}</span>
+              </div>
+              <p style={{ color: C.blue, fontSize: 13, lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>Tip: {w.tip}</p>
+            </div>
+          ))}
+        </div>
+      )}
+      <div style={{ background: C.accent + "0e", border: `1px solid ${C.accent}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 10 }}>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Fluency & Rhythm</div>
+        <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.fluency_comment}</p>
+      </div>
+      <div style={{ background: C.purple + "0e", border: `1px solid ${C.purple}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 10 }}>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.purple, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Intonation</div>
+        <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.intonation_comment}</p>
+      </div>
+      <div style={{ background: C.green + "0e", border: `1px solid ${C.green}28`, borderRadius: 10, padding: "12px 14px" }}>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>Practice Plan</div>
+        <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.next_steps}</p>
+      </div>
+    </div>
+  );
+}
+
+// ─── SPEAKING PRACTICE ────────────────────────────────────────────────────────
+function SpeakingPractice({ supabase, userId, onLimitReached }) {
+  const [part, setPart] = useState(1);
+  const [topic, setTopic] = useState(SPEAKING_TOPICS[1][0]);
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState(null);
+  const [pronunciation, setPronunciation] = useState(null);
+  const [view, setView] = useState("speak");
+  const [exporting, setExporting] = useState(false);
+  const [lastTranscript, setLastTranscript] = useState("");
+
+  const partKey = part === 1 ? "speaking_part1" : part === 2 ? "speaking_part2" : "speaking_part3";
+  const cp = useCustomPrompt(supabase, partKey, userId);
+  const activePrompt = cp.useCustom && cp.customPrompt.trim()
+    ? (part === 2 && cp.customCueCard.trim() ? `${cp.customPrompt.trim()}\n\n${cp.customCueCard.trim()}` : cp.customPrompt.trim())
+    : topic.prompt;
+
+  const partColors = { 1: C.blue, 2: C.green, 3: C.purple };
+  const partLabels = { 1: "Introduction & Interview", 2: "Long Turn", 3: "Discussion" };
+  const partHints = {
+    1: "Answer naturally as you would in a conversation. Aim for 2–3 sentences per question.",
+    2: "Use your 1 minute of preparation time. Speak for the full 1–2 minutes without stopping.",
+    3: "Give extended answers with reasons and examples. Show abstract thinking.",
+  };
+  const criteriaMap = [{ key: "fluency" }, { key: "lexis" }, { key: "grammar" }, { key: "pronunciation" }];
+  const ringColors = [C.blue, C.green, C.accent, C.purple];
+
+  function handlePartChange(p) { setPart(p); setTopic(SPEAKING_TOPICS[p][0]); setFeedback(null); setPronunciation(null); setView("speak"); cp.setUseCustom(false); }
+
+  async function analyze(transcript) {
+    setLastTranscript(transcript); setLoading(true); setFeedback(null); setPronunciation(null); setView("loading");
+    try {
+      const res = await fetch(`${PROXY}/analyse-speaking`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": userId || "",
+        },
+        body: JSON.stringify({
+          ieltsMessages: [{ role: "user", content: buildSpeakingPrompt(part, activePrompt, transcript) }],
+          part, question: activePrompt, transcript,
+        })
+      });
+      const data = await res.json();
+      if (res.status === 403 && data.error === "free_limit_reached") {
+        onLimitReached("speaking");
+        setLoading(false);
+        setView("speak");
+        return;
+      }
+      const ieltsRaw = data.ielts?.content?.find(b => b.type === "text")?.text || "{}";
+      const flat = safeParseJSON(ieltsRaw);
+      const nested = {
+        overall_band: flat.overall_band, cefr: flat.cefr,
+        examiner_comment: flat.examiner_comment, next_band_targets: flat.next_band_targets, model_rewrite: flat.model_rewrite,
+        criteria: {
+          fluency: { band: flat.fluency_band, descriptor_matched: flat.fluency_matched, quick_summary: flat.fluency_summary, evidence: [
+            { feature: "Speaking pace & flow", extract: flat.fluency_evidence_1, observation: flat.fluency_obs_1, band_signal: flat.fluency_signal_1 },
+            { feature: "Discourse markers", extract: flat.fluency_evidence_2, observation: flat.fluency_obs_2, band_signal: flat.fluency_signal_2 },
+          ]},
+          lexis: { band: flat.lexis_band, descriptor_matched: flat.lexis_matched, quick_summary: flat.lexis_summary, evidence: [
+            { feature: "Vocabulary range", extract: flat.lexis_evidence_1, observation: flat.lexis_obs_1, band_signal: flat.lexis_signal_1 },
+            { feature: "Topic-specific language", extract: flat.lexis_evidence_2, observation: flat.lexis_obs_2, band_signal: flat.lexis_signal_2 },
+          ]},
+          grammar: { band: flat.grammar_band, descriptor_matched: flat.grammar_matched, quick_summary: flat.grammar_summary, evidence: [
+            { feature: "Structure variety", extract: flat.grammar_evidence_1, observation: flat.grammar_obs_1, band_signal: flat.grammar_signal_1 },
+            { feature: "Complex sentence use", extract: flat.grammar_evidence_2, observation: flat.grammar_obs_2, band_signal: flat.grammar_signal_2 },
+          ]},
+          pronunciation: { band: flat.pronunciation_band, descriptor_matched: flat.pronunciation_matched, quick_summary: flat.pronunciation_summary, evidence: [
+            { feature: "Intelligibility", extract: flat.pronunciation_evidence_1, observation: flat.pronunciation_obs_1, band_signal: flat.pronunciation_signal_1 },
+            { feature: "Stress & rhythm", extract: flat.pronunciation_evidence_2, observation: flat.pronunciation_obs_2, band_signal: flat.pronunciation_signal_2 },
+          ]},
+        }
+      };
+      setFeedback(nested);
+      const pronRaw = data.pronunciation?.content?.find(b => b.type === "text")?.text || "{}";
+      setPronunciation(safeParseJSON(pronRaw));
+      setView("feedback");
+      saveSession(supabase, userId, { taskType: `Speaking Part ${part}`, topicLabel: cp.useCustom ? "Custom Prompt" : topic.label, prompt: activePrompt, response: transcript, imageBase64: null, feedback: nested, overallBand: nested.overall_band });
+    } catch (err) { setFeedback({ error: true, message: err?.message || String(err) }); setView("speak"); }
+    setLoading(false);
+  }
+
+  return (
+    <div>
+      {feedback && !feedback.error && (
+        <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
+          <Pill active={view === "speak"} onClick={() => setView("speak")} color={partColors[part]}>My Response</Pill>
+          <Pill active={view === "feedback"} onClick={() => setView("feedback")} color={C.purple}>IELTS Feedback</Pill>
+          <Pill active={view === "pronunciation"} onClick={() => setView("pronunciation")} color={C.accent}>Pronunciation</Pill>
+        </div>
+      )}
+      {view === "speak" && (
+        <>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Part</div>
+          <div style={{ display: "flex", gap: 6, marginBottom: 13 }}>
+            {[1, 2, 3].map(p => <Pill key={p} active={part === p} onClick={() => handlePartChange(p)} color={partColors[p]}>Part {p}</Pill>)}
+          </div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Topic</div>
+          <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
+            {SPEAKING_TOPICS[part].map(t => <Pill key={t.id} active={topic.id === t.id} onClick={() => { setTopic(t); setFeedback(null); }} color={partColors[part]}>{t.label}</Pill>)}
+          </div>
+          <CustomPromptToggle useCustom={cp.useCustom} onToggle={cp.setUseCustom} customPrompt={cp.customPrompt} onPromptChange={cp.setCustomPrompt} customCueCard={cp.customCueCard} onCueCardChange={cp.setCustomCueCard} showCueCard={part === 2} saving={cp.saving} onSave={cp.savePrompt} taskType={`speaking_part${part}`} />
+          {!cp.useCustom && (
+            <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 6 }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: partColors[part], textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>Part {part} — {partLabels[part]}</div>
+              <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{topic.prompt}</p>
+            </div>
+          )}
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 7, padding: "8px 12px", marginBottom: 14 }}>
+            <span style={{ fontSize: 16, marginTop: 1 }}>💡</span>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, lineHeight: 1.6 }}>{partHints[part]}</span>
+          </div>
+          <VoiceRecorder partColor={partColors[part]} onTranscriptReady={analyze} />
+          {lastTranscript && feedback && !feedback.error && (
+            <div style={{ marginTop: 14, background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px" }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Your Submitted Response</div>
+              <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0 }}>{lastTranscript}</p>
+            </div>
+          )}
+          {feedback?.error && (
+            <div style={{ marginTop: 12, padding: 12, background: C.red + "15", border: `1px solid ${C.red}33`, borderRadius: 9, color: C.red, fontFamily: "'Inter', sans-serif", fontSize: 12 }}>
+              <div style={{ fontWeight: 700, marginBottom: 4 }}>Analysis failed</div>
+              <div style={{ fontSize: 15, opacity: 0.85, wordBreak: "break-all" }}>{feedback.message || "Unknown error."}</div>
+            </div>
+          )}
+        </>
+      )}
+      {view === "loading" && (
+        <div style={{ textAlign: "center", padding: "48px 20px" }}>
+          <div style={{ marginBottom: 20 }}><Waveform active={true} color={partColors[part]} /></div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 600, color: partColors[part], marginBottom: 6 }}>Scoring your response…</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted, marginBottom: 20 }}>Running IELTS assessment and pronunciation analysis in parallel</div>
+        </div>
+      )}
+      {view === "feedback" && feedback && !feedback.error && (
+        <FeedbackReport feedback={feedback} criteriaMap={criteriaMap} descriptors={SPEAKING_DESCRIPTORS} ringColors={ringColors}
+          onExport={() => { setExporting(true); exportToPDF(feedback, { taskType: `Speaking Part ${part}`, topicLabel: topic.label }); setTimeout(() => setExporting(false), 1500); }}
+          exporting={exporting} />
+      )}
+      {view === "pronunciation" && pronunciation && <PronunciationReport pronunciation={pronunciation} partColor={partColors[part]} />}
+    </div>
+  );
+}
+
+// ─── BAND PROGRESS CHART ──────────────────────────────────────────────────────
+const SAMPLE_DATA = [
+  { date: "Jan 1", band: 5.0, type: "Writing" }, { date: "Jan 8", band: 5.5, type: "Speaking" },
+  { date: "Jan 15", band: 5.5, type: "Writing" }, { date: "Jan 22", band: 6.0, type: "Speaking" },
+  { date: "Jan 29", band: 6.5, type: "Writing" }, { date: "Feb 5", band: 6.5, type: "Speaking" },
+  { date: "Feb 12", band: 7.0, type: "Writing" },
+];
+
+function BandProgressChart({ supabase, userId }) {
+  const [allSessions, setAllSessions] = useState([]);
+  const [filter, setFilter] = useState("Both");
+  const [range, setRange] = useState("30");
+  const [loading, setLoading] = useState(true);
+  const isEmpty = allSessions.length === 0;
+
+  useEffect(() => {
+    if (!supabase || !userId) { setLoading(false); return; }
+    supabase.from("sessions").select("created_at, overall_band, task_type").eq("user_id", userId).order("created_at", { ascending: true })
+      .then(({ data }) => { setAllSessions(data || []); setLoading(false); });
+  }, [userId]);
+
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - parseInt(range));
+  const chartData = (isEmpty ? SAMPLE_DATA : allSessions
+    .filter(s => new Date(s.created_at) >= cutoff)
+    .map(s => ({ date: new Date(s.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }), band: s.overall_band, type: s.task_type?.includes("Task") ? "Writing" : "Speaking" }))
+  ).filter(s => filter === "Both" || s.type === filter);
+
+  const lineColor = filter === "Writing" ? C.blue : filter === "Speaking" ? C.purple : C.accent;
+  if (loading) return null;
+
+  return (
+    <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: "16px 15px", marginBottom: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, flexWrap: "wrap", gap: 8 }}>
+        <div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>Band Progress</div>
+          {isEmpty && <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, marginTop: 2 }}>✦ Sample data — complete a session to track your real progress</div>}
+        </div>
+        <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+          {["Both", "Writing", "Speaking"].map(f => {
+            const col = f === "Writing" ? C.blue : f === "Speaking" ? C.purple : C.accent;
+            return <button key={f} onClick={() => setFilter(f)} style={{ padding: "4px 11px", borderRadius: 999, border: `1.5px solid ${filter === f ? col : C.border}`, background: filter === f ? col + "18" : "transparent", color: filter === f ? col : C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: filter === f ? 700 : 400, cursor: "pointer" }}>{f}</button>;
+          })}
+          <div style={{ width: 1, background: C.border, margin: "0 3px" }} />
+          {[["7", "7d"], ["30", "30d"]].map(([val, label]) => (
+            <button key={val} onClick={() => setRange(val)} style={{ padding: "4px 11px", borderRadius: 999, border: `1.5px solid ${range === val ? C.teal : C.border}`, background: range === val ? C.teal + "18" : "transparent", color: range === val ? C.teal : C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: range === val ? 700 : 400, cursor: "pointer" }}>{label}</button>
+          ))}
+        </div>
+      </div>
+      <div style={{ opacity: isEmpty ? 0.45 : 1 }}>
+        {chartData.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "28px 0", color: C.textDim, fontFamily: "'Inter', sans-serif", fontSize: 13 }}>No sessions in this time range</div>
+        ) : (
+          <ResponsiveContainer width="100%" height={180}>
+            <LineChart data={chartData} margin={{ top: 8, right: 8, left: -28, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false} />
+              <XAxis dataKey="date" tick={{ fill: C.textDim, fontSize: 10, fontFamily: "'Inter', sans-serif" }} tickLine={false} axisLine={false} />
+              <YAxis domain={[3, 9]} ticks={[4, 5, 5.5, 6, 6.5, 7, 7.5, 8, 9]} tick={{ fill: C.textDim, fontSize: 10, fontFamily: "'Inter', sans-serif" }} tickLine={false} axisLine={false} width={40} />
+              <Tooltip contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "'Inter', sans-serif", fontSize: 11 }} formatter={(v, _, props) => [`Band ${v} · ${props.payload.type}`, ""]} />
+              <Line type="monotone" dataKey="band" stroke={lineColor} strokeWidth={2.5}
+                dot={({ cx, cy, payload }) => <circle key={`dot-${cx}-${cy}`} cx={cx} cy={cy} r={4} fill={payload.type === "Writing" ? C.blue : C.purple} stroke={C.surface} strokeWidth={2} />}
+                activeDot={{ r: 6, stroke: lineColor, strokeWidth: 2, fill: C.surface }} />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+      <div style={{ display: "flex", gap: 14, marginTop: 10, justifyContent: "flex-end" }}>
+        {[["Writing", C.blue], ["Speaking", C.purple]].map(([label, col]) => (
+          <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: col, display: "inline-block" }} />
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: C.textDim }}>{label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+function Dashboard({ supabase, userId }) {
+  const [stats, setStats] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [streak, setStreak] = useState(0);
+  const [bestSession, setBestSession] = useState(null);
+  const [currentAvg, setCurrentAvg] = useState(null);
+  const [nextTarget, setNextTarget] = useState(null);
+  const [targetProgress, setTargetProgress] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    loadDashboardStats(supabase, userId).then(({ stats: s, recentSessions: h, streak: st, bestSession: bs, currentAvg: ca, nextTarget: nt, targetProgress: tp }) => {
+      setStats(s); setHistory(h); setStreak(st); setBestSession(bs); setCurrentAvg(ca); setNextTarget(nt); setTargetProgress(tp);
+    }).finally(() => setLoading(false));
+  }, [userId]);
+
+  if (loading) return <div style={{ textAlign: "center", padding: "48px 20px", color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 15 }}>Loading your dashboard…</div>;
+
+  return (
+    <div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+        <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: "16px 15px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+          <div style={{ fontSize: 32, marginBottom: 4 }}>🔥</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 34, fontWeight: 800, color: streak > 0 ? C.accent : C.textDim, lineHeight: 1 }}>{streak}</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginTop: 4 }}>Day Streak</div>
+          {streak === 0 && <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, marginTop: 5, lineHeight: 1.4 }}>Complete a session today to start your streak</div>}
+        </div>
+        <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: "16px 15px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+          <div style={{ fontSize: 32, marginBottom: 4 }}>🏆</div>
+          {bestSession ? (
+            <>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 34, fontWeight: 800, color: BAND_COLOR(bestSession.overall_band), lineHeight: 1 }}>{bestSession.overall_band}</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginTop: 4 }}>Personal Best</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, marginTop: 4 }}>{bestSession.task_type?.includes("Task") ? "Writing" : "Speaking"} · {new Date(bestSession.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</div>
+            </>
+          ) : (
+            <>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 34, fontWeight: 800, color: C.textDim, lineHeight: 1 }}>—</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginTop: 4 }}>Personal Best</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, marginTop: 5 }}>No sessions yet</div>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: "14px 15px", marginBottom: 10 }}>
+        {currentAvg !== null ? (
+          <>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>Next Target</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textMuted }}>
+                <span style={{ fontWeight: 700, color: BAND_COLOR(currentAvg), fontSize: 14 }}>Band {parseFloat(currentAvg).toFixed(1)}</span>
+                <span style={{ color: C.textDim }}> → </span>
+                <span style={{ fontWeight: 700, color: BAND_COLOR(nextTarget), fontSize: 14 }}>Band {nextTarget}</span>
+              </div>
+            </div>
+            <div style={{ height: 8, background: C.surfaceAlt, borderRadius: 99, overflow: "hidden", marginBottom: 6 }}>
+              <div style={{ height: "100%", width: `${targetProgress}%`, background: `linear-gradient(90deg, ${BAND_COLOR(currentAvg)}, ${BAND_COLOR(nextTarget)})`, borderRadius: 99, transition: "width 1.2s ease" }} />
+            </div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim }}>
+              {targetProgress >= 80 ? "Almost there — one strong session could push you over" : targetProgress >= 40 ? "Good momentum — keep practising consistently" : "Every session moves you closer — keep going"}
+            </div>
+          </>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Next Target Band</div>
+              <div style={{ height: 8, background: C.surfaceAlt, borderRadius: 99 }} />
+            </div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim }}>Complete a session to unlock</div>
+          </div>
+        )}
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, marginBottom: 10 }}>
+        {stats.length > 0 ? stats.map(s => (
+          <div key={s.label} style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 15px" }}>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 30, fontWeight: 700, color: s.color, marginBottom: 4 }}>{s.value}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1 }}>{s.label}</div>
+          </div>
+        )) : (
+          <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "24px 0", color: C.textMuted }}>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, marginBottom: 8 }}>No sessions yet</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textDim }}>Complete your first Writing or Speaking session to see your stats</div>
+          </div>
+        )}
+      </div>
+
+      <BandProgressChart supabase={supabase} userId={userId} />
+
+      {history.length > 0 && (
+        <>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Recent Sessions</div>
+          {history.map((h, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: `1px solid ${C.border}` }}>
+              <div>
+                <div style={{ color: C.text, fontSize: 14, marginBottom: 2 }}>{h.task}</div>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textMuted }}>{h.date} · {h.type}</div>
+              </div>
+              <span style={{ background: BAND_COLOR(h.band) + "22", color: BAND_COLOR(h.band), border: `1px solid ${BAND_COLOR(h.band)}44`, borderRadius: 6, padding: "2px 9px", fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 700 }}>Band {h.band}</span>
+            </div>
+          ))}
+        </>
+      )}
+    </div>
+  );
+}
+
+// ─── PORTFOLIO ────────────────────────────────────────────────────────────────
+function Portfolio({ supabase, userId }) {
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedSession, setSelectedSession] = useState(null);
+
+  useEffect(() => {
+    setLoading(true);
+    loadSessions(supabase, userId).then(setSessions).finally(() => setLoading(false));
+  }, [userId]);
+
+  if (loading) return <div style={{ textAlign: "center", padding: "48px 20px", color: C.textMuted }}><div style={{ fontSize: 20, marginBottom: 12 }}>⏳</div><div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15 }}>Loading your session history…</div></div>;
+  if (sessions.length === 0) return <div style={{ textAlign: "center", padding: "48px 20px" }}><div style={{ fontSize: 40, marginBottom: 12 }}>📚</div><div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.text, marginBottom: 6 }}>No sessions yet</div><div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted }}>Complete a Writing or Speaking session to build your history.</div></div>;
+
+  if (selectedSession?.feedback) {
+    const isWriting = !!selectedSession.feedback.criteria?.task;
+    const descriptors = isWriting ? WRITING_DESCRIPTORS : SPEAKING_DESCRIPTORS;
+    const criteriaMap = isWriting ? [{ key: "task" }, { key: "coherence" }, { key: "lexis" }, { key: "grammar" }] : [{ key: "fluency" }, { key: "lexis" }, { key: "grammar" }, { key: "pronunciation" }];
+    const ringColors = isWriting ? [C.blue, C.teal, C.green, C.accent] : [C.blue, C.green, C.accent, C.purple];
+    return (
+      <div>
+        <button onClick={() => setSelectedSession(null)} style={{ padding: "8px 14px", background: "transparent", border: `1px solid ${C.border}`, borderRadius: 8, color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 13, cursor: "pointer", marginBottom: 14 }}>← Back to History</button>
+        <FeedbackReport feedback={selectedSession.feedback} criteriaMap={criteriaMap} descriptors={descriptors} ringColors={ringColors} onExport={() => exportToPDF(selectedSession.feedback, { taskType: selectedSession.task_type, topicLabel: selectedSession.topic_label })} exporting={false} />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 12 }}>{sessions.length} Session{sessions.length !== 1 ? "s" : ""}</div>
+      {sessions.map(s => <HistoryCard key={s.id} session={s} onViewReport={setSelectedSession} />)}
+    </div>
+  );
+}
+
+// ─── LEGAL ────────────────────────────────────────────────────────────────────
+const LEGAL = {
+  privacy: {
+    title: "Privacy Policy",
+    content: `Last updated: May 2026\n\nSoundReady English operates SoundReady Ascend ("the App"), an AI-powered IELTS preparation platform.\n\nINFORMATION WE COLLECT\n• Account information: your email address and password when you register\n• Voice recordings: audio recorded during Speaking practice sessions\n• Written responses: essays and written answers submitted for assessment\n• Usage data: session history and performance scores\n\nHOW WE USE YOUR INFORMATION\n• To provide AI-powered IELTS feedback and pronunciation assessment\n• To track your progress and display your session history\n• We do not sell your personal data to third parties\n\nTHIRD-PARTY SERVICES\n• Supabase — secure user authentication and data storage\n• OpenAI Whisper — voice transcription\n• Anthropic Claude — AI feedback generation\n• Netlify — frontend hosting\n\nCONTACT\nSoundReady English | support@sound-ready.com`
+  },
+  terms: {
+    title: "Terms of Service",
+    content: `Last updated: May 2026\n\nBy using SoundReady Ascend, you agree to these Terms of Service.\n\nELIGIBILITY\nYou must be at least 13 years old to use this App.\n\nACCEPTABLE USE\nYou agree to use SoundReady Ascend only for lawful purposes.\n\nAI-GENERATED CONTENT\nAI feedback is for educational purposes only and does not constitute a guarantee of exam performance.\n\nFREE AND PREMIUM TIERS\nFree tier users have access to limited sessions. Premium features require a paid subscription.\n\nCONTACT\nSoundReady English | support@sound-ready.com`
+  },
+  disclaimer: {
+    title: "Disclaimer",
+    content: `Last updated: May 2026\n\nEDUCATIONAL PURPOSE ONLY\nSoundReady Ascend is an AI-powered educational tool. Feedback and band scores are for practice purposes only.\n\nNO GUARANTEE OF EXAM RESULTS\nBand scores are approximations and are not official IELTS scores.\n\nIELTS TRADEMARK\nIELTS is a registered trademark of the British Council, IDP: IELTS Australia, and Cambridge Assessment English. SoundReady Ascend is not affiliated with any official IELTS testing body.\n\nCONTACT\nSoundReady English | support@sound-ready.com`
+  }
+};
+
+function LegalModal({ type, onClose }) {
+  const content = LEGAL[type];
+  if (!content) return null;
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }} onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} style={{ background: C.surface, borderRadius: 16, width: "100%", maxWidth: 640, maxHeight: "85vh", display: "flex", flexDirection: "column", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
+        <div style={{ padding: "20px 24px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, color: C.text }}>{content.title}</h2>
+          <button onClick={onClose} style={{ background: "transparent", border: "none", fontSize: 20, color: C.textMuted, cursor: "pointer" }}>×</button>
+        </div>
+        <div style={{ padding: "20px 24px", overflowY: "auto", flex: 1 }}>
+          <pre style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.text, lineHeight: 1.8, whiteSpace: "pre-wrap", margin: 0 }}>{content.content}</pre>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Footer({ onLegal }) {
+  return (
+    <div style={{ borderTop: `1px solid ${C.border}`, padding: "16px 24px", background: C.surface }}>
+      <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap", marginBottom: 8 }}>
+        {[["privacy", "Privacy Policy"], ["terms", "Terms of Service"], ["disclaimer", "Disclaimer"]].map(([type, label]) => (
+          <button key={type} onClick={() => onLegal(type)} style={{ background: "transparent", border: "none", fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textMuted, cursor: "pointer", textDecoration: "underline", padding: 0 }}>{label}</button>
+        ))}
+        <a href="mailto:support@sound-ready.com" style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textMuted, textDecoration: "underline" }}>Contact</a>
+      </div>
+      <p style={{ textAlign: "center", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, margin: 0 }}>© 2026 SoundReady English — SoundReady-Ascend. All rights reserved.</p>
+    </div>
+  );
+}
+
+// ─── AVATAR MENU ──────────────────────────────────────────────────────────────
+function AvatarMenu({ email, onLogout, onAdmin }) {
+  const [open, setOpen] = useState(false);
+  const initial = email ? email[0].toUpperCase() : "?";
+  return (
+    <div style={{ position: "relative" }}>
+      <button onClick={() => setOpen(!open)} style={{ width: 36, height: 36, borderRadius: "50%", background: C.accent, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Sora', sans-serif", fontSize: 14, fontWeight: 700, color: "#FFFFFF", boxShadow: open ? `0 0 0 3px ${C.accent}33` : "none" }}>{initial}</button>
+      {open && (
+        <>
+          <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 99 }} />
+          <div style={{ position: "absolute", right: 0, top: 44, zIndex: 100, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: "6px 0", minWidth: 220, boxShadow: "0 8px 32px rgba(27,42,58,0.12)" }}>
+            <div style={{ padding: "12px 16px", borderBottom: `1px solid ${C.border}` }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 3 }}>{email}</div>
+              <div style={{ display: "inline-block", background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "2px 8px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green }}>Free Plan</div>
+            </div>
+            <div style={{ padding: "6px 0" }}>
+              {onAdmin && (
+                <button onClick={() => { setOpen(false); onAdmin(); }} style={{ width: "100%", padding: "9px 16px", background: "transparent", border: "none", textAlign: "left", cursor: "pointer", fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blue, fontWeight: 600 }}
+                  onMouseOver={e => e.currentTarget.style.background = C.surfaceAlt} onMouseOut={e => e.currentTarget.style.background = "transparent"}>Admin Panel</button>
+              )}
+              <button onClick={() => setOpen(false)} style={{ width: "100%", padding: "9px 16px", background: "transparent", border: "none", textAlign: "left", cursor: "pointer", fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.accent, fontWeight: 700 }}
+                onMouseOver={e => e.currentTarget.style.background = C.accentSoft} onMouseOut={e => e.currentTarget.style.background = "transparent"}>⭐ Upgrade to Premium</button>
+              <div style={{ height: 1, background: C.border, margin: "6px 0" }} />
+              <button onClick={() => { setOpen(false); onLogout(); }} style={{ width: "100%", padding: "9px 16px", background: "transparent", border: "none", textAlign: "left", cursor: "pointer", fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.red }}
+                onMouseOver={e => e.currentTarget.style.background = C.red + "0e"} onMouseOut={e => e.currentTarget.style.background = "transparent"}>Log Out</button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ─── APP SHELL ────────────────────────────────────────────────────────────────
+export default function App({ supabase, session, onAdmin }) {
+  const [tab, setTab] = useState("dashboard");
+  const [legalModal, setLegalModal] = useState(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeType, setUpgradeType] = useState("");
+
+  async function handleLogout() { if (supabase) await supabase.auth.signOut(); }
+
+  const userEmail = session?.user?.email || "";
+  const isAdmin = userEmail === "sergio@sound-ready.com";
+  const tabs = [
+    { id: "dashboard", label: "Dashboard" },
+    { id: "writing", label: "Writing" },
+    { id: "speaking", label: "Speaking" },
+    { id: "history", label: "My History" },
+  ];
+
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: radial-gradient(ellipse at 12% 50%, ${C.blue}55 0%, transparent 45%), radial-gradient(ellipse at 88% 30%, ${C.accent}45 0%, transparent 45%), ${C.bg}; color: ${C.text}; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; min-height: 100vh; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: ${C.bg}; }
+        ::-webkit-scrollbar-thumb { background: ${C.border}; border-radius: 3px; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+        @keyframes wave { from{height:4px} to{height:40px} }
+        input, textarea, select { color: ${C.text}; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        textarea::placeholder { color: ${C.textDim}; }
+      `}</style>
+      <div style={{ maxWidth: 720, margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column", width: "100%" }}>
+        <div style={{ padding: "16px clamp(18px, 5vw, 120px) 0", borderBottom: `1px solid ${C.border}`, background: C.bg, position: "sticky", top: 0, zIndex: 10, boxShadow: "0 2px 12px rgba(27,42,58,0.08)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 13 }}>
+            <div style={{ width: 80 }}>
+              <div style={{ background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "3px 10px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, display: "inline-block" }}>Free</div>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <img src="/soundready-logo-transparent.png" alt="SoundReady" style={{ height: 56, objectFit: "contain" }} />
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 3, marginTop: 2 }}>Ascend</div>
+            </div>
+            <div style={{ width: 80, display: "flex", justifyContent: "flex-end" }}>
+              <AvatarMenu email={userEmail} onLogout={handleLogout} onAdmin={isAdmin ? onAdmin : null} />
+            </div>
+          </div>
+          <div style={{ display: "flex" }}>
+            {tabs.map(t => (
+              <button key={t.id} onClick={() => setTab(t.id)} style={{ flex: 1, padding: "11px 0", background: "transparent", border: "none", borderBottom: `2px solid ${tab === t.id ? C.accent : "transparent"}`, color: tab === t.id ? C.accent : C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: "clamp(11px, 2.8vw, 15px)", fontWeight: tab === t.id ? 600 : 400, cursor: "pointer", transition: "all 0.15s" }}>{t.label}</button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ padding: "18px 20px", flex: 1 }}>
+          {tab === "dashboard" && <Dashboard supabase={supabase} userId={session?.user?.id} />}
+          {tab === "writing" && <WritingPractice supabase={supabase} userId={session?.user?.id} onLimitReached={(type) => { setUpgradeType(type); setShowUpgradeModal(true); }} />}
+          {tab === "speaking" && <SpeakingPractice supabase={supabase} userId={session?.user?.id} onLimitReached={(type) => { setUpgradeType(type); setShowUpgradeModal(true); }} />}
+          {tab === "history" && <Portfolio supabase={supabase} userId={session?.user?.id} />}
+        </div>
+
+        <Footer onLegal={setLegalModal} />
+        {legalModal && <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />}
+        {showUpgradeModal && <UpgradeModal type={upgradeType} onClose={() => setShowUpgradeModal(false)} supabase={supabase} userEmail={userEmail} />}
+      </div>
+    </>
+  );
+}
