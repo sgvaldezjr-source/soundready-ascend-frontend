@@ -1819,14 +1819,15 @@ export default function App({ supabase, session, onAdmin }) {
 
   const userEmail = session?.user?.email || "";
   const isAdmin = userEmail === "sergio@sound-ready.com";
-  const tabs = [
-    { id: "dashboard", label: "Dashboard" },
-    { id: "writing", label: "Writing" },
-    { id: "speaking", label: "Speaking" },
-    { id: "history", label: "My History" },
+const tabs = [
+    { id: "dashboard", label: t.dashboard },
+    { id: "writing", label: t.writing },
+    { id: "speaking", label: t.speaking },
+    { id: "history", label: t.history },
   ];
 
   return (
+   <LangContext.Provider value={lang}>
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap');
@@ -1870,8 +1871,9 @@ export default function App({ supabase, session, onAdmin }) {
 
         <Footer onLegal={setLegalModal} />
         {legalModal && <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />}
-        {showUpgradeModal && <UpgradeModal type={upgradeType} onClose={() => setShowUpgradeModal(false)} supabase={supabase} userEmail={userEmail} />}
+     {showUpgradeModal && <UpgradeModal type={upgradeType} onClose={() => setShowUpgradeModal(false)} supabase={supabase} userEmail={userEmail} />}
       </div>
     </>
+    </LangContext.Provider>
   );
 }
