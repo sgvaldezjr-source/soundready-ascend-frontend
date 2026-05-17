@@ -2758,7 +2758,7 @@ function Footer({ onLegal }) {
 }
 
 // ─── AVATAR MENU ─────────────────────────────────────────────────────────────
-function AvatarMenu({ email, onLogout, onAdmin }) {
+function AvatarMenu({ email, onLogout, onAdmin, onProfile }) {
   const t = useLang();
   const [open, setOpen] = useState(false);
   const initial = email ? email[0].toUpperCase() : "?";
@@ -2792,14 +2792,14 @@ function AvatarMenu({ email, onLogout, onAdmin }) {
             </div>
             {/* Menu items */}
             <div style={{ padding: "6px 0" }}>
-              <button onClick={() => setOpen(false)} style={{
+              <button onClick={() => { setOpen(false); onProfile && onProfile(); }} style={{
                 width: "100%", padding: "9px 16px", background: "transparent",
                 border: "none", textAlign: "left", cursor: "pointer",
                 fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted,
               }}
                 onMouseOver={e => e.currentTarget.style.background = C.surfaceAlt}
                 onMouseOut={e => e.currentTarget.style.background = "transparent"}
-              >Profile Settings</button>
+              >My Profile</button>
               <button onClick={() => setOpen(false)} style={{
                 width: "100%", padding: "9px 16px", background: "transparent",
                 border: "none", textAlign: "left", cursor: "pointer",
@@ -2888,7 +2888,7 @@ function LangSwitcher() {
 }
 
 // ─── APP SHELL ───────────────────────────────────────────────────────────────
-export default function App({ supabase, session, onAdmin }) {
+export default function App({ supabase, session, onAdmin, onProfile }) {
   const [tab, setTab] = useState("dashboard");
   const [legalModal, setLegalModal] = useState(null);
 
@@ -2930,7 +2930,7 @@ export default function App({ supabase, session, onAdmin }) {
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 3, marginTop: 2 }}>Ascend</div>
             </div>
             <div style={{ width: 80, display: "flex", justifyContent: "flex-end", position: "relative" }}>
-              <AvatarMenu email={userEmail} onLogout={handleLogout} onAdmin={isAdmin ? onAdmin : null} />
+              <AvatarMenu email={userEmail} onLogout={handleLogout} onAdmin={isAdmin ? onAdmin : null} onProfile={onProfile} />
             </div>
           </div>
           <NavTabs tab={tab} setTab={setTab} />

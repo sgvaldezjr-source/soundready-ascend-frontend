@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import Auth from "./Auth";
 import Admin from "./Admin";
+import Profile from "./Profile";
 import { createClient } from "@supabase/supabase-js";
 
 const rawUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -32,7 +33,8 @@ function Root() {
 );
   if (!session) return <Auth supabase={supabase} />;
   if (view === "admin") return <Admin supabase={supabase} session={session} onBack={() => setView("app")} />;
-  return <App supabase={supabase} session={session} onAdmin={() => setView("admin")} />;
+  if (view === "profile") return <Profile supabase={supabase} session={session} onBack={() => setView("app")} />;
+  return <App supabase={supabase} session={session} onAdmin={() => setView("admin")} onProfile={() => setView("profile")} />;
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(
