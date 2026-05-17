@@ -2840,6 +2840,26 @@ function AvatarMenu({ email, onLogout, onAdmin }) {
   );
 }
 
+// ─── LANG SWITCHER ───────────────────────────────────────────────────────────
+function LangSwitcher() {
+  const { lang, switchLang } = useContext(LangContext);
+  return (
+    <div style={{ display: "flex", gap: 3 }}>
+      {["en", "es", "zh"].map(l => (
+        <button key={l} onClick={() => switchLang(l)} style={{
+          padding: "2px 7px", borderRadius: 6,
+          border: `1px solid ${lang === l ? C.accent : C.border}`,
+          background: lang === l ? C.accent + "18" : "transparent",
+          color: lang === l ? C.accent : C.textDim,
+          fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: lang === l ? 700 : 400,
+          cursor: "pointer", textTransform: "uppercase", letterSpacing: 0.5,
+          transition: "all 0.15s",
+        }}>{l}</button>
+      ))}
+    </div>
+  );
+}
+
 // ─── APP SHELL ───────────────────────────────────────────────────────────────
 export default function App({ supabase, session, onAdmin }) {
   const [tab, setTab] = useState("dashboard");
@@ -2876,8 +2896,9 @@ const tabs = [
      <div style={{ maxWidth: 720, margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column", width: "100%" }}>
         <div style={{ padding: "16px clamp(18px, 5vw, 120px) 0", borderBottom: `1px solid ${C.border}`, background: C.bg, position: "sticky", top: 0, zIndex: 10, boxShadow: "0 2px 12px rgba(27,42,58,0.08)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 13 }}>
-            <div style={{ width: 80 }}>
+            <div style={{ width: 80, display: "flex", flexDirection: "column", gap: 6 }}>
               <div style={{ background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "3px 10px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, display: "inline-block" }}>Free</div>
+              <LangSwitcher />
             </div>
             <div style={{ textAlign: "center" }}>
               <img
