@@ -80,6 +80,7 @@ const TRANSLATIONS = {
     part2MainQuestion: "Part 2 — Main Question", yourCustomPrompt: "Your Custom Prompt",
     cueCardBullets: "Cue Card Bullet Points", taskVisual: "Task Visual",
     saving: "Saving…", savePrompt: "Save Prompt ✓",
+    tabDashboard: "Dashboard", tabWriting: "Writing", tabSpeaking: "Speaking", tabHistory: "My History",
   },
   es: {
     myResponse: "Mi Respuesta", feedbackReport: "Informe de Retroalimentación",
@@ -136,6 +137,7 @@ const TRANSLATIONS = {
     part2MainQuestion: "Parte 2 — Pregunta Principal", yourCustomPrompt: "Tu Enunciado Personalizado",
     cueCardBullets: "Puntos de la Tarjeta de Apoyo", taskVisual: "Visual de Tarea",
     saving: "Guardando…", savePrompt: "Guardar Enunciado ✓",
+    tabDashboard: "Panel", tabWriting: "Escritura", tabSpeaking: "Expresión Oral", tabHistory: "Mi Historial",
   },
   zh: {
     myResponse: "我的回答", feedbackReport: "反馈报告", taskType: "任务类型",
@@ -192,6 +194,7 @@ const TRANSLATIONS = {
     part2MainQuestion: "第2部分 — 主要问题", yourCustomPrompt: "您的自定义题目",
     cueCardBullets: "提示卡要点", taskVisual: "任务图表",
     saving: "保存中…", savePrompt: "保存题目 ✓",
+    tabDashboard: "仪表盘", tabWriting: "写作", tabSpeaking: "口语", tabHistory: "我的记录",
   },
 };
 
@@ -2840,6 +2843,30 @@ function AvatarMenu({ email, onLogout, onAdmin }) {
   );
 }
 
+// ─── NAV TABS ────────────────────────────────────────────────────────────────
+function NavTabs({ tab, setTab }) {
+  const t = useLang();
+  const tabs = [
+    { id: "dashboard", label: t.tabDashboard },
+    { id: "writing",   label: t.tabWriting   },
+    { id: "speaking",  label: t.tabSpeaking  },
+    { id: "history",   label: t.tabHistory   },
+  ];
+  return (
+    <div style={{ display: "flex" }}>
+      {tabs.map(tb => (
+        <button key={tb.id} onClick={() => setTab(tb.id)} style={{
+          flex: 1, padding: "11px 0", background: "transparent", border: "none",
+          borderBottom: `2px solid ${tab === tb.id ? C.accent : "transparent"}`,
+          color: tab === tb.id ? C.accent : C.textMuted,
+          fontFamily: "'Inter', sans-serif", fontSize: "clamp(11px, 2.8vw, 15px)",
+          fontWeight: tab === tb.id ? 600 : 400, cursor: "pointer", transition: "all 0.15s",
+        }}>{tb.label}</button>
+      ))}
+    </div>
+  );
+}
+
 // ─── LANG SWITCHER ───────────────────────────────────────────────────────────
 function LangSwitcher() {
   const { lang, switchLang } = useContext(LangContext);
@@ -2871,12 +2898,6 @@ export default function App({ supabase, session, onAdmin }) {
 
   const userEmail = session?.user?.email || "";
   const isAdmin = userEmail === "sergio@sound-ready.com";
-const tabs = [
-    { id: "dashboard", label: "Dashboard" },
-    { id: "writing", label: "Writing" },
-    { id: "speaking", label: "Speaking" },
-    { id: "history", label: "My History" },
-  ];
 
   return (
     <LangProvider>
@@ -2912,17 +2933,7 @@ const tabs = [
               <AvatarMenu email={userEmail} onLogout={handleLogout} onAdmin={isAdmin ? onAdmin : null} />
             </div>
           </div>
-          <div style={{ display: "flex" }}>
-       {tabs.map(t => (
-              <button key={t.id} onClick={() => setTab(t.id)} style={{
-                flex: 1, padding: "11px 0", background: "transparent", border: "none",
-                borderBottom: `2px solid ${tab === t.id ? C.accent : "transparent"}`,
-                color: tab === t.id ? C.accent : C.textMuted,
-                fontFamily: "'Inter', sans-serif", fontSize: "clamp(11px, 2.8vw, 15px)", fontWeight: tab === t.id ? 600 : 400,
-                cursor: "pointer", transition: "all 0.15s",
-              }}>{t.label}</button>
-            ))}
-          </div>
+          <NavTabs tab={tab} setTab={setTab} />
         </div>
 
     <div style={{ padding: "18px 20px", flex: 1 }}>
