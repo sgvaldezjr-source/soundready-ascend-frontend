@@ -2851,6 +2851,7 @@ function NavTabs({ tab, setTab }) {
     { id: "writing",   label: t.tabWriting   },
     { id: "speaking",  label: t.tabSpeaking  },
     { id: "history",   label: t.tabHistory   },
+    { id: "lessons", label: "Lessons" },
   ];
   return (
     <div style={{ display: "flex" }}>
