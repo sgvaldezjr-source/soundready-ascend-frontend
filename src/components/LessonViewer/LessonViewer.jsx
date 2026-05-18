@@ -7,7 +7,7 @@ import './LessonViewer.css';
  * Integrates with Supabase REST API to fetch lessons
  * Includes gamification features (hearts, XP, crowns)
  */
-  const LessonViewer = ({ lessonId }) => {
+const LessonViewer = ({ lessonId }) => {
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,34 +25,15 @@ import './LessonViewer.css';
     fetchLesson();
   }, [lessonId]);
 
-const fetchLesson = async () => {
-  try {
-    setLoading(true);
-    const response = await fetch(`/api/lessons/${lessonId}`);
-    if (!response.ok) throw new Error('Failed to fetch lesson');
-    const data = await response.json();
-    setLesson(data);
-    setError(null);
-  } catch (err) {
-    setError(err.message);
-    console.error('Fetch error:', err);
-  } finally {
-    setLoading(false);
-  }
-};
-        {
-          headers: {
-            'apikey': supabaseKey,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+  const fetchLesson = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/lessons/${lessonId}`);
 
       if (!response.ok) throw new Error('Failed to fetch lesson');
       const data = await response.json();
       
-      if (data.length === 0) throw new Error('Lesson not found');
-      setLesson(data[0]);
+      setLesson(data);
       setError(null);
     } catch (err) {
       setError(err.message);
