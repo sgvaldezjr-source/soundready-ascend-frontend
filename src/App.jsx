@@ -2941,7 +2941,7 @@ export default function App({ supabase, session, onAdmin, onProfile }) {
           {tab === "writing" && <WritingPractice supabase={supabase} userId={session?.user?.id} />}
           {tab === "speaking" && <SpeakingPractice supabase={supabase} userId={session?.user?.id} />}
           {tab === "history" && <Portfolio supabase={supabase} userId={session?.user?.id} />}
-          {tab === "lessons" && <LessonViewer lessonId="vocab_band5_001" supabaseUrl={import.meta.env.REACT_APP_SUPABASE_URL} supabaseKey={import.meta.env.REACT_APP_SUPABASE_KEY} />}
+          {tab === "lessons" && <LessonViewer lessonId="vocab_band5_001" supabaseUrl={import.meta.env.VITE_APP_SUPABASE_URL} supabaseKey={import.meta.env.VITE_APP_SUPABASE_KEY} />}
         </div>
 
         <Footer onLegal={setLegalModal} />
