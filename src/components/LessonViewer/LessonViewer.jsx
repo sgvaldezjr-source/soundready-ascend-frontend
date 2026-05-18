@@ -28,7 +28,7 @@ const LessonViewer = ({ lessonId }) => {
   const fetchLesson = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/lessons/${lessonId}`);
+     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/lessons/${lessonId}`);
 
       if (!response.ok) throw new Error('Failed to fetch lesson');
       const data = await response.json();
