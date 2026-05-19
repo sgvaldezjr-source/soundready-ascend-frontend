@@ -1,6 +1,3 @@
-You're right — I have it. Here's the complete corrected `LessonViewer.jsx`. **Replace the entire file with this:**
-
-```jsx
 import React, { useState, useEffect } from 'react';
 import './LessonViewer.css';
 
