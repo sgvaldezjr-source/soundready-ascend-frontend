@@ -32,7 +32,7 @@ const LessonViewer = ({ lessonId }) => {
 
       if (!response.ok) throw new Error('Failed to fetch lesson');
       const data = await response.json();
-      
+      console.log('LESSON DATA:', JSON.stringify(data, null, 2));
       setLesson(data);
       setError(null);
     } catch (err) {
