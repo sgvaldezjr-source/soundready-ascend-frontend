@@ -28,7 +28,7 @@ const LessonViewer = ({ lessonId }) => {
   const fetchLesson = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/lessons/${lessonId}`);
+      const response = await fetch(`https://web-production-e43ad.up.railway.app/api/lessons/${lessonId}`);
 
       if (!response.ok) throw new Error('Failed to fetch lesson');
       const data = await response.json();
