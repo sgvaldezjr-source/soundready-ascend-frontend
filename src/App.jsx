@@ -1,6 +1,71 @@
 import { useState, useRef, useEffect, createContext, useContext } from "react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 import LessonViewer from './components/LessonViewer/LessonViewer';
+function LessonSelector() {
+  const [selectedId, setSelectedId] = useState(null);
+  const lessons = [
+    { id: "vocab_band5_001",     label: "Vocabulary — Band 5 — Part 1" },
+    { id: "vocab_band5_002",     label: "Vocabulary — Band 5 — Part 2" },
+    { id: "vocab_band6_001",     label: "Vocabulary — Band 6 — Part 1" },
+    { id: "vocab_band6_002",     label: "Vocabulary — Band 6 — Part 2" },
+    { id: "vocab_band7_001",     label: "Vocabulary — Band 7 — Part 1" },
+    { id: "vocab_band7_002",     label: "Vocabulary — Band 7 — Part 2" },
+    { id: "grammar_band5_001",   label: "Grammar — Band 5 — Part 1" },
+    { id: "grammar_band5_002",   label: "Grammar — Band 5 — Part 2" },
+    { id: "grammar_band6_001",   label: "Grammar — Band 6 — Part 1" },
+    { id: "grammar_band6_002",   label: "Grammar — Band 6 — Part 2" },
+    { id: "grammar_band7_001",   label: "Grammar — Band 7 — Part 1" },
+    { id: "grammar_band7_002",   label: "Grammar — Band 7 — Part 2" },
+    { id: "listening_band5_001", label: "Listening — Band 5 — Part 1" },
+    { id: "listening_band5_002", label: "Listening — Band 5 — Part 2" },
+    { id: "listening_band6_001", label: "Listening — Band 6 — Part 1" },
+    { id: "listening_band6_002", label: "Listening — Band 6 — Part 2" },
+    { id: "listening_band7_001", label: "Listening — Band 7 — Part 1" },
+    { id: "listening_band7_002", label: "Listening — Band 7 — Part 2" },
+    { id: "reading_band5_001",   label: "Reading — Band 5 — Part 1" },
+    { id: "reading_band5_002",   label: "Reading — Band 5 — Part 2" },
+    { id: "reading_band6_001",   label: "Reading — Band 6 — Part 1" },
+    { id: "reading_band6_002",   label: "Reading — Band 6 — Part 2" },
+    { id: "reading_band7_001",   label: "Reading — Band 7 — Part 1" },
+    { id: "reading_band7_002",   label: "Reading — Band 7 — Part 2" },
+    { id: "speaking_band5_001",  label: "Speaking — Band 5 — Part 1" },
+    { id: "speaking_band5_002",  label: "Speaking — Band 5 — Part 2" },
+    { id: "speaking_band6_001",  label: "Speaking — Band 6 — Part 1" },
+    { id: "speaking_band6_002",  label: "Speaking — Band 6 — Part 2" },
+    { id: "speaking_band7_001",  label: "Speaking — Band 7 — Part 1" },
+    { id: "speaking_band7_002",  label: "Speaking — Band 7 — Part 2" },
+  ];
+
+  if (selectedId) return (
+    <div>
+      <button onClick={() => setSelectedId(null)} style={{ marginBottom: 16, padding: "8px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 13, cursor: "pointer" }}>
+        ← Back to Lessons
+      </button>
+      <LessonViewer lessonId={selectedId} />
+    </div>
+  );
+
+  return (
+    <div>
+      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 14 }}>Choose a Lesson</div>
+      {lessons.map(l => (
+        <button key={l.id} onClick={() => setSelectedId(l.id)} style={{
+          display: "block", width: "100%", textAlign: "left",
+          padding: "12px 14px", marginBottom: 8,
+          background: C.surface, border: `1px solid ${C.border}`,
+          borderRadius: 10, cursor: "pointer",
+          fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.text,
+          transition: "border-color 0.15s",
+        }}
+          onMouseOver={e => e.currentTarget.style.borderColor = C.accent}
+          onMouseOut={e => e.currentTarget.style.borderColor = C.border}
+        >
+          {l.label}
+        </button>
+      ))}
+    </div>
+  );
+}
 // ─── BACKEND PROXY ───────────────────────────────────────────────────────────
 const PROXY = "https://web-production-e43ad.up.railway.app";
 
@@ -2943,7 +3008,7 @@ export default function App({ supabase, session, onAdmin, onProfile }) {
           {tab === "writing" && <WritingPractice supabase={supabase} userId={session?.user?.id} />}
           {tab === "speaking" && <SpeakingPractice supabase={supabase} userId={session?.user?.id} />}
           {tab === "history" && <Portfolio supabase={supabase} userId={session?.user?.id} />}
-          {tab === "lessons" && <LessonViewer lessonId="vocab_band5_001" />}
+          {tab === "lessons" && <LessonSelector />}
         </div>
 
         <Footer onLegal={setLegalModal} />
