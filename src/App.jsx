@@ -2155,7 +2155,7 @@ function handlePartChange(p) {
         method: "POST",
       headers: { "Content-Type": "application/json", "x-user-id": user.id },
         body: JSON.stringify({
-          ieltsMessages: [{ role: "user", content: buildSpeakingPrompt(part, activePrompt, transcript) }]
+          ieltsMessages: [{ role: "user", content: buildSpeakingPrompt(part, activePrompt, transcript) }],
           part,
           question: activePrompt,
           transcript,
