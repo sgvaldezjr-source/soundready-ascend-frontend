@@ -19,7 +19,8 @@ const LessonViewer = ({ lessonId }) => {
   const [crowns, setCrowns] = useState(0);
   const [recordingAudio, setRecordingAudio] = useState(null);
   const [mediaRecorder, setMediaRecorder] = useState(null);
-
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [showFeedback, setShowFeedback] = useState(false);
   // Fetch lesson from Supabase
   useEffect(() => {
     fetchLesson();
@@ -48,9 +49,12 @@ const LessonViewer = ({ lessonId }) => {
       ...answers,
       [currentQuestionIndex]: answer
     });
+    setSelectedAnswer(answer);
+    setShowFeedback(true);
   };
-
   const handleNextQuestion = () => {
+    setShowFeedback(false);
+    setSelectedAnswer(null);
     if (currentQuestionIndex < lesson.lesson_data.questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
@@ -108,7 +112,61 @@ const LessonViewer = ({ lessonId }) => {
       mediaRecorder.stream.getTracks().forEach(track => track.stop());
     }
   };
+  const isCorrect = selectedAnswer === currentQuestion?.correct_answer;
 
+const FeedbackPopup = () => {
+    const q = lesson?.lesson_data?.questions[currentQuestionIndex];
+    const correct = selectedAnswer === q?.correct_answer;
+
+    return (
+      <div className="feedback-overlay">
+        <div className={`feedback-popup ${correct ? 'correct' : 'incorrect'}`}>
+          <div className="feedback-header">
+            <span className="feedback-icon">{correct ? '✓' : '✗'}</span>
+            <span className="feedback-title">
+              {correct ? 'Correct!' : 'Not quite'}
+            </span>
+          </div>
+
+          {/* Grammar explanation */}
+          {lesson.lesson_type === 'grammar' && q?.explanation && (
+            <div className="feedback-explanation">
+              <p><strong>Pattern:</strong> {q.pattern}</p>
+              <p>{q.explanation}</p>
+            </div>
+          )}
+
+          {/* Vocabulary focus */}
+          {lesson.lesson_type === 'vocabulary' && q?.vocabulary_focus && (
+            <div className="feedback-vocab">
+              <h3>{q.vocabulary_focus.word}</h3>
+              <p className="pronunciation">{q.vocabulary_focus.pronunciation}</p>
+              <p className="definition">{q.vocabulary_focus.definition}</p>
+              <p className="band-level">Band {q.vocabulary_focus.band_level}</p>
+            </div>
+          )}
+
+          {/* Listening / Reading */}
+          {(lesson.lesson_type === 'listening' || lesson.lesson_type === 'reading') && !correct && (
+            <div className="feedback-explanation">
+              <p><strong>Correct answer:</strong> {q?.correct_answer}</p>
+            </div>
+          )}
+
+          {/* Vocabulary explanation */}
+          {lesson.lesson_type === 'vocabulary' && q?.explanation && (
+            <div className="feedback-explanation">
+              <p>{q.explanation}</p>
+            </div>
+          )}
+
+          <button className="btn-primary feedback-continue" onClick={handleNextQuestion}>
+            Continue
+          </button>
+        </div>
+      </div>
+    );
+  };
   if (loading) return <div className="lesson-loader">Loading lesson...</div>;
   if (error) return <div className="lesson-error">Error: {error}</div>;
   if (!lesson) return <div className="lesson-error">No lesson found</div>;
@@ -149,7 +207,9 @@ const LessonViewer = ({ lessonId }) => {
         </div>
         <p className="progress-text">{currentQuestionIndex + 1} of {lesson.lesson_data.questions.length}</p>
       </div>
-
+     {/* Feedback Popup */}
+     {showFeedback && <FeedbackPopup />}
+      
       {/* Question Container */}
       {!showResults ? (
         <main className="lesson-content">
@@ -173,14 +233,7 @@ const LessonViewer = ({ lessonId }) => {
                     </button>
                   ))}
                 </div>
-                {currentQuestion.vocabulary_focus && (
-                  <div className="vocabulary-focus">
-                    <h3>{currentQuestion.vocabulary_focus.word}</h3>
-                    <p className="pronunciation">{currentQuestion.vocabulary_focus.pronunciation}</p>
-                    <p className="definition">{currentQuestion.vocabulary_focus.definition}</p>
-                    <p className="band-level">Band {currentQuestion.vocabulary_focus.band_level}</p>
-                  </div>
-                )}
+               
               </div>
             )}
 
@@ -200,10 +253,7 @@ const LessonViewer = ({ lessonId }) => {
                     </button>
                   ))}
                 </div>
-                <div className="pattern-info">
-                  <p className="pattern">{currentQuestion.pattern}</p>
-                  <p className="explanation">{currentQuestion.explanation}</p>
-                </div>
+               
               </div>
             )}
 
