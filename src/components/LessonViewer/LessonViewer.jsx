@@ -1,12 +1,9 @@
+You're right — I have it. Here's the complete corrected `LessonViewer.jsx`. **Replace the entire file with this:**
+
+```jsx
 import React, { useState, useEffect } from 'react';
 import './LessonViewer.css';
 
-/**
- * LessonViewer Component
- * Displays IELTS lessons with support for vocabulary, grammar, listening, reading, and speaking
- * Integrates with Supabase REST API to fetch lessons
- * Includes gamification features (hearts, XP, crowns)
- */
 const LessonViewer = ({ lessonId }) => {
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,7 +18,7 @@ const LessonViewer = ({ lessonId }) => {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showFeedback, setShowFeedback] = useState(false);
-  // Fetch lesson from Supabase
+
   useEffect(() => {
     fetchLesson();
   }, [lessonId]);
@@ -30,10 +27,8 @@ const LessonViewer = ({ lessonId }) => {
     try {
       setLoading(true);
       const response = await fetch(`https://web-production-e43ad.up.railway.app/api/lessons/${lessonId}`);
-
       if (!response.ok) throw new Error('Failed to fetch lesson');
       const data = await response.json();
-      console.log('LESSON DATA:', JSON.stringify(data, null, 2));
       setLesson(data);
       setError(null);
     } catch (err) {
@@ -45,13 +40,11 @@ const LessonViewer = ({ lessonId }) => {
   };
 
   const handleAnswer = (answer) => {
-    setAnswers({
-      ...answers,
-      [currentQuestionIndex]: answer
-    });
+    setAnswers({ ...answers, [currentQuestionIndex]: answer });
     setSelectedAnswer(answer);
     setShowFeedback(true);
   };
+
   const handleNextQuestion = () => {
     setShowFeedback(false);
     setSelectedAnswer(null);
@@ -65,14 +58,10 @@ const LessonViewer = ({ lessonId }) => {
   const checkAnswers = () => {
     let correct = 0;
     lesson.lesson_data.questions.forEach((q, index) => {
-      if (answers[index] === q.correct_answer) {
-        correct++;
-      }
+      if (answers[index] === q.correct_answer) correct++;
     });
-
     const percentage = (correct / lesson.lesson_data.questions.length) * 100;
     const passed = percentage >= lesson.pass_threshold_percent;
-
     setXpEarned(passed ? lesson.xp_reward : Math.floor(lesson.xp_reward * 0.5));
     if (passed) {
       setCrowns(1);
@@ -88,17 +77,12 @@ const LessonViewer = ({ lessonId }) => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
       const chunks = [];
-
       recorder.ondataavailable = (e) => chunks.push(e.data);
       recorder.onstop = () => {
         const blob = new Blob(chunks, { type: 'audio/webm' });
         setRecordingAudio(blob);
-        setAnswers({
-          ...answers,
-          [currentQuestionIndex]: blob
-        });
+        setAnswers({ ...answers, [currentQuestionIndex]: blob });
       };
-
       recorder.start();
       setMediaRecorder(recorder);
     } catch (err) {
@@ -112,34 +96,25 @@ const LessonViewer = ({ lessonId }) => {
       mediaRecorder.stream.getTracks().forEach(track => track.stop());
     }
   };
- 
+
+  if (loading) return <div className="lesson-loader">Loading lesson...</div>;
+  if (error) return <div className="lesson-error">Error: {error}</div>;
+  if (!lesson) return <div className="lesson-error">No lesson found</div>;
+
   const currentQuestion = lesson.lesson_data.questions[currentQuestionIndex];
-
   const isCorrect = selectedAnswer === currentQuestion?.correct_answer;
+  const progress = ((currentQuestionIndex + 1) / lesson.lesson_data.questions.length) * 100;
 
-const FeedbackPopup = () => {
+  const FeedbackPopup = () => {
     const q = lesson?.lesson_data?.questions[currentQuestionIndex];
     const correct = selectedAnswer === q?.correct_answer;
-
     return (
       <div className="feedback-overlay">
         <div className={`feedback-popup ${correct ? 'correct' : 'incorrect'}`}>
           <div className="feedback-header">
             <span className="feedback-icon">{correct ? '✓' : '✗'}</span>
-            <span className="feedback-title">
-              {correct ? 'Correct!' : 'Not quite'}
-            </span>
+            <span className="feedback-title">{correct ? 'Correct!' : 'Not quite'}</span>
           </div>
-
-          {/* Grammar explanation */}
-          {lesson.lesson_type === 'grammar' && q?.explanation && (
-            <div className="feedback-explanation">
-              <p><strong>Pattern:</strong> {q.pattern}</p>
-              <p>{q.explanation}</p>
-            </div>
-          )}
-
-          {/* Vocabulary focus */}
           {lesson.lesson_type === 'vocabulary' && q?.vocabulary_focus && (
             <div className="feedback-vocab">
               <h3>{q.vocabulary_focus.word}</h3>
@@ -148,21 +123,22 @@ const FeedbackPopup = () => {
               <p className="band-level">Band {q.vocabulary_focus.band_level}</p>
             </div>
           )}
-
-          {/* Listening / Reading */}
-          {(lesson.lesson_type === 'listening' || lesson.lesson_type === 'reading') && !correct && (
-            <div className="feedback-explanation">
-              <p><strong>Correct answer:</strong> {q?.correct_answer}</p>
-            </div>
-          )}
-
-          {/* Vocabulary explanation */}
           {lesson.lesson_type === 'vocabulary' && q?.explanation && (
             <div className="feedback-explanation">
               <p>{q.explanation}</p>
             </div>
           )}
-
+          {lesson.lesson_type === 'grammar' && q?.explanation && (
+            <div className="feedback-explanation">
+              <p><strong>Pattern:</strong> {q.pattern}</p>
+              <p>{q.explanation}</p>
+            </div>
+          )}
+          {(lesson.lesson_type === 'listening' || lesson.lesson_type === 'reading') && !correct && (
+            <div className="feedback-explanation">
+              <p><strong>Correct answer:</strong> {q?.correct_answer}</p>
+            </div>
+          )}
           <button className="btn-primary feedback-continue" onClick={handleNextQuestion}>
             Continue
           </button>
@@ -170,18 +146,15 @@ const FeedbackPopup = () => {
       </div>
     );
   };
-  const progress = ((currentQuestionIndex + 1) / lesson.lesson_data.questions.length) * 100;
 
   return (
     <div className="lesson-viewer">
-      {/* Header */}
       <header className="lesson-header">
         <div className="lesson-info">
           <span className={`badge badge-${lesson.lesson_type}`}>{lesson.lesson_type}</span>
           <h1 className="lesson-title">{lesson.title}</h1>
           <p className="lesson-band">IELTS Band {lesson.difficulty_band}</p>
         </div>
-        
         <div className="lesson-stats">
           <div className="stat">
             <span className="stat-label">Hearts</span>
@@ -198,32 +171,27 @@ const FeedbackPopup = () => {
         </div>
       </header>
 
-      {/* Progress Bar */}
       <div className="progress-container">
         <div className="progress-bar">
           <div className="progress-fill" style={{ width: `${progress}%` }}></div>
         </div>
         <p className="progress-text">{currentQuestionIndex + 1} of {lesson.lesson_data.questions.length}</p>
       </div>
-     {/* Feedback Popup */}
-     {showFeedback && <FeedbackPopup />}
-      
-      {/* Question Container */}
+
+      {showFeedback && <FeedbackPopup />}
+
       {!showResults ? (
         <main className="lesson-content">
           <section className="question-section">
             <h2 className="question-text">{currentQuestion.question_text}</h2>
 
-            {/* Vocabulary Question */}
             {lesson.lesson_type === 'vocabulary' && (
               <div className="question-body">
                 <div className="vocabulary-options">
                   {currentQuestion.options.map((option) => (
                     <button
                       key={option.id}
-                      className={`option-button ${
-                        answers[currentQuestionIndex] === option.id ? 'selected' : ''
-                      }`}
+                      className={`option-button ${answers[currentQuestionIndex] === option.id ? 'selected' : ''}`}
                       onClick={() => handleAnswer(option.id)}
                     >
                       <span className="option-id">{option.id}</span>
@@ -231,46 +199,37 @@ const FeedbackPopup = () => {
                     </button>
                   ))}
                 </div>
-               
               </div>
             )}
 
-            {/* Grammar Question */}
             {lesson.lesson_type === 'grammar' && (
               <div className="question-body">
                 <div className="grammar-options">
                   {currentQuestion.blank_options.map((option, index) => (
                     <button
                       key={index}
-                      className={`option-button ${
-                        answers[currentQuestionIndex] === option ? 'selected' : ''
-                      }`}
+                      className={`option-button ${answers[currentQuestionIndex] === option ? 'selected' : ''}`}
                       onClick={() => handleAnswer(option)}
                     >
                       {option}
                     </button>
                   ))}
                 </div>
-               
               </div>
             )}
 
-            {/* Listening Question */}
             {lesson.lesson_type === 'listening' && (
               <div className="question-body">
                 {lesson.lesson_data.audio_clips && (
                   <audio controls className="audio-player">
                     <source src={lesson.lesson_data.audio_clips[0]?.audio_url} type="audio/mpeg" />
-                    Your browser does not support the audio element.
                   </audio>
                 )}
                 <div className="listening-options">
                   {currentQuestion.options.map((option) => (
                     <button
                       key={option.id}
-                      className={`option-button ${
-                        answers[currentQuestionIndex] === option.id ? 'selected' : ''
-                      }`}
+                      className={`option-button ${answers[currentQuestionIndex] === option.id ? 'selected' : ''}`}
                       onClick={() => handleAnswer(option.id)}
                     >
                       <span className="option-id">{option.id}</span>
@@ -281,7 +240,6 @@ const FeedbackPopup = () => {
               </div>
             )}
 
-            {/* Reading Question */}
             {lesson.lesson_type === 'reading' && (
               <div className="question-body">
                 <div className="passage-box">
@@ -291,9 +249,7 @@ const FeedbackPopup = () => {
                   {currentQuestion.options.map((option) => (
                     <button
                       key={option.id}
-                      className={`option-button ${
-                        answers[currentQuestionIndex] === option.id ? 'selected' : ''
-                      }`}
+                      className={`option-button ${answers[currentQuestionIndex] === option.id ? 'selected' : ''}`}
                       onClick={() => handleAnswer(option.id)}
                     >
                       <span className="option-id">{option.id}</span>
@@ -304,14 +260,12 @@ const FeedbackPopup = () => {
               </div>
             )}
 
-            {/* Speaking Question */}
             {lesson.lesson_type === 'speaking' && (
               <div className="question-body speaking-section">
                 <div className="speaking-prompt">
                   <p className="prompt-text">{currentQuestion.instructions}</p>
                   <p className="time-limit">Time: {currentQuestion.time_limit_sec} seconds</p>
                 </div>
-                
                 <div className="recording-controls">
                   {!recordingAudio ? (
                     <button className="btn-record" onClick={startAudioRecording}>
@@ -330,7 +284,6 @@ const FeedbackPopup = () => {
             )}
           </section>
 
-          {/* Navigation */}
           <footer className="lesson-footer">
             <button
               className="btn-secondary"
@@ -344,14 +297,11 @@ const FeedbackPopup = () => {
               onClick={handleNextQuestion}
               disabled={answers[currentQuestionIndex] === undefined}
             >
-              {currentQuestionIndex === lesson.lesson_data.questions.length - 1
-                ? 'Submit'
-                : 'Next →'}
+              {currentQuestionIndex === lesson.lesson_data.questions.length - 1 ? 'Submit' : 'Next →'}
             </button>
           </footer>
         </main>
       ) : (
-        /* Results Screen */
         <main className="lesson-results">
           <div className="results-card">
             <h2>Lesson Complete!</h2>
@@ -380,3 +330,6 @@ const FeedbackPopup = () => {
 };
 
 export default LessonViewer;
+```
+
+Replace the entire file, commit, and test. 🙂
