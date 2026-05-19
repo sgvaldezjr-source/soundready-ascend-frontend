@@ -327,6 +327,6 @@ const LessonViewer = ({ lessonId }) => {
 };
 
 export default LessonViewer;
-```
 
-Replace the entire file, commit, and test. 🙂
+
+
