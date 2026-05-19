@@ -1405,7 +1405,7 @@ function WritingPractice({ supabase, userId }) {
 
       const res = await fetch(`${PROXY}/analyse`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-user-id": user.id },
+        headers: { "Content-Type": "application/json", "x-user-id": userId },
         body: JSON.stringify({
           messages: [{ role: "user", content: userContent }]
         })
@@ -2153,7 +2153,7 @@ function handlePartChange(p) {
       // Fire parallel IELTS + pronunciation calls
       const res = await fetch(`${PROXY}/analyse-speaking`, {
         method: "POST",
-      headers: { "Content-Type": "application/json", "x-user-id": user.id },
+      headers: { "Content-Type": "application/json", "x-user-id": userId },
         body: JSON.stringify({
           ieltsMessages: [{ role: "user", content: buildSpeakingPrompt(part, activePrompt, transcript) }],
           part,
