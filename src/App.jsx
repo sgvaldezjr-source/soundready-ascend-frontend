@@ -4,7 +4,7 @@ import LessonViewer from './components/LessonViewer/LessonViewer';
 function LessonSelector() {
   const [selectedId, setSelectedId] = useState(null);
   const lessons = [
-    { id: "vocab_band5_001",     label: "Vocabulary — Band 5 — Part 1" },
+     { id: "vocab_band5_001",     label: "Vocabulary — Band 5 — Part 1" },
     { id: "vocab_band5_002",     label: "Vocabulary — Band 5 — Part 2" },
     { id: "vocab_band6_001",     label: "Vocabulary — Band 6 — Part 1" },
     { id: "vocab_band6_002",     label: "Vocabulary — Band 6 — Part 2" },
@@ -1712,7 +1712,7 @@ function AudioPlayer({ audioUrl, color }) {
 // ─── RECORDER STATES ─────────────────────────────────────────────────────────
 // idle → recording → recorded → transcribing → review → (submit to Claude)
 
-function VoiceRecorder({ partColor, onTranscriptReady }) {
+function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
   const t = useLang();
   // recorderState: "idle" | "recording" | "recorded" | "transcribing" | "review" | "error"
   const [recorderState, setRecorderState] = useState("idle");
@@ -1744,7 +1744,7 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
       formData.append("audio", new File([blob], `recording.${ext}`, { type: blob.type || "audio/webm" }));
      const res = await fetch(`${PROXY}/transcribe`, {
         method: "POST",
-        headers: { "x-user-id": user.id },
+        headers: { "x-user-id": userId },
         body: formData,
       });
       if (!res.ok) {
@@ -2337,7 +2337,7 @@ function handlePartChange(p) {
           </div>
 
           {/* Voice Recorder */}
-          <VoiceRecorder partColor={partColors[part]} onTranscriptReady={analyze} />
+          <VoiceRecorder partColor={partColors[part]} onTranscriptReady={analyze} userId={userId} />
 
           {/* Show last transcript for comparison when feedback exists */}
           {lastTranscript && feedback && !feedback.error && (
