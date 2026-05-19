@@ -112,6 +112,9 @@ const LessonViewer = ({ lessonId }) => {
       mediaRecorder.stream.getTracks().forEach(track => track.stop());
     }
   };
+ 
+  const currentQuestion = lesson.lesson_data.questions[currentQuestionIndex];
+
   const isCorrect = selectedAnswer === currentQuestion?.correct_answer;
 
 const FeedbackPopup = () => {
@@ -167,11 +170,6 @@ const FeedbackPopup = () => {
       </div>
     );
   };
-  if (loading) return <div className="lesson-loader">Loading lesson...</div>;
-  if (error) return <div className="lesson-error">Error: {error}</div>;
-  if (!lesson) return <div className="lesson-error">No lesson found</div>;
-
-  const currentQuestion = lesson.lesson_data.questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / lesson.lesson_data.questions.length) * 100;
 
   return (
