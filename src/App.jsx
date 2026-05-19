@@ -1405,7 +1405,7 @@ function WritingPractice({ supabase, userId }) {
 
       const res = await fetch(`${PROXY}/analyse`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-user-id": user.id },
         body: JSON.stringify({
           messages: [{ role: "user", content: userContent }]
         })
@@ -1677,8 +1677,9 @@ function VoiceRecorder({ partColor, onTranscriptReady }) {
                 : "webm";
       const formData = new FormData();
       formData.append("audio", new File([blob], `recording.${ext}`, { type: blob.type || "audio/webm" }));
-      const res = await fetch(`${PROXY}/transcribe`, {
+     const res = await fetch(`${PROXY}/transcribe`, {
         method: "POST",
+        headers: { "x-user-id": user.id },
         body: formData,
       });
       if (!res.ok) {
@@ -2152,9 +2153,9 @@ function handlePartChange(p) {
       // Fire parallel IELTS + pronunciation calls
       const res = await fetch(`${PROXY}/analyse-speaking`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-user-id": user.id },
         body: JSON.stringify({
-          ieltsMessages: [{ role: "user", content: buildSpeakingPrompt(part, activePrompt, transcript) }],
+          ieltsMessages: [{ role: "user", content: buildSpeakingPrompt(part, activePrompt, transcript) }]
           part,
           question: activePrompt,
           transcript,
