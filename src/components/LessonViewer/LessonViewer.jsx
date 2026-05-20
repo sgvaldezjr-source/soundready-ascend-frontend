@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './LessonViewer.css';
 
-const LessonViewer = ({ lessonId }) => {
+const LessonViewer = ({ lessonId, onComplete, onBack }) => {
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -316,9 +316,13 @@ const LessonViewer = ({ lessonId }) => {
                 <span className="result-value">{'❤️'.repeat(hearts)}</span>
               </div>
             </div>
-            <button className="btn-primary" onClick={() => window.location.reload()}>
-              Try Another Lesson
-            </button>
+           <button className="btn-primary" onClick={onComplete}>
+  Next Lesson
+</button>
+<button className="btn-secondary" onClick={onBack} style={{ marginTop: 8 }}>
+  Back to Skill Tree
+</button>
+
           </div>
         </main>
       )}
