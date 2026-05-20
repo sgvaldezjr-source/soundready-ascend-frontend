@@ -7,36 +7,6 @@ function LessonSelector() {
   return null;
 }
 
-  if (selectedId) return (
-    <div>
-      <button onClick={() => setSelectedId(null)} style={{ marginBottom: 16, padding: "8px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 13, cursor: "pointer" }}>
-        ← Back to Lessons
-      </button>
-      <LessonViewer lessonId={selectedId} />
-    </div>
-  );
-
-  return (
-    <div>
-      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 14 }}>Choose a Lesson</div>
-      {lessons.map(l => (
-        <button key={l.id} onClick={() => setSelectedId(l.id)} style={{
-          display: "block", width: "100%", textAlign: "left",
-          padding: "12px 14px", marginBottom: 8,
-          background: C.surface, border: `1px solid ${C.border}`,
-          borderRadius: 10, cursor: "pointer",
-          fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.text,
-          transition: "border-color 0.15s",
-        }}
-          onMouseOver={e => e.currentTarget.style.borderColor = C.accent}
-          onMouseOut={e => e.currentTarget.style.borderColor = C.border}
-        >
-          {l.label}
-        </button>
-      ))}
-    </div>
-  );
-
 // ─── BACKEND PROXY ───────────────────────────────────────────────────────────
 const PROXY = "https://web-production-e43ad.up.railway.app";
 
