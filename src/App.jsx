@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect, createContext, useContext } from "react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 import LessonViewer from './components/LessonViewer/LessonViewer';
-function LessonSelector() {
-  const [selectedId, setSelectedId] = useState(null);
-  const [selectedLesson, setSelectedLesson] = useState(null);
+import SkillTree from './components/SkillTree/SkillTree';
 
-  
+function LessonSelector() {
+  return null;
+}
 
   if (selectedId) return (
     <div>
