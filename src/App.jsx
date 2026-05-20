@@ -3011,7 +3011,15 @@ export default function App({ supabase, session, onAdmin, onProfile }) {
     }
   }}
 
-  onBack={() => setTab("lessons")}
+  onBack={(correctCount, totalQuestions) => {
+  if (correctCount && totalQuestions && correctCount / totalQuestions >= 0.8) {
+    const progress = JSON.parse(localStorage.getItem("sr_progress") || "{}");
+    progress[selectedLesson] = { completed: true, completedAt: Date.now() };
+    localStorage.setItem("sr_progress", JSON.stringify(progress));
+  }
+  setTab("lessons");
+}}
+
 />
 
 )}
