@@ -18,8 +18,17 @@ const LessonViewer = ({ lessonId, onComplete, onBack }) => {
   const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
-    fetchLesson();
-  }, [lessonId]);
+  fetchLesson();
+  setCurrentQuestionIndex(0);
+  setAnswers({});
+  setSelectedAnswer(null);
+  setShowFeedback(false);
+  setShowResults(false);
+  setHearts(5);
+  setXpEarned(0);
+  setCorrectCount(0);
+}, [lessonId]);
+
 
   const fetchLesson = async () => {
     try {
