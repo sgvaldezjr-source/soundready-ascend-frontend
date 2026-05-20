@@ -36,7 +36,7 @@ function LessonSelector() {
       ))}
     </div>
   );
-}
+
 // ─── BACKEND PROXY ───────────────────────────────────────────────────────────
 const PROXY = "https://web-production-e43ad.up.railway.app";
 
