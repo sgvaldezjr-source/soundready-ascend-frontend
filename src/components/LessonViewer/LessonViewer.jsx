@@ -9,6 +9,7 @@ const LessonViewer = ({ lessonId, onComplete, onBack }) => {
   const [answers, setAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
   const [hearts, setHearts] = useState(5);
+  const [correctCount, setCorrectCount] = useState(0);
   const [xpEarned, setXpEarned] = useState(0);
   const [crowns, setCrowns] = useState(0);
   const [recordingAudio, setRecordingAudio] = useState(null);
@@ -100,6 +101,8 @@ const LessonViewer = ({ lessonId, onComplete, onBack }) => {
 
   const currentQuestion = lesson.lesson_data.questions[currentQuestionIndex];
   const isCorrect = selectedAnswer === currentQuestion?.correct_answer;
+  if (isCorrect) setCorrectCount(prev => prev + 1);
+
   const progress = ((currentQuestionIndex + 1) / lesson.lesson_data.questions.length) * 100;
 
   const FeedbackPopup = () => {
@@ -316,7 +319,11 @@ const LessonViewer = ({ lessonId, onComplete, onBack }) => {
                 <span className="result-value">{'❤️'.repeat(hearts)}</span>
               </div>
             </div>
-           <button className="btn-primary" onClick={onComplete}>
+          <button
+  className="btn-primary"
+  onClick={() => onComplete(correctCount, lesson.lesson_data.questions.length)}
+>
+
   Next Lesson
 </button>
 <button className="btn-secondary" onClick={onBack} style={{ marginTop: 8 }}>
