@@ -2994,14 +2994,23 @@ export default function App({ supabase, session, onAdmin, onProfile }) {
 {tab === "lesson-viewer" && selectedLesson && (
   <LessonViewer
   lessonId={selectedLesson}
-  onComplete={() => {
-    const idx = lessons.findIndex(l => l.id === selectedLesson);
-    if (idx < lessons.length - 1) {
-      setSelectedLesson(lessons[idx + 1].id);
+ onComplete={(correctCount, totalQuestions) => {
+    const passed = correctCount / totalQuestions >= 0.8;
+    if (passed) {
+      const progress = JSON.parse(localStorage.getItem("sr_progress") || "{}");
+      progress[selectedLesson] = { completed: true, completedAt: Date.now() };
+      localStorage.setItem("sr_progress", JSON.stringify(progress));
+      const idx = lessons.findIndex(l => l.id === selectedLesson);
+      if (idx < lessons.length - 1) {
+        setSelectedLesson(lessons[idx + 1].id);
+      } else {
+        setTab("lessons");
+      }
     } else {
       setTab("lessons");
     }
   }}
+
   onBack={() => setTab("lessons")}
 />
 
