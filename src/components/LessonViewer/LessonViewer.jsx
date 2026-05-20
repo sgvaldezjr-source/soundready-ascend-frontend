@@ -384,7 +384,7 @@ const LessonViewer = ({ lessonId, onComplete, onBack }) => {
         Try Again
       </button>
     )}
-    <button className="btn-secondary" onClick={onBack} style={{ marginTop: 8 }}>
+    <button className="btn-secondary" onClick={() => onBack(correctCount, lesson.lesson_data.questions.length)} style={{ marginTop: 8 }}>
       Back to Skill Tree
     </button>
   </div>
