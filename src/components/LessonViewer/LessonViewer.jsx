@@ -390,7 +390,6 @@ const LessonViewer = ({ lessonId, onComplete, onBack }) => {
   </div>
 </main>
 
-        </main>
       )}
     </div>
   );
