@@ -2992,7 +2992,19 @@ export default function App({ supabase, session, onAdmin, onProfile }) {
   />
 )}
 {tab === "lesson-viewer" && selectedLesson && (
-  <LessonViewer lessonId={selectedLesson} />
+  <LessonViewer
+  lessonId={selectedLesson}
+  onComplete={() => {
+    const idx = lessons.findIndex(l => l.id === selectedLesson);
+    if (idx < lessons.length - 1) {
+      setSelectedLesson(lessons[idx + 1].id);
+    } else {
+      setTab("lessons");
+    }
+  }}
+  onBack={() => setTab("lessons")}
+/>
+
 )}
 
         </div>
