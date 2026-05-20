@@ -312,35 +312,84 @@ const LessonViewer = ({ lessonId, onComplete, onBack }) => {
           </footer>
         </main>
       ) : (
-        <main className="lesson-results">
-          <div className="results-card">
-            <h2>Lesson Complete!</h2>
-            <div className="results-summary">
-              <div className="result-item">
-                <span className="result-label">XP Earned</span>
-                <span className="result-value">+{xpEarned}</span>
-              </div>
-              <div className="result-item">
-                <span className="result-label">Crowns</span>
-                <span className="result-value">👑 {crowns}</span>
-              </div>
-              <div className="result-item">
-                <span className="result-label">Hearts Remaining</span>
-                <span className="result-value">{'❤️'.repeat(hearts)}</span>
-              </div>
-            </div>
-          <button
-  className="btn-primary"
-  onClick={() => onComplete(correctCount, lesson.lesson_data.questions.length)}
->
+  <main className="lesson-results">
+   <div className="results-card">
+    <h2>{correctCount / lesson.lesson_data.questions.length >= 0.8 ? '🎉 Lesson Complete!' : '😔 Try Again'}</h2>
 
-  Next Lesson
-</button>
-<button className="btn-secondary" onClick={onBack} style={{ marginTop: 8 }}>
-  Back to Skill Tree
-</button>
+    <div className="results-score-circle">
+      <span className="results-percentage">
+        {Math.round((correctCount / lesson.lesson_data.questions.length) * 100)}%
+      </span>
+      <span className="results-score-label">Score</span>
+    </div>
 
-          </div>
+    <div className="results-summary">
+      <div className="result-item">
+        <span className="result-label">✅ Correct</span>
+        <span className="result-value">{correctCount}</span>
+      </div>
+      <div className="result-item">
+        <span className="result-label">❌ Wrong</span>
+        <span className="result-value">{lesson.lesson_data.questions.length - correctCount}</span>
+      </div>
+      <div className="result-item">
+        <span className="result-label">❤️ Hearts</span>
+        <span className="result-value">{hearts}</span>
+      </div>
+      <div className="result-item">
+        <span className="result-label">👑 Crowns</span>
+        <span className="result-value">
+          {correctCount / lesson.lesson_data.questions.length >= 1 ? '👑👑👑' :
+           correctCount / lesson.lesson_data.questions.length >= 0.9 ? '👑👑' :
+           correctCount / lesson.lesson_data.questions.length >= 0.8 ? '👑' : '—'}
+        </span>
+      </div>
+      <div className="result-item">
+        <span className="result-label">⚡ XP</span>
+        <span className="result-value">+{xpEarned}</span>
+      </div>
+    </div>
+
+    <div className="results-question-review">
+      <h3>Question Review</h3>
+      {lesson.lesson_data.questions.map((q, idx) => (
+        <div key={idx} className={`review-item ${answers[idx] === q.correct_answer ? 'correct' : 'incorrect'}`}>
+          <span className="review-icon">{answers[idx] === q.correct_answer ? '✅' : '❌'}</span>
+          <span className="review-question">Q{idx + 1}: {q.question}</span>
+        </div>
+      ))}
+    </div>
+
+    {correctCount / lesson.lesson_data.questions.length >= 0.8 ? (
+      <button
+        className="btn-primary"
+        onClick={() => onComplete(correctCount, lesson.lesson_data.questions.length)}
+      >
+        Next Lesson →
+      </button>
+    ) : (
+      <button
+        className="btn-primary"
+        onClick={() => {
+          setCurrentQuestionIndex(0);
+          setAnswers({});
+          setSelectedAnswer(null);
+          setShowFeedback(false);
+          setShowResults(false);
+          setHearts(5);
+          setXpEarned(0);
+          setCorrectCount(0);
+        }}
+      >
+        Try Again
+      </button>
+    )}
+    <button className="btn-secondary" onClick={onBack} style={{ marginTop: 8 }}>
+      Back to Skill Tree
+    </button>
+  </div>
+</main>
+
         </main>
       )}
     </div>
