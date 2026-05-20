@@ -2899,6 +2899,8 @@ function LangSwitcher() {
 export default function App({ supabase, session, onAdmin, onProfile }) {
   const [tab, setTab] = useState("dashboard");
   const [legalModal, setLegalModal] = useState(null);
+  const [selectedLesson, setSelectedLesson] = useState(null);
+
   const lessons = [
      { id: "vocab_band5_001",     label: "Vocabulary — Band 5 — Part 1" },
     { id: "vocab_band5_002",     label: "Vocabulary — Band 5 — Part 2" },
