@@ -41,6 +41,8 @@ const LessonViewer = ({ lessonId, onComplete, onBack }) => {
     setAnswers({ ...answers, [currentQuestionIndex]: answer });
     setSelectedAnswer(answer);
     setShowFeedback(true);
+    if (answer === currentQuestion?.correct_answer) setCorrectCount(prev => prev + 1);
+
   };
 
   const handleNextQuestion = () => {
@@ -101,8 +103,7 @@ const LessonViewer = ({ lessonId, onComplete, onBack }) => {
 
   const currentQuestion = lesson.lesson_data.questions[currentQuestionIndex];
   const isCorrect = selectedAnswer === currentQuestion?.correct_answer;
-  if (isCorrect) setCorrectCount(prev => prev + 1);
-
+  
   const progress = ((currentQuestionIndex + 1) / lesson.lesson_data.questions.length) * 100;
 
   const FeedbackPopup = () => {
