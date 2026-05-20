@@ -3,38 +3,9 @@ import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, L
 import LessonViewer from './components/LessonViewer/LessonViewer';
 function LessonSelector() {
   const [selectedId, setSelectedId] = useState(null);
-  const lessons = [
-     { id: "vocab_band5_001",     label: "Vocabulary — Band 5 — Part 1" },
-    { id: "vocab_band5_002",     label: "Vocabulary — Band 5 — Part 2" },
-    { id: "vocab_band6_001",     label: "Vocabulary — Band 6 — Part 1" },
-    { id: "vocab_band6_002",     label: "Vocabulary — Band 6 — Part 2" },
-    { id: "vocab_band7_001",     label: "Vocabulary — Band 7 — Part 1" },
-    { id: "vocab_band7_002",     label: "Vocabulary — Band 7 — Part 2" },
-    { id: "grammar_band5_001",   label: "Grammar — Band 5 — Part 1" },
-    { id: "grammar_band5_002",   label: "Grammar — Band 5 — Part 2" },
-    { id: "grammar_band6_001",   label: "Grammar — Band 6 — Part 1" },
-    { id: "grammar_band6_002",   label: "Grammar — Band 6 — Part 2" },
-    { id: "grammar_band7_001",   label: "Grammar — Band 7 — Part 1" },
-    { id: "grammar_band7_002",   label: "Grammar — Band 7 — Part 2" },
-    { id: "listening_band5_001", label: "Listening — Band 5 — Part 1" },
-    { id: "listening_band5_002", label: "Listening — Band 5 — Part 2" },
-    { id: "listening_band6_001", label: "Listening — Band 6 — Part 1" },
-    { id: "listening_band6_002", label: "Listening — Band 6 — Part 2" },
-    { id: "listening_band7_001", label: "Listening — Band 7 — Part 1" },
-    { id: "listening_band7_002", label: "Listening — Band 7 — Part 2" },
-    { id: "reading_band5_001",   label: "Reading — Band 5 — Part 1" },
-    { id: "reading_band5_002",   label: "Reading — Band 5 — Part 2" },
-    { id: "reading_band6_001",   label: "Reading — Band 6 — Part 1" },
-    { id: "reading_band6_002",   label: "Reading — Band 6 — Part 2" },
-    { id: "reading_band7_001",   label: "Reading — Band 7 — Part 1" },
-    { id: "reading_band7_002",   label: "Reading — Band 7 — Part 2" },
-    { id: "speaking_band5_001",  label: "Speaking — Band 5 — Part 1" },
-    { id: "speaking_band5_002",  label: "Speaking — Band 5 — Part 2" },
-    { id: "speaking_band6_001",  label: "Speaking — Band 6 — Part 1" },
-    { id: "speaking_band6_002",  label: "Speaking — Band 6 — Part 2" },
-    { id: "speaking_band7_001",  label: "Speaking — Band 7 — Part 1" },
-    { id: "speaking_band7_002",  label: "Speaking — Band 7 — Part 2" },
-  ];
+  const [selectedLesson, setSelectedLesson] = useState(null);
+
+  
 
   if (selectedId) return (
     <div>
@@ -2958,7 +2929,38 @@ function LangSwitcher() {
 export default function App({ supabase, session, onAdmin, onProfile }) {
   const [tab, setTab] = useState("dashboard");
   const [legalModal, setLegalModal] = useState(null);
-
+  const lessons = [
+     { id: "vocab_band5_001",     label: "Vocabulary — Band 5 — Part 1" },
+    { id: "vocab_band5_002",     label: "Vocabulary — Band 5 — Part 2" },
+    { id: "vocab_band6_001",     label: "Vocabulary — Band 6 — Part 1" },
+    { id: "vocab_band6_002",     label: "Vocabulary — Band 6 — Part 2" },
+    { id: "vocab_band7_001",     label: "Vocabulary — Band 7 — Part 1" },
+    { id: "vocab_band7_002",     label: "Vocabulary — Band 7 — Part 2" },
+    { id: "grammar_band5_001",   label: "Grammar — Band 5 — Part 1" },
+    { id: "grammar_band5_002",   label: "Grammar — Band 5 — Part 2" },
+    { id: "grammar_band6_001",   label: "Grammar — Band 6 — Part 1" },
+    { id: "grammar_band6_002",   label: "Grammar — Band 6 — Part 2" },
+    { id: "grammar_band7_001",   label: "Grammar — Band 7 — Part 1" },
+    { id: "grammar_band7_002",   label: "Grammar — Band 7 — Part 2" },
+    { id: "listening_band5_001", label: "Listening — Band 5 — Part 1" },
+    { id: "listening_band5_002", label: "Listening — Band 5 — Part 2" },
+    { id: "listening_band6_001", label: "Listening — Band 6 — Part 1" },
+    { id: "listening_band6_002", label: "Listening — Band 6 — Part 2" },
+    { id: "listening_band7_001", label: "Listening — Band 7 — Part 1" },
+    { id: "listening_band7_002", label: "Listening — Band 7 — Part 2" },
+    { id: "reading_band5_001",   label: "Reading — Band 5 — Part 1" },
+    { id: "reading_band5_002",   label: "Reading — Band 5 — Part 2" },
+    { id: "reading_band6_001",   label: "Reading — Band 6 — Part 1" },
+    { id: "reading_band6_002",   label: "Reading — Band 6 — Part 2" },
+    { id: "reading_band7_001",   label: "Reading — Band 7 — Part 1" },
+    { id: "reading_band7_002",   label: "Reading — Band 7 — Part 2" },
+    { id: "speaking_band5_001",  label: "Speaking — Band 5 — Part 1" },
+    { id: "speaking_band5_002",  label: "Speaking — Band 5 — Part 2" },
+    { id: "speaking_band6_001",  label: "Speaking — Band 6 — Part 1" },
+    { id: "speaking_band6_002",  label: "Speaking — Band 6 — Part 2" },
+    { id: "speaking_band7_001",  label: "Speaking — Band 7 — Part 1" },
+    { id: "speaking_band7_002",  label: "Speaking — Band 7 — Part 2" },
+  ];
   async function handleLogout() {
     if (supabase) await supabase.auth.signOut();
   }
@@ -3008,7 +3010,19 @@ export default function App({ supabase, session, onAdmin, onProfile }) {
           {tab === "writing" && <WritingPractice supabase={supabase} userId={session?.user?.id} />}
           {tab === "speaking" && <SpeakingPractice supabase={supabase} userId={session?.user?.id} />}
           {tab === "history" && <Portfolio supabase={supabase} userId={session?.user?.id} />}
-          {tab === "lessons" && <LessonSelector />}
+          {tab === "lessons" && (
+  <SkillTree
+    lessons={lessons}
+    onSelectLesson={(id) => {
+      setSelectedLesson(id);
+      setTab("lesson-viewer");
+    }}
+  />
+)}
+{tab === "lesson-viewer" && selectedLesson && (
+  <LessonViewer lessonId={selectedLesson} />
+)}
+
         </div>
 
         <Footer onLegal={setLegalModal} />
