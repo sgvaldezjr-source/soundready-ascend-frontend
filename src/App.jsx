@@ -645,7 +645,37 @@ CRITICAL SCORING INSTRUCTIONS:
 - overall_band is the mean of the four criterion bands, rounded to the nearest 0.5.
 
 No apostrophes in output. Return ONLY this JSON with accurate values based on the essay — do not use these numbers as defaults:
-{"overall_band":0,"cefr":"","task_band":0,"coherence_band":0,"lexis_band":0,"grammar_band":0,"task_matched":"one sentence describing which band descriptor this essay matches for task response","task_summary":"two sentences summarising task response performance","coherence_matched":"one sentence describing which band descriptor this essay matches for coherence","coherence_summary":"two sentences summarising coherence performance","lexis_matched":"one sentence describing which band descriptor this essay matches for lexis","lexis_summary":"two sentences summarising lexical resource performance","grammar_matched":"one sentence describing which band descriptor this essay matches for grammar","grammar_summary":"two sentences summarising grammatical performance","task_evidence_1":"direct quote from essay","task_obs_1":"specific observation about this quote","task_signal_1":"positive","task_evidence_2":"direct quote from essay","task_obs_2":"specific observation about this quote","task_signal_2":"negative","coherence_evidence_1":"direct quote from essay","coherence_obs_1":"specific observation","coherence_signal_1":"positive","coherence_evidence_2":"direct quote from essay","coherence_obs_2":"specific observation","coherence_signal_2":"negative","lexis_evidence_1":"direct quote from essay","lexis_obs_1":"specific observation","lexis_signal_1":"positive","lexis_evidence_2":"direct quote from essay","lexis_obs_2":"specific observation","lexis_signal_2":"negative","grammar_evidence_1":"direct quote from essay","grammar_obs_1":"specific observation","grammar_signal_1":"positive","grammar_evidence_2":"direct quote from essay","grammar_obs_2":"specific observation","grammar_signal_2":"negative","examiner_comment":"two sentences giving an honest overall assessment including band justification","next_band_targets":"two specific, actionable improvements needed to reach the next band — if already Band 8 target Band 9","model_rewrite":"one sentence from the essay rewritten to demonstrate the next band level"}
+FEEDBACK LANGUAGE RULES — apply to every text field in the JSON:
+- Write as a warm, encouraging tutor speaking directly to the student.
+- Use simple, everyday English. Avoid jargon like "phonological features", "lexical resource", or "cohesive devices". Instead say things like "how clearly you speak", "your vocabulary", "how your ideas flow".
+- Always acknowledge what the student did well before explaining what to improve.
+- Keep sentences short. Aim for a reading age of 14-16.
+- For *_matched fields: explain in plain English which level the student is at and why, as if telling them face to face.
+- For *_summary fields: two warm, clear sentences. Start with a strength, then a specific area to work on.
+- For evidence observations (*_obs fields): explain why the quote is strong or what it shows needs work, in plain language a parent could understand.
+- For examiner_comment: sound like a tutor wrapping up a session — honest, kind, specific.
+- For next_band_targets: two clear, actionable tips written as advice ("Try to...", "Work on...", "Next time...").
+- For model_rewrite: show the improved version and briefly note what changed.
+- No apostrophes anywhere in the output.
+
+Return ONLY this JSON with accurate values — do not use these numbers as defaults:
+FEEDBACK LANGUAGE RULES — apply to every text field in the JSON:
+- Write as a warm, encouraging tutor speaking directly to the student.
+- Use simple, everyday English. Avoid jargon like "phonological features", "lexical resource", or "cohesive devices". Instead say things like "how clearly you speak", "your vocabulary", "how your ideas flow".
+- Always acknowledge what the student did well before explaining what to improve.
+- Keep sentences short. Aim for a reading age of 14-16.
+- For *_matched fields: explain in plain English which level the student is at and why, as if telling them face to face.
+- For *_summary fields: two warm, clear sentences. Start with a strength, then a specific area to work on.
+- For evidence observations (*_obs fields): explain why the quote is strong or what it shows needs work, in plain language a parent could understand.
+- For examiner_comment: sound like a tutor wrapping up a session — honest, kind, specific.
+- For next_band_targets: two clear, actionable tips written as advice ("Try to...", "Work on...", "Next time...").
+- For model_rewrite: show the improved version and briefly note what changed.
+- No apostrophes anywhere in the output.
+
+Return ONLY this JSON with accurate values — do not use these numbers as defaults:
+{"overall_band":0,"cefr":"","fluency_band":0,"lexis_band":0,"grammar_band":0,"pronunciation_band":0,"fluency_matched":"plain English explanation of which level the student is at for speaking fluently and staying on topic, and why","fluency_summary":"one sentence on what they did well with fluency, one sentence on what to improve","lexis_matched":"plain English explanation of which level the student is at for vocabulary use, and why","lexis_summary":"one sentence on what they did well with word choice, one sentence on what to improve","grammar_matched":"plain English explanation of which level the student is at for grammar, and why","grammar_summary":"one sentence on what they did well grammatically, one sentence on what to improve","pronunciation_matched":"plain English explanation of which level the student is at for how clearly and naturally they speak, and why","pronunciation_summary":"one sentence on what they did well with pronunciation, one sentence on what to improve","fluency_evidence_1":"direct quote from transcript","fluency_obs_1":"warm plain-English observation about why this quote shows good fluency or flow","fluency_signal_1":"positive","fluency_evidence_2":"direct quote from transcript","fluency_obs_2":"warm plain-English observation about what this quote shows needs work with fluency","fluency_signal_2":"negative","lexis_evidence_1":"direct quote from transcript","lexis_obs_1":"warm plain-English observation","lexis_signal_1":"positive","lexis_evidence_2":"direct quote from transcript","lexis_obs_2":"warm plain-English observation","lexis_signal_2":"negative","grammar_evidence_1":"direct quote from transcript","grammar_obs_1":"warm plain-English observation","grammar_signal_1":"positive","grammar_evidence_2":"direct quote from transcript","grammar_obs_2":"warm plain-English observation","grammar_signal_2":"negative","pronunciation_evidence_1":"direct quote from transcript","pronunciation_obs_1":"warm plain-English observation","pronunciation_signal_1":"positive","pronunciation_evidence_2":"direct quote from transcript","pronunciation_obs_2":"warm plain-English observation","pronunciation_signal_2":"negative","examiner_comment":"two warm tutor-style sentences wrapping up the session honestly and kindly with band justification in simple terms","next_band_targets":"two specific friendly tips written as advice the student can act on immediately","model_rewrite":"one sentence from the transcript rewritten at the next band level, with a brief plain-English note on what changed"}
+
+
 
 TASK: ${taskType}
 PROMPT: ${topicPrompt}
