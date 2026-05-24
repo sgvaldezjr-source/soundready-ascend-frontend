@@ -701,9 +701,18 @@ CRITICAL SCORING INSTRUCTIONS:
 No apostrophes in output. Return ONLY this JSON with accurate values based on the transcript — do not use these numbers as defaults:
 {"overall_band":0,"cefr":"","fluency_band":0,"lexis_band":0,"grammar_band":0,"pronunciation_band":0,"fluency_matched":"one sentence describing which band descriptor this transcript matches for fluency","fluency_summary":"two sentences summarising fluency performance","lexis_matched":"one sentence describing which band descriptor this transcript matches for lexis","lexis_summary":"two sentences summarising lexical resource performance","grammar_matched":"one sentence describing which band descriptor this transcript matches for grammar","grammar_summary":"two sentences summarising grammatical performance","pronunciation_matched":"one sentence describing which band descriptor this transcript matches for pronunciation based on transcript evidence","pronunciation_summary":"two sentences summarising inferred pronunciation performance","fluency_evidence_1":"direct quote from transcript","fluency_obs_1":"specific observation about this quote","fluency_signal_1":"positive","fluency_evidence_2":"direct quote from transcript","fluency_obs_2":"specific observation","fluency_signal_2":"negative","lexis_evidence_1":"direct quote from transcript","lexis_obs_1":"specific observation","lexis_signal_1":"positive","lexis_evidence_2":"direct quote from transcript","lexis_obs_2":"specific observation","lexis_signal_2":"negative","grammar_evidence_1":"direct quote from transcript","grammar_obs_1":"specific observation","grammar_signal_1":"positive","grammar_evidence_2":"direct quote from transcript","grammar_obs_2":"specific observation","grammar_signal_2":"negative","pronunciation_evidence_1":"direct quote from transcript","pronunciation_obs_1":"specific observation","pronunciation_signal_1":"positive","pronunciation_evidence_2":"direct quote from transcript","pronunciation_obs_2":"specific observation","pronunciation_signal_2":"negative","examiner_comment":"two sentences giving an honest overall assessment including band justification","next_band_targets":"two specific actionable improvements to reach the next band — if already Band 8 target Band 9","model_rewrite":"one phrase or sentence from the transcript rewritten to demonstrate the next band level"}
 
+IMPORTANT CONTEXT — READ BEFORE SCORING:
+- This is Part ${part} of the IELTS Speaking test. In the real exam, band scores are awarded holistically across all 3 parts. Score this part as a snapshot of the candidate overall, not as a standalone task.
+- Part 1 is a short personal interview. Do NOT penalise the candidate for not developing complex arguments.
+- Part 2 is a long turn monologue. Expect some self-correction and filler as this is natural in spontaneous speech.
+- Part 3 is a two-way discussion. Expect some hesitation and repair as thinking out loud is normal here.
+- Do NOT penalise natural spoken features such as: "I mean", "you know", "and that sort of thing", repetition for emphasis, or self-correction mid-sentence.
+- Do NOT penalise natural disfluency markers like "um", "well", "let me think". Only penalise disfluency that genuinely disrupts communication.
+- PRONUNCIATION NOTE: This assessment is based on a written transcript. Do NOT make confident claims about pronunciation, stress, or intonation. Flag in feedback that full pronunciation assessment requires listening to the audio.
+
 PART: ${part}
 QUESTION: ${topicPrompt}
-TRANSCRIPT: ${transcript}`;
+TRANSCRIPT: ${transcript}
 }
 
 // ─── PDF EXPORT ───────────────────────────────────────────────────────────────
