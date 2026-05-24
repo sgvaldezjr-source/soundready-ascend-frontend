@@ -1628,6 +1628,7 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
   const [timer, setTimer] = useState(0);
   const [audioUrl, setAudioUrl] = useState(null);
   const [transcript, setTranscript] = useState("");
+  const [acousticFeatures, setAcousticFeatures] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
   const timerRef = useRef(null);
   const mediaRecorderRef = useRef(null);
@@ -1660,8 +1661,9 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
       }
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-      setTranscript(data.transcript || "");
-      setRecorderState("review");
+     setTranscript(data.transcript || "");
+     setAcousticFeatures(data.acousticFeatures || null);
+     setRecorderState("review");
     } catch (err) {
       setErrorMsg(err.message || "Transcription failed. Please try again.");
       setRecorderState("error");
@@ -2065,8 +2067,10 @@ function SpeakingPractice({ supabase, userId }) {
       const res = await fetch(`${PROXY}/analyse-speaking-holistic`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-user-id": userId },
-        body: JSON.stringify({
+       body: JSON.stringify({
           ieltsMessages: [{ role: "user", content: combinedPrompt }],
+          acousticFeatures,
+        }),
         }),
       });
       const data = await res.json();
