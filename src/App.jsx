@@ -641,6 +641,8 @@ CRITICAL SCORING INSTRUCTIONS:
 - Band 6: Adequate. Main requirements addressed but not all parts equally. Limited range with some errors. Noticeable but not disruptive.
 - Band 5: Partial task coverage. Limited vocabulary and grammar range. Errors affect clarity.
 - Do NOT default to Band 6 or 7. If the evidence supports Band 8 or 9, award it. Underscoring strong work is as inaccurate as overscoring weak work.
+- CRITICAL: Do NOT use language copied or paraphrased from the task prompt as positive evidence. If a quote mirrors the prompt wording, ignore it or flag it as neutral.
+- Do NOT suggest proofreading as a next step. Give a specific constructive tip instead.
 - Each criterion (task, coherence, lexis, grammar) must be scored independently based on its own evidence.
 - overall_band is the mean of the four criterion bands, rounded to the nearest 0.5.
 
