@@ -658,6 +658,11 @@ FEEDBACK LANGUAGE RULES — apply to every text field in the JSON:
 - For examiner_comment: sound like a tutor wrapping up a session — honest, kind, specific.
 - For next_band_targets: two clear, actionable tips written as advice ("Try to...", "Work on...", "Next time...").
 - For model_rewrite: show the improved version and briefly note what changed.
+- For next_band_targets, write exactly two tips. Each tip must have a short bold-style title on its own line, followed by 2-3 sentences of warm, plain advice.
+- Write next_band_targets at a B1-C1 level — clear enough for a teenager or parent to understand, but specific enough to guide real improvement.
+- Each tip must reference something specific from the transcript — a real example of what the student said — and explain in simple terms what to do differently next time.
+- Never use terms like "lexical precision", "circumlocution", "syntactic subordination", "idiomatic register", or any language a non-specialist would not understand. Rewrite all feedback in everyday English.
+- Always include one practical study habit or exercise the student can do outside the classroom to work on that specific area.
 - No apostrophes anywhere in the output.
 
 Return ONLY this JSON with accurate values — do not use these numbers as defaults:
@@ -694,7 +699,7 @@ CRITICAL SCORING INSTRUCTIONS:
 - Band 6: Able to keep talking but some fluency loss. Adequate vocabulary. Mix of simple and complex structures with errors. Understandable with some effort.
 - Band 5: Relies on repetition. Limited vocabulary and grammar. Frequent hesitation. Errors affect clarity at times.
 - Do NOT default to Band 6 or 7. If the evidence in the transcript supports Band 8 or 9, award it. Underscoring strong performance is as inaccurate as overscoring weak performance.
-- Each criterion (fluency, lexis, grammar, pronunciation) must be scored independently based on its own evidence from the transcript.
+- Score all four criteria (fluency, lexis, grammar, pronunciation) holistically based on the overall impression of the candidate across all parts of the test. Do not score each criterion in isolation.
 - overall_band is the mean of the four criterion bands, rounded to the nearest 0.5.
 - Pronunciation can only be inferred from the transcript — note this in the pronunciation evidence.
 
