@@ -729,7 +729,7 @@ function exportToPDF(feedback, meta) {
   const criteriaHTML = criteriaMap.map(({ key }) => {
     const c = feedback.criteria[key];
     const d = descriptors[key];
-    const evHTML = c.evidence.map(ev => `
+    const evHTML = c.evidence.map(ev => `<div style="margin-bottom:10px;padding:10px 12px;background:#fafafa;">${ev}</div>`).join('');
       <div style="margin-bottom:10px;padding:10px 12px;background:#fafafa;border-radius:7px;border-left:3px solid ${sc(ev.band_signal)}">
         <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:1px;font-family:monospace;margin-bottom:3px">${ev.feature} · <span style="color:${sc(ev.band_signal)}">${ev.band_signal}</span></div>
         <div style="font-style:italic;color:#2d2d2d;font-size:13px;padding:6px 8px;background:#fff;border-radius:5px;margin-bottom:5px">"${ev.extract}"</div>
