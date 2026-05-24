@@ -12,23 +12,24 @@ const PROXY = "https://web-production-e43ad.up.railway.app";
 
 // ─── THEME — SoundReady English Light Mode ───────────────────────────────────
 const C = {
-  bg: "#F8F9FC",           // off-white background
-  surface: "#FFFFFF",      // card surface
-  surfaceAlt: "#EEF2F8",   // elevated surface / input background
-  border: "#D0DCE8",       // subtle border
-  accent: "#C8922A",       // brand gold (Ready)
-  accentSoft: "#C8922A12", // gold tint
-  accentGlow: "#C8922A33", // gold glow
-  green: "#1F8A5A",        // success green
-  red: "#C0392B",          // error red
-  blue: "#1B4F8A",         // brand navy (Sound)
-  blueLight: "#2E7FC8",    // mid blue
-  purple: "#5B4FA8",       // accent purple
-  teal: "#1A8A8F",         // teal accent
-  text: "#1A2A3A",         // primary text — deep navy
-  textMuted: "#5A7A9A",    // muted text
-  textDim: "#A0B4C8",      // dim text
+  bg: "#F8F9FC",
+  surface: "#FFFFFF",
+  surfaceAlt: "#EEF2F8",
+  border: "#D0DCE8",
+  accent: "#C8922A",
+  accentSoft: "#C8922A12",
+  accentGlow: "#C8922A33",
+  green: "#1F8A5A",
+  red: "#C0392B",
+  blue: "#1B4F8A",
+  blueLight: "#2E7FC8",
+  purple: "#5B4FA8",
+  teal: "#1A8A8F",
+  text: "#1A2A3A",
+  textMuted: "#5A7A9A",
+  textDim: "#A0B4C8",
 };
+
 // ─── LANGUAGE CONTEXT ────────────────────────────────────────────────────────
 const TRANSLATIONS = {
   en: {
@@ -45,14 +46,14 @@ const TRANSLATIONS = {
     partHint3: "Give extended answers with reasons and examples. Show abstract thinking.",
     ieltsFeedback: "IELTS Feedback", pronunciation: "Pronunciation", part: "Part",
     scoringResponse: "Scoring your response…",
-    runningAssessment: "Running IELTS assessment and pronunciation analysis in parallel",
+    runningAssessment: "Running IELTS assessment across all three parts holistically",
     recording: "Recording", recordingComplete: "Recording Complete", readyToRecord: "Ready to Record",
     stopRecording: "Stop Recording", startRecording: "Start Recording",
     reRecord: "↺ Re-record", transcribe: "Transcribe →",
     transcribing: "Transcribing your response…", whisperProcessing: "Whisper AI is processing your audio",
     recordingError: "Recording Error", tryAgain: "↺ Try Again",
     transcriptionComplete: "Transcription Complete",
-    reviewTranscript: "Review and correct your transcript before analysis",
+    reviewTranscript: "Review and correct your transcript before saving",
     yourTranscript: "Your Transcript — edit if needed", orTypePaste: "or type / paste",
     pasteSpokenResponse: "Paste or type your spoken response here to analyse without recording…",
     overallBand: "Overall Band", examinerComment: "Examiner Comment",
@@ -87,6 +88,11 @@ const TRANSLATIONS = {
     cueCardBullets: "Cue Card Bullet Points", taskVisual: "Task Visual",
     saving: "Saving…", savePrompt: "Save Prompt ✓",
     tabDashboard: "Dashboard", tabWriting: "Writing", tabSpeaking: "Speaking", tabHistory: "My History",
+    partSaved: "Part saved",
+    getMyResults: "Get My Results →",
+    completeAllParts: "Please complete all three parts before getting your results",
+    nextPart: "Next Part →",
+    submittingAll: "Scoring all three parts together…",
   },
   es: {
     myResponse: "Mi Respuesta", feedbackReport: "Informe de Retroalimentación",
@@ -102,14 +108,14 @@ const TRANSLATIONS = {
     partHint3: "Da respuestas extensas con razones y ejemplos. Muestra pensamiento abstracto.",
     ieltsFeedback: "Retroalimentación IELTS", pronunciation: "Pronunciación", part: "Parte",
     scoringResponse: "Puntuando tu respuesta…",
-    runningAssessment: "Ejecutando evaluación IELTS y análisis de pronunciación en paralelo",
+    runningAssessment: "Evaluación IELTS holística de las tres partes",
     recording: "Grabando", recordingComplete: "Grabación Completa", readyToRecord: "Listo para Grabar",
     stopRecording: "Detener Grabación", startRecording: "Iniciar Grabación",
     reRecord: "↺ Re-grabar", transcribe: "Transcribir →",
     transcribing: "Transcribiendo tu respuesta…", whisperProcessing: "Whisper AI está procesando tu audio",
     recordingError: "Error de Grabación", tryAgain: "↺ Intentar de Nuevo",
     transcriptionComplete: "Transcripción Completa",
-    reviewTranscript: "Revisa y corrige tu transcripción antes del análisis",
+    reviewTranscript: "Revisa y corrige tu transcripción antes de guardar",
     yourTranscript: "Tu Transcripción — edita si es necesario", orTypePaste: "o escribe / pega",
     pasteSpokenResponse: "Pega o escribe tu respuesta hablada aquí para analizar sin grabar…",
     overallBand: "Banda General", examinerComment: "Comentario del Examinador",
@@ -144,6 +150,11 @@ const TRANSLATIONS = {
     cueCardBullets: "Puntos de la Tarjeta de Apoyo", taskVisual: "Visual de Tarea",
     saving: "Guardando…", savePrompt: "Guardar Enunciado ✓",
     tabDashboard: "Panel", tabWriting: "Escritura", tabSpeaking: "Expresión Oral", tabHistory: "Mi Historial",
+    partSaved: "Parte guardada",
+    getMyResults: "Obtener Mis Resultados →",
+    completeAllParts: "Por favor completa las tres partes antes de obtener tus resultados",
+    nextPart: "Siguiente Parte →",
+    submittingAll: "Puntuando las tres partes juntas…",
   },
   zh: {
     myResponse: "我的回答", feedbackReport: "反馈报告", taskType: "任务类型",
@@ -159,14 +170,14 @@ const TRANSLATIONS = {
     partHint3: "给出详细回答，提供理由和例子，展现抽象思维。",
     ieltsFeedback: "雅思反馈", pronunciation: "发音", part: "部分",
     scoringResponse: "正在评分…",
-    runningAssessment: "并行运行雅思评估与发音分析",
+    runningAssessment: "对三个部分进行整体雅思评估",
     recording: "录音中", recordingComplete: "录音完成", readyToRecord: "准备录音",
     stopRecording: "停止录音", startRecording: "开始录音",
     reRecord: "↺ 重新录音", transcribe: "转录 →",
     transcribing: "正在转录您的回答…", whisperProcessing: "Whisper AI 正在处理您的音频",
     recordingError: "录音错误", tryAgain: "↺ 重试",
     transcriptionComplete: "转录完成",
-    reviewTranscript: "分析前请检查并更正转录内容",
+    reviewTranscript: "保存前请检查并更正转录内容",
     yourTranscript: "您的转录 — 如需请编辑", orTypePaste: "或输入 / 粘贴",
     pasteSpokenResponse: "在此粘贴或输入您的口语回答以进行分析…",
     overallBand: "总体评分", examinerComment: "考官评语",
@@ -201,6 +212,11 @@ const TRANSLATIONS = {
     cueCardBullets: "提示卡要点", taskVisual: "任务图表",
     saving: "保存中…", savePrompt: "保存题目 ✓",
     tabDashboard: "仪表盘", tabWriting: "写作", tabSpeaking: "口语", tabHistory: "我的记录",
+    partSaved: "部分已保存",
+    getMyResults: "获取我的结果 →",
+    completeAllParts: "请在获取结果前完成所有三个部分",
+    nextPart: "下一部分 →",
+    submittingAll: "正在对三个部分一起评分…",
   },
 };
 
@@ -229,7 +245,6 @@ function useCustomPrompt(supabase, taskType, userId) {
   const [useCustom, setUseCustom] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Load saved prompt for this task type on mount / task change
   useState(() => {
     if (!supabase || !userId || !taskType) return;
     supabase
@@ -255,22 +270,21 @@ function useCustomPrompt(supabase, taskType, userId) {
 
   return { customPrompt, setCustomPrompt, customCueCard, setCustomCueCard, useCustom, setUseCustom, saving, savePrompt };
 }
+
 // ─── SESSION SAVER ────────────────────────────────────────────────────────────
 async function saveSession(supabase, userId, { taskType, topicLabel, prompt, response, imageBase64, feedback, overallBand }) {
   if (!supabase || !userId) return;
   try {
     let imageUrl = null;
 
-  // Upload image to Supabase Storage if present
     if (imageBase64) {
       const base64Data = imageBase64.split(",")[1];
       const byteArray = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-      // Detect actual image type from base64 header
       const mimeType = imageBase64.startsWith("data:image/png") ? "image/png" : "image/jpeg";
       const ext = mimeType === "image/png" ? "png" : "jpg";
       const blob = new Blob([byteArray], { type: mimeType });
       const fileName = `${userId}/${Date.now()}.${ext}`;
-     const { data, error } = await supabase.storage
+      const { data, error } = await supabase.storage
         .from("task-images")
         .upload(fileName, blob, { contentType: mimeType, upsert: false });
       if (!error) {
@@ -293,10 +307,9 @@ async function saveSession(supabase, userId, { taskType, topicLabel, prompt, res
     });
   } catch (err) {
     console.error("Session save failed:", err);
-    // Silent fail — never block the student from seeing their feedback
   }
 }
-// ─── PORTFOLIO / HISTORY LOADER ───────────────────────────────────────────
+
 // ─── DASHBOARD STATS ──────────────────────────────────────────────────────
 async function loadDashboardStats(supabase, userId) {
   if (!supabase || !userId) return { stats: [], recentSessions: [] };
@@ -314,9 +327,8 @@ async function loadDashboardStats(supabase, userId) {
       ? (allSessions.reduce((sum, s) => sum + (s.overall_band || 0), 0) / totalSessions).toFixed(1)
       : "—";
 
-    // Separate writing and speaking
     const writingSessions = allSessions.filter(s => s.task_type?.includes("Task"));
-    const speakingSessions = allSessions.filter(s => s.task_type?.includes("Part"));
+    const speakingSessions = allSessions.filter(s => s.task_type?.includes("Speaking"));
 
     const writingAvg = writingSessions.length > 0
       ? (writingSessions.reduce((sum, s) => sum + (s.overall_band || 0), 0) / writingSessions.length).toFixed(1)
@@ -341,7 +353,6 @@ async function loadDashboardStats(supabase, userId) {
       band: s.overall_band || "—",
     }));
 
-// ── Streak calculation ──────────────────────────────────────────────────
     let streak = 0;
     if (allSessions.length > 0) {
       const today = new Date();
@@ -354,12 +365,10 @@ async function loadDashboardStats(supabase, userId) {
         })
       );
       let cursor = new Date(today);
-      // Allow streak to count if user already did something today
       while (sessionDays.has(cursor.getTime())) {
         streak++;
         cursor.setDate(cursor.getDate() - 1);
       }
-      // If no session today, check if yesterday keeps the streak alive
       if (streak === 0) {
         cursor = new Date(today);
         cursor.setDate(cursor.getDate() - 1);
@@ -370,12 +379,10 @@ async function loadDashboardStats(supabase, userId) {
       }
     }
 
-    // ── Best session ────────────────────────────────────────────────────────
     const bestSession = allSessions.length > 0
       ? allSessions.reduce((best, s) => (!best || (s.overall_band || 0) > (best.overall_band || 0)) ? s : best, null)
       : null;
 
-    // ── Next target band ────────────────────────────────────────────────────
     const currentAvg = totalSessions > 0
       ? allSessions.reduce((sum, s) => sum + (s.overall_band || 0), 0) / totalSessions
       : null;
@@ -392,7 +399,7 @@ async function loadDashboardStats(supabase, userId) {
     return { stats: [], recentSessions: [], streak: 0, bestSession: null, currentAvg: null, nextTarget: null, targetProgress: 0 };
   }
 }
-// ─── PORTFOLIO / HISTORY LOADER ───────────────────────────────────────────
+
 async function loadSessions(supabase, userId) {
   if (!supabase || !userId) return [];
   try {
@@ -408,10 +415,11 @@ async function loadSessions(supabase, userId) {
     return [];
   }
 }
+
 const BAND_COLOR = b => b >= 7 ? C.green : b >= 5.5 ? C.accent : b >= 4 ? C.blue : C.red;
 const CEFR = b => b >= 8.5 ? "C2" : b >= 7 ? "C1" : b >= 5.5 ? "B2" : b >= 4 ? "B1" : b >= 3 ? "A2" : "A1";
 
-// ─── PARAPHRASED BAND DESCRIPTORS (Sergio's coaching voice) ──────────────────
+// ─── PARAPHRASED BAND DESCRIPTORS ────────────────────────────────────────────
 const WRITING_DESCRIPTORS = {
   task: {
     label: "Task Response / Task Achievement",
@@ -517,7 +525,7 @@ const WRITING_TOPICS = {
   "Task 1 Academic": [
     {
       id: "t1a-1", label: "Bar Chart",
-      imageUrl: null, // ← swap in a real image URL here to override the generated chart
+      imageUrl: null,
       chartType: "bar",
       chartData: {
         title: "Daily internet use by age group (%)",
@@ -631,96 +639,95 @@ const SPEAKING_TOPICS = {
 };
 
 // ─── AI PROMPT BUILDERS ───────────────────────────────────────────────────────
+// FIXED: clean, single JSON template with WRITING fields (not speaking)
 function buildWritingPrompt(taskType, topicPrompt, response) {
-  return `You are a senior IELTS examiner with 15 years of experience marking scripts at all band levels including 8 and 9. Your task is to score the essay below accurately and without leniency bias.
+  return `You are a senior IELTS examiner with 15 years of experience marking scripts at all band levels including 8 and 9. Score the essay below accurately and without leniency bias.
 
 CRITICAL SCORING INSTRUCTIONS:
-- Band 9: Virtually no errors. Fully addresses all parts. Sophisticated vocabulary, complex grammar, flawless cohesion. Rare — award only when genuinely merited.
-- Band 8: Minor errors only. All parts addressed. Wide range of vocabulary and grammar used with flexibility. Cohesion is skilful. Award this when the essay clearly demonstrates upper-proficiency writing.
-- Band 7: Good control with some inaccuracies. All parts addressed but development may be uneven. Good range of vocabulary with some less common use. Award when the essay is clearly above Band 6 in multiple criteria.
-- Band 6: Adequate. Main requirements addressed but not all parts equally. Limited range with some errors. Noticeable but not disruptive.
+- Band 9: Virtually no errors. Fully addresses all parts. Sophisticated vocabulary, complex grammar, flawless cohesion. Rare.
+- Band 8: Minor errors only. All parts addressed. Wide range of vocabulary and grammar used with flexibility. Cohesion is skilful.
+- Band 7: Good control with some inaccuracies. All parts addressed but development may be uneven. Good range of vocabulary with some less common use.
+- Band 6: Adequate. Main requirements addressed but not all parts equally. Limited range with some errors.
 - Band 5: Partial task coverage. Limited vocabulary and grammar range. Errors affect clarity.
-- Do NOT default to Band 6 or 7. If the evidence supports Band 8 or 9, award it. Underscoring strong work is as inaccurate as overscoring weak work.
-- CRITICAL: Do NOT use language copied or paraphrased from the task prompt as positive evidence. If a quote mirrors the prompt wording, ignore it or flag it as neutral.
+- Do NOT default to Band 6 or 7. If the evidence supports Band 8 or 9, award it.
+- CRITICAL: Do NOT use language copied or paraphrased from the task prompt as positive evidence. If a quote mirrors the prompt wording, ignore it.
 - Do NOT suggest proofreading as a next step. Give a specific constructive tip instead.
 - Each criterion (task, coherence, lexis, grammar) must be scored independently based on its own evidence.
 - overall_band is the mean of the four criterion bands, rounded to the nearest 0.5.
 
-No apostrophes in output. Return ONLY this JSON with accurate values based on the essay — do not use these numbers as defaults:
-FEEDBACK LANGUAGE RULES — apply to every text field in the JSON:
+FEEDBACK LANGUAGE RULES:
 - Write as a warm, encouraging tutor speaking directly to the student.
-- Use simple, everyday English. Avoid jargon like "phonological features", "lexical resource", or "cohesive devices". Instead say things like "how clearly you speak", "your vocabulary", "how your ideas flow".
+- Use simple, everyday English. Avoid jargon like "lexical resource" or "cohesive devices".
 - Always acknowledge what the student did well before explaining what to improve.
 - Keep sentences short. Aim for a reading age of 14-16.
-- For *_matched fields: explain in plain English which level the student is at and why, as if telling them face to face.
-- For *_summary fields: two warm, clear sentences. Start with a strength, then a specific area to work on.
-- For evidence observations (*_obs fields): explain why the quote is strong or what it shows needs work, in plain language a parent could understand.
-- For examiner_comment: sound like a tutor wrapping up a session — honest, kind, specific.
-- For next_band_targets: two clear, actionable tips written as advice ("Try to...", "Work on...", "Next time...").
-- For model_rewrite: show the improved version and briefly note what changed.
-- For next_band_targets, write exactly two tips. Each tip must have a short bold-style title on its own line, followed by 2-3 sentences of warm, plain advice.
-- Write next_band_targets at a B1-C1 level — clear enough for a teenager or parent to understand, but specific enough to guide real improvement.
-- Each tip must reference something specific from the transcript — a real example of what the student said — and explain in simple terms what to do differently next time.
-- Never use terms like "lexical precision", "circumlocution", "syntactic subordination", "idiomatic register", or any language a non-specialist would not understand. Rewrite all feedback in everyday English.
-- Always include one practical study habit or exercise the student can do outside the classroom to work on that specific area.
+- For next_band_targets, write exactly two tips. Each tip must have a short bold-style title on its own line, followed by 2-3 sentences of warm plain advice.
+- Write next_band_targets at B1-C1 level — clear for teenagers and parents.
+- Each tip must reference something specific from the essay.
+- Never use terms like "lexical precision", "circumlocution", "syntactic subordination".
+- Always include one practical study habit the student can do outside the classroom.
 - No apostrophes anywhere in the output.
 
-Return ONLY this JSON with accurate values — do not use these numbers as defaults:
-FEEDBACK LANGUAGE RULES — apply to every text field in the JSON:
-- Write as a warm, encouraging tutor speaking directly to the student.
-- Use simple, everyday English. Avoid jargon like "phonological features", "lexical resource", or "cohesive devices". Instead say things like "how clearly you speak", "your vocabulary", "how your ideas flow".
-- Always acknowledge what the student did well before explaining what to improve.
-- Keep sentences short. Aim for a reading age of 14-16.
-- For *_matched fields: explain in plain English which level the student is at and why, as if telling them face to face.
-- For *_summary fields: two warm, clear sentences. Start with a strength, then a specific area to work on.
-- For evidence observations (*_obs fields): explain why the quote is strong or what it shows needs work, in plain language a parent could understand.
-- For examiner_comment: sound like a tutor wrapping up a session — honest, kind, specific.
-- For next_band_targets: two clear, actionable tips written as advice ("Try to...", "Work on...", "Next time...").
-- For model_rewrite: show the improved version and briefly note what changed.
-- No apostrophes anywhere in the output.
-
-Return ONLY this JSON with accurate values — do not use these numbers as defaults:
-{"overall_band":0,"cefr":"","fluency_band":0,"lexis_band":0,"grammar_band":0,"pronunciation_band":0,"fluency_matched":"plain English explanation of which level the student is at for speaking fluently and staying on topic, and why","fluency_summary":"one sentence on what they did well with fluency, one sentence on what to improve","lexis_matched":"plain English explanation of which level the student is at for vocabulary use, and why","lexis_summary":"one sentence on what they did well with word choice, one sentence on what to improve","grammar_matched":"plain English explanation of which level the student is at for grammar, and why","grammar_summary":"one sentence on what they did well grammatically, one sentence on what to improve","pronunciation_matched":"plain English explanation of which level the student is at for how clearly and naturally they speak, and why","pronunciation_summary":"one sentence on what they did well with pronunciation, one sentence on what to improve","fluency_evidence_1":"direct quote from transcript","fluency_obs_1":"warm plain-English observation about why this quote shows good fluency or flow","fluency_signal_1":"positive","fluency_evidence_2":"direct quote from transcript","fluency_obs_2":"warm plain-English observation about what this quote shows needs work with fluency","fluency_signal_2":"negative","lexis_evidence_1":"direct quote from transcript","lexis_obs_1":"warm plain-English observation","lexis_signal_1":"positive","lexis_evidence_2":"direct quote from transcript","lexis_obs_2":"warm plain-English observation","lexis_signal_2":"negative","grammar_evidence_1":"direct quote from transcript","grammar_obs_1":"warm plain-English observation","grammar_signal_1":"positive","grammar_evidence_2":"direct quote from transcript","grammar_obs_2":"warm plain-English observation","grammar_signal_2":"negative","pronunciation_evidence_1":"direct quote from transcript","pronunciation_obs_1":"warm plain-English observation","pronunciation_signal_1":"positive","pronunciation_evidence_2":"direct quote from transcript","pronunciation_obs_2":"warm plain-English observation","pronunciation_signal_2":"negative","examiner_comment":"two warm tutor-style sentences wrapping up the session honestly and kindly with band justification in simple terms","next_band_targets":"two specific friendly tips written as advice the student can act on immediately","model_rewrite":"one sentence from the transcript rewritten at the next band level, with a brief plain-English note on what changed"}
-
-
+Return ONLY this JSON with accurate values:
+{"overall_band":0,"cefr":"","task_band":0,"coherence_band":0,"lexis_band":0,"grammar_band":0,"task_matched":"plain English explanation of which level the student is at for answering the question","task_summary":"one sentence on what they did well, one sentence on what to improve","coherence_matched":"plain English explanation of which level the student is at for organising ideas","coherence_summary":"one sentence on what they did well, one sentence on what to improve","lexis_matched":"plain English explanation of which level the student is at for vocabulary","lexis_summary":"one sentence on what they did well, one sentence on what to improve","grammar_matched":"plain English explanation of which level the student is at for grammar","grammar_summary":"one sentence on what they did well, one sentence on what to improve","task_evidence_1":"direct quote from essay","task_obs_1":"warm plain-English observation","task_signal_1":"positive","task_evidence_2":"direct quote from essay","task_obs_2":"warm plain-English observation","task_signal_2":"negative","coherence_evidence_1":"direct quote from essay","coherence_obs_1":"warm plain-English observation","coherence_signal_1":"positive","coherence_evidence_2":"direct quote from essay","coherence_obs_2":"warm plain-English observation","coherence_signal_2":"negative","lexis_evidence_1":"direct quote from essay","lexis_obs_1":"warm plain-English observation","lexis_signal_1":"positive","lexis_evidence_2":"direct quote from essay","lexis_obs_2":"warm plain-English observation","lexis_signal_2":"negative","grammar_evidence_1":"direct quote from essay","grammar_obs_1":"warm plain-English observation","grammar_signal_1":"positive","grammar_evidence_2":"direct quote from essay","grammar_obs_2":"warm plain-English observation","grammar_signal_2":"negative","examiner_comment":"two warm tutor-style sentences with band justification","next_band_targets":"two specific friendly tips with bold titles referencing real examples","model_rewrite":"one sentence from the essay rewritten at the next band level with a brief note on what changed"}
 
 TASK: ${taskType}
 PROMPT: ${topicPrompt}
 ESSAY: ${response}`;
 }
 
-function buildSpeakingPrompt(part, topicPrompt, transcript) {
-  return `You are a senior IELTS Speaking examiner with 15 years of experience marking candidates at all band levels including 8 and 9. Your task is to score the transcript below accurately and without leniency bias.
+// FIXED: properly closed template literal, holistic scoring across all 3 parts
+function buildHolisticSpeakingPrompt(part1Q, part1T, part2Q, part2T, part3Q, part3T) {
+  return `You are a senior IELTS Speaking examiner with 15 years of experience. Score the candidate below using the official IELTS Speaking Band Descriptors.
+
+IMPORTANT: You are scoring all three parts of the IELTS Speaking test together as one holistic assessment. Award one score per criterion based on the candidate's overall performance across all three parts, not per part.
 
 CRITICAL SCORING INSTRUCTIONS:
-- Band 9: Speaks with complete fluency and precision. Vocabulary is sophisticated and idiomatic. Grammar is flexible and accurate throughout. Pronunciation is clear with natural prosody. Extremely rare — award only when genuinely merited.
-- Band 8: Speaks fluently with only occasional hesitation. Wide vocabulary range with natural use of less common and idiomatic expressions. Complex grammar used accurately most of the time. Easy to understand throughout. Award when the transcript clearly demonstrates upper-proficiency speaking.
-- Band 7: Speaks at length without noticeable effort. Good vocabulary range with some less common use. Variety of structures with general accuracy. Generally clear. Award when the transcript is clearly above Band 6 in most criteria.
-- Band 6: Able to keep talking but some fluency loss. Adequate vocabulary. Mix of simple and complex structures with errors. Understandable with some effort.
-- Band 5: Relies on repetition. Limited vocabulary and grammar. Frequent hesitation. Errors affect clarity at times.
-- Do NOT default to Band 6 or 7. If the evidence in the transcript supports Band 8 or 9, award it. Underscoring strong performance is as inaccurate as overscoring weak performance.
-- Score all four criteria (fluency, lexis, grammar, pronunciation) holistically based on the overall impression of the candidate across all parts of the test. Do not score each criterion in isolation.
-- overall_band is the mean of the four criterion bands, rounded to the nearest 0.5.
-- Pronunciation can only be inferred from the transcript — note this in the pronunciation evidence.
+- Band 9: Complete fluency and precision. Sophisticated, idiomatic vocabulary. Flexible, accurate grammar throughout. Rare.
+- Band 8: Fluent with only occasional hesitation. Wide vocabulary, natural idiomatic use. Complex grammar mostly accurate. Easy to understand.
+- Band 7: Speaks at length without noticeable effort. Good vocabulary range. Variety of structures with general accuracy. Generally clear.
+- Band 6: Keeps talking but some fluency loss. Adequate vocabulary. Mix of structures with errors. Understandable with some effort.
+- Band 5: Relies on repetition. Limited vocabulary and grammar. Frequent hesitation. Errors affect clarity.
+- Do NOT default to Band 6 or 7. Award Band 8 or 9 when the evidence merits it.
+- Score all four criteria holistically based on overall impression across all three parts.
+- overall_band = mean of four criteria rounded to nearest 0.5.
 
-No apostrophes in output. Return ONLY this JSON with accurate values based on the transcript — do not use these numbers as defaults:
-{"overall_band":0,"cefr":"","fluency_band":0,"lexis_band":0,"grammar_band":0,"pronunciation_band":0,"fluency_matched":"one sentence describing which band descriptor this transcript matches for fluency","fluency_summary":"two sentences summarising fluency performance","lexis_matched":"one sentence describing which band descriptor this transcript matches for lexis","lexis_summary":"two sentences summarising lexical resource performance","grammar_matched":"one sentence describing which band descriptor this transcript matches for grammar","grammar_summary":"two sentences summarising grammatical performance","pronunciation_matched":"one sentence describing which band descriptor this transcript matches for pronunciation based on transcript evidence","pronunciation_summary":"two sentences summarising inferred pronunciation performance","fluency_evidence_1":"direct quote from transcript","fluency_obs_1":"specific observation about this quote","fluency_signal_1":"positive","fluency_evidence_2":"direct quote from transcript","fluency_obs_2":"specific observation","fluency_signal_2":"negative","lexis_evidence_1":"direct quote from transcript","lexis_obs_1":"specific observation","lexis_signal_1":"positive","lexis_evidence_2":"direct quote from transcript","lexis_obs_2":"specific observation","lexis_signal_2":"negative","grammar_evidence_1":"direct quote from transcript","grammar_obs_1":"specific observation","grammar_signal_1":"positive","grammar_evidence_2":"direct quote from transcript","grammar_obs_2":"specific observation","grammar_signal_2":"negative","pronunciation_evidence_1":"direct quote from transcript","pronunciation_obs_1":"specific observation","pronunciation_signal_1":"positive","pronunciation_evidence_2":"direct quote from transcript","pronunciation_obs_2":"specific observation","pronunciation_signal_2":"negative","examiner_comment":"two sentences giving an honest overall assessment including band justification","next_band_targets":"two specific actionable improvements to reach the next band — if already Band 8 target Band 9","model_rewrite":"one phrase or sentence from the transcript rewritten to demonstrate the next band level"}
-
-IMPORTANT CONTEXT — READ BEFORE SCORING:
-- This is Part ${part} of the IELTS Speaking test. In the real exam, band scores are awarded holistically across all 3 parts. Score this part as a snapshot of the candidate overall, not as a standalone task.
-- Part 1 is a short personal interview. Do NOT penalise the candidate for not developing complex arguments.
-- Part 2 is a long turn monologue. Expect some self-correction and filler as this is natural in spontaneous speech.
-- Part 3 is a two-way discussion. Expect some hesitation and repair as thinking out loud is normal here.
-- Do NOT penalise natural spoken features such as: "I mean", "you know", "and that sort of thing", repetition for emphasis, or self-correction mid-sentence.
+CONTEXT — READ BEFORE SCORING:
+- Part 1 is a short personal interview. Do NOT penalise lack of complex argument development.
+- Part 2 is a long turn monologue. Expect natural self-correction and filler.
+- Part 3 is a two-way discussion. Expect hesitation and repair as thinking out loud is normal.
+- Spoken English is NOT written English. Do NOT penalise natural spoken features: "I mean", "you know", "and that sort of thing", repetition for emphasis, mid-sentence self-correction.
 - Do NOT penalise natural disfluency markers like "um", "well", "let me think". Only penalise disfluency that genuinely disrupts communication.
-- PRONUNCIATION NOTE: This assessment is based on a written transcript. Do NOT make confident claims about pronunciation, stress, or intonation. Flag in feedback that full pronunciation assessment requires listening to the audio.
+- PRONUNCIATION NOTE: This assessment is based on written transcripts. Do NOT make confident claims about pronunciation, stress, or intonation. Flag in feedback that full pronunciation assessment requires audio.
 
-PART: ${part}
-QUESTION: ${topicPrompt}
-TRANSCRIPT: ${transcript}
+FEEDBACK LANGUAGE RULES:
+- Write as a warm encouraging tutor speaking to the student.
+- Use simple everyday English. Avoid jargon.
+- Acknowledge strengths first, then improvements.
+- Reading age 14-16, short sentences.
+- For next_band_targets, write exactly two tips. Each tip starts with a short bold-style title on its own line, then 2-3 sentences of plain advice.
+- Write at B1-C1 level. Specific enough to guide improvement.
+- Reference real examples from the transcripts.
+- Never use terms like "lexical precision", "circumlocution", "syntactic subordination".
+- Always include one practical study habit for outside the classroom.
+- No apostrophes anywhere in output.
+
+Return ONLY this JSON with accurate values:
+{"overall_band":0,"cefr":"","fluency_band":0,"lexis_band":0,"grammar_band":0,"pronunciation_band":0,"fluency_matched":"plain English explanation of fluency level across all three parts","fluency_summary":"one sentence on what they did well with fluency, one sentence on what to improve","lexis_matched":"plain English explanation of vocabulary level across all three parts","lexis_summary":"one sentence on what they did well with word choice, one sentence on what to improve","grammar_matched":"plain English explanation of grammar level across all three parts","grammar_summary":"one sentence on what they did well grammatically, one sentence on what to improve","pronunciation_matched":"provisional plain English explanation noting full assessment requires audio","pronunciation_summary":"one sentence on what the transcripts suggest about pronunciation, one sentence noting full assessment requires audio","fluency_evidence_1":"direct quote from any part","fluency_obs_1":"warm plain-English observation","fluency_signal_1":"positive","fluency_evidence_2":"direct quote from any part","fluency_obs_2":"warm plain-English observation — do not penalise natural spoken fillers","fluency_signal_2":"negative","lexis_evidence_1":"direct quote from any part","lexis_obs_1":"warm plain-English observation","lexis_signal_1":"positive","lexis_evidence_2":"direct quote from any part","lexis_obs_2":"warm plain-English observation","lexis_signal_2":"negative","grammar_evidence_1":"direct quote from any part","grammar_obs_1":"warm plain-English observation","grammar_signal_1":"positive","grammar_evidence_2":"direct quote from any part","grammar_obs_2":"warm plain-English observation","grammar_signal_2":"negative","pronunciation_evidence_1":"any transcript evidence relevant to pronunciation","pronunciation_obs_1":"warm plain-English observation flagging transcript limitation","pronunciation_signal_1":"positive","pronunciation_evidence_2":"any transcript evidence relevant to pronunciation","pronunciation_obs_2":"warm plain-English observation","pronunciation_signal_2":"negative","examiner_comment":"two warm tutor-style sentences wrapping up overall performance","next_band_targets":"two specific friendly tips with bold titles referencing real examples","model_rewrite":"one sentence from any part rewritten at next band level with brief note on what changed"}
+
+PART 1 — Personal Interview
+Question: ${part1Q}
+Transcript: ${part1T}
+
+PART 2 — Long Turn
+Question: ${part2Q}
+Transcript: ${part2T}
+
+PART 3 — Discussion
+Question: ${part3Q}
+Transcript: ${part3T}`;
 }
 
-// ─── PDF EXPORT ───────────────────────────────────────────────────────────────
+// ─── PDF EXPORT (FIXED template literals) ────────────────────────────────────
 function exportToPDF(feedback, meta) {
   const isWriting = !!feedback.criteria.task;
   const descriptors = isWriting ? WRITING_DESCRIPTORS : SPEAKING_DESCRIPTORS;
@@ -734,33 +741,15 @@ function exportToPDF(feedback, meta) {
   const criteriaHTML = criteriaMap.map(({ key }) => {
     const c = feedback.criteria[key];
     const d = descriptors[key];
-    const evHTML = c.evidence.map(ev => `<div style="margin-bottom:10px;padding:10px 12px;background:#fafafa;border-radius:7px;border-left:3px solid ${sc(ev.score)};"><div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:1px;font-family:monospace;margin-bottom:6px;">${descriptorLabel}</div><div>${ev.text}</div></div>`).join('');
-        <div style="font-style:italic;color:#2d2d2d;font-size:13px;padding:6px 8px;background:#fff;border-radius:5px;margin-bottom:5px">"${ev.extract}"</div>
-        <p style="font-size:12px;color:#555;margin:0;line-height:1.6">${ev.observation}</p>
-      </div>`).join("");
+    const evHTML = c.evidence.map(ev => `<div style="margin-bottom:10px;padding:10px 12px;background:#fafafa;border-radius:7px;border-left:3px solid ${sc(ev.band_signal)};"><div style="font-style:italic;color:#2d2d2d;font-size:13px;padding:6px 8px;background:#fff;border-radius:5px;margin-bottom:5px">"${ev.extract}"</div><p style="font-size:12px;color:#555;margin:0;line-height:1.6">${ev.observation}</p></div>`).join("");
 
-    return `
-      <div style="margin-bottom:18px;border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;page-break-inside:avoid">
-        <div style="background:#f5f5f5;padding:11px 14px;display:flex;align-items:center;gap:10px">
-          <span style="background:${bc(c.band)}18;color:${bc(c.band)};border:1px solid ${bc(c.band)}55;border-radius:6px;padding:2px 9px;font-family:monospace;font-size:11px;font-weight:700">Band ${c.band}</span>
-          <span style="font-weight:700;font-size:13px;color:#111">${d.label}</span>
-        </div>
-        <div style="padding:13px 14px">
-          <p style="font-size:12.5px;color:#444;font-style:italic;margin:0 0 6px;line-height:1.6">${c.descriptor_matched}</p>
-          <p style="font-size:13px;color:#222;line-height:1.65;margin:0 0 12px">${c.quick_summary}</p>
-          <div style="font-size:9px;color:#999;text-transform:uppercase;letter-spacing:1px;font-family:monospace;margin-bottom:8px">Language Evidence from Candidate Response</div>
-          ${evHTML}
-        </div>
-      </div>`;
+    return `<div style="margin-bottom:18px;border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;page-break-inside:avoid"><div style="background:#f5f5f5;padding:11px 14px;display:flex;align-items:center;gap:10px"><span style="background:${bc(c.band)}18;color:${bc(c.band)};border:1px solid ${bc(c.band)}55;border-radius:6px;padding:2px 9px;font-family:monospace;font-size:11px;font-weight:700">Band ${c.band}</span><span style="font-weight:700;font-size:13px;color:#111">${d.label}</span></div><div style="padding:13px 14px"><p style="font-size:12.5px;color:#444;font-style:italic;margin:0 0 6px;line-height:1.6">${c.descriptor_matched}</p><p style="font-size:13px;color:#222;line-height:1.65;margin:0 0 12px">${c.quick_summary}</p><div style="font-size:9px;color:#999;text-transform:uppercase;letter-spacing:1px;font-family:monospace;margin-bottom:8px">Language Evidence from Candidate Response</div>${evHTML}</div></div>`;
   }).join("");
 
   const scoreBoxes = criteriaMap.map(({ key }) => {
     const c = feedback.criteria[key];
     const d = descriptors[key];
-    return `<div style="background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:8px 12px;text-align:center;min-width:70px">
-      <div style="font-family:monospace;font-size:20px;font-weight:800;color:${bc(c.band)}">${c.band}</div>
-      <div style="font-family:monospace;font-size:9px;color:#888;text-transform:uppercase;letter-spacing:0.8px">${d.label.split(" ")[0]}</div>
-    </div>`;
+    return `<div style="background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:8px 12px;text-align:center;min-width:70px"><div style="font-family:monospace;font-size:20px;font-weight:800;color:${bc(c.band)}">${c.band}</div><div style="font-family:monospace;font-size:9px;color:#888;text-transform:uppercase;letter-spacing:0.8px">${d.label.split(" ")[0]}</div></div>`;
   }).join("");
 
   const html = `<!DOCTYPE html>
@@ -778,7 +767,6 @@ function exportToPDF(feedback, meta) {
   </style>
 </head>
 <body>
-
   <div style="display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid #F0A500;padding-bottom:14px;margin-bottom:22px">
     <div>
       <div style="font-family:monospace;font-size:24px;font-weight:800;letter-spacing:-0.5px">Sound<span style="color:#F0A500">Ready</span></div>
@@ -824,11 +812,9 @@ function exportToPDF(feedback, meta) {
     <div style="font-family:monospace;font-size:9px;color:#ccc;text-transform:uppercase;letter-spacing:1px">SOUNDREADY ASCEND · Powered by Claude</div>
     <div style="font-family:monospace;font-size:9px;color:#ccc">${new Date().toLocaleString("en-GB")}</div>
   </div>
-
 </body>
 </html>`;
 
-  // Direct download — opens in browser or saves to downloads on mobile
   const blob = new Blob([html], { type: "text/html;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -844,8 +830,6 @@ function exportToPDF(feedback, meta) {
 }
 
 // ─── SHARED COMPONENTS ────────────────────────────────────────────────────────
-// ─── CUSTOM PROMPT TOGGLE ─────────────────────────────────────────────────────
-// ─── UPLOAD IMAGE BUTTON ──────────────────────────────────────────────────────
 function UploadImageButton({ onBase64Change }) {
   const fileRef = useRef(null);
 
@@ -866,11 +850,11 @@ function UploadImageButton({ onBase64Change }) {
     </div>
   );
 }
+
 function CustomPromptToggle({ useCustom, onToggle, customPrompt, onPromptChange, customCueCard, onCueCardChange, showCueCard, saving, onSave, taskType, onBase64Change, uploadedBase64 }) {
   const t = useLang();
   return (
     <div style={{ marginBottom: 13 }}>
-      {/* Toggle row */}
       <div style={{ display: "flex", alignItems: "center", gap: 0, background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 10, padding: 3, width: "fit-content", marginBottom: useCustom ? 12 : 0 }}>
         {[false, true].map((val) => (
           <button key={String(val)} onClick={() => onToggle(val)} style={{
@@ -897,7 +881,7 @@ function CustomPromptToggle({ useCustom, onToggle, customPrompt, onPromptChange,
             placeholder={showCueCard
               ? "Paste the main Part 2 question here…"
               : taskType?.includes("Task 1 Academic")
-                ? "Paste the Task 1 Academic prompt here, e.g. 'The chart shows… Summarise the information…'"
+                ? "Paste the Task 1 Academic prompt here…"
                 : taskType?.includes("Task 1 General")
                   ? "Paste the Task 1 General letter prompt here…"
                   : "Paste your Task 2 essay question here…"}
@@ -920,20 +904,13 @@ function CustomPromptToggle({ useCustom, onToggle, customPrompt, onPromptChange,
             </>
           )}
 
-          {/* Image upload — only for Task 1 Academic */}
           {taskType === "writing_task1_academic" && onBase64Change && (
             <div style={{ marginTop: 10 }}>
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>{t.taskVisual}</div>
               {uploadedBase64 ? (
                 <div style={{ position: "relative", marginBottom: 6 }}>
-                  <img
-                    src={uploadedBase64}
-                    alt="Uploaded chart"
-                    style={{ width: "100%", borderRadius: 8, maxHeight: 220, objectFit: "contain", background: "#fff", border: `1px solid ${C.border}` }}
-                  />
-                  <button
-                    onClick={() => onBase64Change(null)}
-                    style={{ position: "absolute", top: 6, right: 6, background: C.red, color: "#fff", border: "none", borderRadius: 6, padding: "3px 8px", fontFamily: "'Inter', sans-serif", fontSize: 12, cursor: "pointer" }}>
+                  <img src={uploadedBase64} alt="Uploaded chart" style={{ width: "100%", borderRadius: 8, maxHeight: 220, objectFit: "contain", background: "#fff", border: `1px solid ${C.border}` }} />
+                  <button onClick={() => onBase64Change(null)} style={{ position: "absolute", top: 6, right: 6, background: C.red, color: "#fff", border: "none", borderRadius: 6, padding: "3px 8px", fontFamily: "'Inter', sans-serif", fontSize: 12, cursor: "pointer" }}>
                     ✕ Remove
                   </button>
                 </div>
@@ -964,7 +941,7 @@ function CustomPromptToggle({ useCustom, onToggle, customPrompt, onPromptChange,
     </div>
   );
 }
-// ─── HISTORY CARD ─────────────────────────────────────────────────────────
+
 function HistoryCard({ session, onViewReport }) {
   const t = useLang();
   const [expanded, setExpanded] = useState(false);
@@ -977,7 +954,6 @@ function HistoryCard({ session, onViewReport }) {
 
   return (
     <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden", marginBottom: 10 }}>
-      {/* Header — always visible, clickable to expand */}
       <button onClick={() => setExpanded(!expanded)} style={{
         width: "100%", padding: "13px 14px", background: "transparent", border: "none",
         cursor: "pointer", textAlign: "left", display: "flex", alignItems: "center",
@@ -997,10 +973,8 @@ function HistoryCard({ session, onViewReport }) {
         <span style={{ color: C.textMuted, fontSize: 16, marginLeft: 8, flexShrink: 0 }}>{expanded ? "▲" : "▼"}</span>
       </button>
 
-      {/* Expanded content */}
       {expanded && (
         <div style={{ padding: "13px 14px", background: C.bg, borderTop: `1px solid ${C.border}` }}>
-          {/* Prompt card */}
           <div style={{ marginBottom: 12 }}>
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Prompt</div>
             <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px", fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.text, lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-word", maxHeight: 150, overflowY: "auto" }}>
@@ -1008,7 +982,6 @@ function HistoryCard({ session, onViewReport }) {
             </div>
           </div>
 
-          {/* Image (if Task 1 Academic) */}
           {session.image_url && (
             <div style={{ marginBottom: 12 }}>
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>{t.chartImage}</div>
@@ -1016,7 +989,6 @@ function HistoryCard({ session, onViewReport }) {
             </div>
           )}
 
-          {/* Response card */}
           <div style={{ marginBottom: 12 }}>
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Your Response</div>
             <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px", fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.text, lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-word", maxHeight: 150, overflowY: "auto" }}>
@@ -1024,7 +996,6 @@ function HistoryCard({ session, onViewReport }) {
             </div>
           </div>
 
-          {/* Feedback summary */}
           {session.feedback && (
             <div style={{ marginBottom: 12 }}>
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>{t.examinerComment}</div>
@@ -1034,7 +1005,6 @@ function HistoryCard({ session, onViewReport }) {
             </div>
           )}
 
-          {/* View full report button */}
           <button onClick={() => onViewReport(session)} style={{
             width: "100%", padding: "10px 0", border: "none", borderRadius: 8,
             background: C.accent, color: "#FFFFFF", fontFamily: "'Inter', sans-serif",
@@ -1045,6 +1015,7 @@ function HistoryCard({ session, onViewReport }) {
     </div>
   );
 }
+
 function Pill({ children, active, onClick, color }) {
   const col = color || C.accent;
   return (
@@ -1141,7 +1112,6 @@ function FeedbackReport({ feedback, criteriaMap, descriptors, ringColors, onExpo
   const t = useLang();
   return (
     <div>
-      {/* Score header */}
       <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 13, padding: "16px 15px", marginBottom: 14 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", flexWrap: "wrap", gap: 24 }}>
           <div>
@@ -1157,13 +1127,11 @@ function FeedbackReport({ feedback, criteriaMap, descriptors, ringColors, onExpo
         </div>
       </div>
 
-      {/* Examiner comment */}
       <div style={{ background: C.blue + "0e", border: `1px solid ${C.blue}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 12 }}>
         <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.blue, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>{t.examinerComment}</div>
         <p style={{ color: C.text, fontSize: 16, lineHeight: 1.68, margin: 0 }}>{feedback.examiner_comment}</p>
       </div>
 
-      {/* Criterion breakdown */}
       <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>{t.criterionBreakdown}</div>
       {criteriaMap.map(({ key }, i) => (
         <CriterionCard
@@ -1179,19 +1147,16 @@ function FeedbackReport({ feedback, criteriaMap, descriptors, ringColors, onExpo
         />
       ))}
 
-      {/* Next band */}
       <div style={{ background: C.accent + "0e", border: `1px solid ${C.accent}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 10 }}>
         <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>{t.toReachNextBand}</div>
-        <p style={{ color: C.text, fontSize: 16, lineHeight: 1.68, margin: 0 }}>{feedback.next_band_targets}</p>
+        <p style={{ color: C.text, fontSize: 16, lineHeight: 1.68, margin: 0, whiteSpace: "pre-line" }}>{feedback.next_band_targets}</p>
       </div>
 
-      {/* Model rewrite */}
       <div style={{ background: C.purple + "0e", border: `1px solid ${C.purple}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 16 }}>
         <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.purple, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5 }}>{t.modelRewrite}</div>
         <p style={{ color: C.text, fontSize: 16, lineHeight: 1.68, margin: 0 }}>{feedback.model_rewrite}</p>
       </div>
 
-      {/* Export */}
       <button onClick={onExport} disabled={exporting} style={{
         width: "100%", padding: "13px 0",
         background: exporting ? C.border : C.accent,
@@ -1207,9 +1172,7 @@ function FeedbackReport({ feedback, criteriaMap, descriptors, ringColors, onExpo
   );
 }
 
-// ─── WRITING PRACTICE ────────────────────────────────────────────────────────
 // ─── TASK 1 CHART COMPONENTS ─────────────────────────────────────────────────
-
 function ChartBar({ data }) {
   const { title, xKey, series, data: rows, yMax, yUnit } = data;
   return (
@@ -1251,7 +1214,7 @@ function ChartLine({ data }) {
 function ChartPie({ data }) {
   const { title, series } = data;
   const RADIAN = Math.PI / 180;
-  const renderLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, value, name }) => {
+  const renderLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, value }) => {
     const r = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + r * Math.cos(-midAngle * RADIAN);
     const y = cy + r * Math.sin(-midAngle * RADIAN);
@@ -1275,7 +1238,6 @@ function ChartPie({ data }) {
           </div>
         ))}
       </div>
-      {/* Legend */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", marginTop: 6 }}>
         {series[0].data.map(d => (
           <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 4 }}>
@@ -1313,7 +1275,6 @@ function ChartProcess({ data }) {
   );
 }
 
-// ─── TASK 1 VISUAL — chart OR real image OR student upload ───────────────────
 function Task1Visual({ topic, taskType, onBase64Change }) {
   const [uploadedImage, setUploadedImage] = useState(null);
   const fileRef = useRef(null);
@@ -1335,63 +1296,41 @@ function Task1Visual({ topic, taskType, onBase64Change }) {
     onBase64Change && onBase64Change(null);
   }
 
-  // Priority: student upload > real image URL > generated chart
   const showUploaded = !!uploadedImage;
   const showRealImage = !showUploaded && !!topic.imageUrl;
   const showChart = !showUploaded && !showRealImage;
 
   return (
     <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 14px 12px", marginBottom: 12 }}>
-      {/* Header row */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.accent, textTransform: "uppercase", letterSpacing: 1 }}>
           {showUploaded ? "Your Uploaded Chart" : showRealImage ? "Task Visual" : `Generated ${topic.label}`}
         </div>
-      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
           {showUploaded && (
             <button onClick={clearUpload} style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.red, background: "transparent", border: `1px solid ${C.red}44`, borderRadius: 6, padding: "3px 8px", cursor: "pointer" }}>✕ Remove</button>
           )}
         </div>
       </div>
 
-      {/* Visual */}
-      {showUploaded && (
-        <img src={uploadedImage} alt="Uploaded Task 1" style={{ width: "100%", borderRadius: 8, maxHeight: 280, objectFit: "contain", background: "#fff" }} />
-      )}
-      {showRealImage && (
-        <img src={topic.imageUrl} alt={topic.label} style={{ width: "100%", borderRadius: 8, maxHeight: 280, objectFit: "contain", background: "#fff" }} />
-      )}
+      {showUploaded && <img src={uploadedImage} alt="Uploaded Task 1" style={{ width: "100%", borderRadius: 8, maxHeight: 280, objectFit: "contain", background: "#fff" }} />}
+      {showRealImage && <img src={topic.imageUrl} alt={topic.label} style={{ width: "100%", borderRadius: 8, maxHeight: 280, objectFit: "contain", background: "#fff" }} />}
       {showChart && topic.chartType === "bar" && <ChartBar data={topic.chartData} />}
       {showChart && topic.chartType === "line" && <ChartLine data={topic.chartData} />}
       {showChart && topic.chartType === "pie" && <ChartPie data={topic.chartData} />}
       {showChart && topic.chartType === "process" && <ChartProcess data={topic.chartData} />}
-
-      {/* Slot hint for real images */}
-      {showChart && (
-        <div style={{ marginTop: 10, padding: "6px 10px", background: C.surface, borderRadius: 7, display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 11 }}></span>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, lineHeight: 1.5 }}>
-            Replace with a real past-paper image by setting <code style={{ color: C.accent }}>imageUrl</code> in the topic bank, or upload one above.
-          </span>
-        </div>
-      )}
     </div>
   );
 }
 
 // ─── JSON REPAIR ─────────────────────────────────────────────────────────────
-// Handles unescaped apostrophes and special chars in AI-generated JSON
 function safeParseJSON(raw) {
   const start = raw.indexOf("{");
   const end = raw.lastIndexOf("}");
   if (start === -1 || end === -1) throw new Error("No JSON object found in response");
   let str = raw.slice(start, end + 1);
-  // Replace smart quotes
   str = str.replace(/[\u2018\u2019]/g, "\\'").replace(/[\u201C\u201D]/g, '\\"');
-  // Try direct parse first
   try { return JSON.parse(str); } catch {}
-  // Fix unescaped apostrophes inside JSON string values
-  // Strategy: parse character by character tracking whether we're inside a string
   let result = "";
   let inString = false;
   let escaped = false;
@@ -1408,6 +1347,7 @@ function safeParseJSON(raw) {
   return JSON.parse(result);
 }
 
+// ─── WRITING PRACTICE ────────────────────────────────────────────────────────
 function WritingPractice({ supabase, userId }) {
   const t = useLang();
   const [taskType, setTaskType] = useState("Task 2 Academic");
@@ -1422,7 +1362,6 @@ function WritingPractice({ supabase, userId }) {
   const wordCount = essay.trim() ? essay.trim().split(/\s+/).length : 0;
   const minWords = taskType === "Task 1 Academic" || taskType === "Task 1 General" ? 150 : 250;
 
-  // Custom prompt
   const taskKey = taskType === "Task 2 Academic" ? "writing_task2_academic"
     : taskType === "Task 2 General" ? "writing_task2_general"
     : taskType === "Task 1 Academic" ? "writing_task1_academic"
@@ -1433,8 +1372,8 @@ function WritingPractice({ supabase, userId }) {
   const criteriaMap = [{ key: "task" }, { key: "coherence" }, { key: "lexis" }, { key: "grammar" }];
   const ringColors = [C.blue, C.teal, C.green, C.accent];
 
- function handleTaskChange(t) {
-    setTaskType(t); setTopic(WRITING_TOPICS[t][0]);
+  function handleTaskChange(newType) {
+    setTaskType(newType); setTopic(WRITING_TOPICS[newType][0]);
     setEssay(""); setFeedback(null); setView("write");
     cp.setUseCustom(false);
   }
@@ -1443,9 +1382,8 @@ function WritingPractice({ supabase, userId }) {
     if (wordCount < 50) return;
     setLastEssay(essay);
     setLoading(true); setFeedback(null);
+    let data;
     try {
-      // Build message content — include image if student uploaded one
-    const textContent = { type: "text", content: buildWritingPrompt(taskType, activePrompt, essay) };
       const userContent = uploadedBase64
         ? [
             { type: "image", source: { type: "base64", media_type: uploadedBase64.startsWith("data:image/png") ? "image/png" : "image/jpeg", data: uploadedBase64.split(",")[1] } },
@@ -1456,18 +1394,12 @@ function WritingPractice({ supabase, userId }) {
       const res = await fetch(`${PROXY}/analyse`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-user-id": userId },
-        body: JSON.stringify({
-          messages: [{ role: "user", content: userContent }]
-        })
+        body: JSON.stringify({ messages: [{ role: "user", content: userContent }] })
       });
-      const data = await res.json();
+      data = await res.json();
       if (data.error) throw new Error(`API error: ${data.error.type} — ${data.error.message}`);
       const raw = data.content.find(b => b.type === "text")?.text || "{}";
-      // Log raw for debugging
-      const preview = raw.slice(6900, 7050);
-      console.log("RAW AROUND ERROR:", preview);
       const flat = safeParseJSON(raw);
-      // Convert flat structure to nested structure UI expects
       const nested = {
         overall_band: flat.overall_band,
         cefr: flat.cefr,
@@ -1493,10 +1425,9 @@ function WritingPractice({ supabase, userId }) {
           ]},
         }
       };
-     setFeedback(nested);
+      setFeedback(nested);
       setView("feedback");
 
-      // Save session to Supabase
       saveSession(supabase, userId, {
         taskType,
         topicLabel: cp.useCustom ? "Custom Prompt" : topic.label,
@@ -1506,18 +1437,15 @@ function WritingPractice({ supabase, userId }) {
         feedback: nested,
         overallBand: nested.overall_band,
       });
-    } catch (err) { 
-      const pos = err.message.match(/position (\d+)/)?.[1];
-      const snippet = pos ? `…${(data?.content?.[0]?.text || "").slice(Math.max(0, parseInt(pos)-30), parseInt(pos)+30)}…` : "";
-      setFeedback({ error: true, message: `${err?.message}${snippet ? " | Near: " + snippet : ""}` }); 
-      setView("write"); 
+    } catch (err) {
+      setFeedback({ error: true, message: err?.message || String(err) });
+      setView("write");
     }
     setLoading(false);
   }
 
   return (
     <div>
-      {/* View toggle after feedback */}
       {feedback && !feedback.error && (
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
           <Pill active={view === "write"} onClick={() => setView("write")} color={C.accent}>{t.myResponse}</Pill>
@@ -1529,15 +1457,15 @@ function WritingPractice({ supabase, userId }) {
         <>
           <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>{t.taskType}</div>
           <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
-            {["Task 2 Academic", "Task 2 General", "Task 1 Academic", "Task 1 General"].map(t => (
-              <Pill key={t} active={taskType === t} onClick={() => handleTaskChange(t)}>{t}</Pill>
+            {["Task 2 Academic", "Task 2 General", "Task 1 Academic", "Task 1 General"].map(tt => (
+              <Pill key={tt} active={taskType === tt} onClick={() => handleTaskChange(tt)}>{tt}</Pill>
             ))}
           </div>
 
           <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>{t.topic}</div>
           <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
-            {WRITING_TOPICS[taskType].map(t => (
-              <Pill key={t.id} active={topic.id === t.id} onClick={() => { setTopic(t); setEssay(""); setFeedback(null); setView("write"); setUploadedBase64(null); }}>{t.label}</Pill>
+            {WRITING_TOPICS[taskType].map(tt => (
+              <Pill key={tt.id} active={topic.id === tt.id} onClick={() => { setTopic(tt); setEssay(""); setFeedback(null); setView("write"); setUploadedBase64(null); }}>{tt.label}</Pill>
             ))}
           </div>
 
@@ -1587,7 +1515,7 @@ function WritingPractice({ supabase, userId }) {
 
           {loading && (
             <div style={{ textAlign: "center", padding: "28px 0", color: C.textMuted, fontFamily: "'Inter', sans-serif", fontSize: 12 }}>
-              <div style={{ fontSize: 20, marginBottom: 8 }}></div>
+              <div style={{ fontSize: 20, marginBottom: 8 }}>⏳</div>
               {t.extractingLanguage}
             </div>
           )}
@@ -1626,8 +1554,7 @@ function WritingPractice({ supabase, userId }) {
   );
 }
 
-// ─── SPEAKING PRACTICE ───────────────────────────────────────────────────────
-// ─── WAVEFORM VISUALISER ─────────────────────────────────────────────────────
+// ─── WAVEFORM ────────────────────────────────────────────────────────────────
 function Waveform({ active, color }) {
   const bars = 28;
   return (
@@ -1694,12 +1621,9 @@ function AudioPlayer({ audioUrl, color }) {
   );
 }
 
-// ─── RECORDER STATES ─────────────────────────────────────────────────────────
-// idle → recording → recorded → transcribing → review → (submit to Claude)
-
+// ─── VOICE RECORDER ──────────────────────────────────────────────────────────
 function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
   const t = useLang();
-  // recorderState: "idle" | "recording" | "recorded" | "transcribing" | "review" | "error"
   const [recorderState, setRecorderState] = useState("idle");
   const [timer, setTimer] = useState(0);
   const [audioUrl, setAudioUrl] = useState(null);
@@ -1711,7 +1635,6 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
   const audioBlobRef = useRef(null);
   const fmt = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
-  // ── Real Whisper transcription via Railway proxy ───────────────────────────
   async function transcribeAudio(blob) {
     if (!blob || blob.size < 100) {
       setErrorMsg("Recording is empty — please try again.");
@@ -1720,14 +1643,13 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
     }
     setRecorderState("transcribing");
     try {
-      // Use correct extension based on actual blob type
-      const ext = blob.type.includes("mp4") ? "m4a" 
-                : blob.type.includes("ogg") ? "ogg" 
+      const ext = blob.type.includes("mp4") ? "m4a"
+                : blob.type.includes("ogg") ? "ogg"
                 : blob.type.includes("webm") ? "webm"
                 : "webm";
       const formData = new FormData();
       formData.append("audio", new File([blob], `recording.${ext}`, { type: blob.type || "audio/webm" }));
-     const res = await fetch(`${PROXY}/transcribe`, {
+      const res = await fetch(`${PROXY}/transcribe`, {
         method: "POST",
         headers: { "x-user-id": userId },
         body: formData,
@@ -1746,44 +1668,33 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
     }
   }
 
-  // ── Start recording ────────────────────────────────────────────────────────
   async function startRecording() {
     setErrorMsg("");
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: { 
-          echoCancellation: true,
-          noiseSuppression: true,
-          sampleRate: 16000 
-        } 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 16000 }
       });
       chunksRef.current = [];
-      
-      // Detect best supported format — iOS uses mp4, Chrome uses webm
       let mimeType = "";
       const formats = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg"];
       for (const fmt of formats) {
         if (MediaRecorder.isTypeSupported(fmt)) { mimeType = fmt; break; }
       }
-      
       const mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
       mediaRecorderRef.current = mediaRecorder;
-      
       mediaRecorder.ondataavailable = e => {
         if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
       };
-      
       mediaRecorder.onstop = () => {
         const type = mimeType || "audio/webm";
         const blob = new Blob(chunksRef.current, { type });
         audioBlobRef.current = blob;
         const url = URL.createObjectURL(blob);
         setAudioUrl(url);
-        stream.getTracks().forEach(t => t.stop());
+        stream.getTracks().forEach(track => track.stop());
         setRecorderState("recorded");
       };
-      
-      mediaRecorder.start(500); // collect every 500ms for stability
+      mediaRecorder.start(500);
       setTimer(0); setAudioUrl(null); setTranscript("");
       setRecorderState("recording");
       timerRef.current = setInterval(() => setTimer(t => t + 1), 1000);
@@ -1799,12 +1710,10 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
     }
   }
 
-  // ── Stop recording ─────────────────────────────────────────────────────────
   function stopRecording() {
     clearInterval(timerRef.current);
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
       mediaRecorderRef.current.stop();
-      // State will be set to "recorded" in onstop callback once blob is ready
     }
   }
 
@@ -1826,47 +1735,29 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
 
   return (
     <div>
-      {/* ── IDLE / RECORDING / RECORDED ── */}
       {(recorderState === "idle" || isRecording || isRecorded) && (
         <div style={{ background: C.surfaceAlt, border: `1.5px solid ${isRecording ? partColor + "66" : C.border}`, borderRadius: 14, padding: "20px 16px", marginBottom: 12, transition: "border-color 0.3s" }}>
-
-          {/* Status label */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              {isRecording && (
-                <span style={{ width: 8, height: 8, borderRadius: "50%", background: C.red, display: "inline-block", animation: "pulse 1s infinite" }} />
-              )}
+              {isRecording && <span style={{ width: 8, height: 8, borderRadius: "50%", background: C.red, display: "inline-block", animation: "pulse 1s infinite" }} />}
               <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: isRecording ? C.red : isRecorded ? C.green : C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>
                 {isRecording ? t.recording : isRecorded ? t.recordingComplete : t.readyToRecord}
               </span>
             </div>
-            {isRecording && (
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 18, fontWeight: 700, color: C.red }}>{fmt(timer)}</span>
-            )}
-            {isRecorded && (
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted }}>{fmt(timer)} recorded</span>
-            )}
+            {isRecording && <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 18, fontWeight: 700, color: C.red }}>{fmt(timer)}</span>}
+            {isRecorded && <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted }}>{fmt(timer)} recorded</span>}
           </div>
 
-          {/* Waveform */}
           <div style={{ marginBottom: 18 }}>
             <Waveform active={isRecording} color={isRecording ? C.red : isRecorded ? C.green : C.textDim} />
           </div>
 
-          {/* Playback (placeholder until real audio available) */}
           {isRecorded && audioUrl && (
             <div style={{ marginBottom: 14 }}>
               <AudioPlayer audioUrl={audioUrl} color={partColor} />
             </div>
           )}
 
-          {isRecorded && !audioUrl && (
-            <div style={{ background: C.surface, border: `1px dashed ${C.border}`, borderRadius: 9, padding: "10px 14px", marginBottom: 14, textAlign: "center" }}>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim }}>Audio playback available once backend is connected</span>
-            </div>
-          )}
-
-          {/* Controls */}
           <div style={{ display: "flex", gap: 8 }}>
             {!isRecorded && (
               <button onClick={isRecording ? stopRecording : startRecording} style={{
@@ -1874,7 +1765,6 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
                 background: isRecording ? C.red : partColor,
                 color: "#FFFFFF", fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700,
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                transition: "background 0.2s",
               }}>
                 {isRecording
                   ? <><span style={{ width: 10, height: 10, borderRadius: 2, background: "#FFFFFF", display: "inline-block" }} /> {t.stopRecording}</>
@@ -1901,23 +1791,14 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
         </div>
       )}
 
-      {/* ── TRANSCRIBING ── */}
       {isTranscribing && (
         <div style={{ background: C.surfaceAlt, border: `1.5px solid ${partColor}44`, borderRadius: 14, padding: "32px 16px", marginBottom: 12, textAlign: "center" }}>
-          <div style={{ marginBottom: 16 }}>
-            <Waveform active={true} color={partColor} />
-          </div>
+          <div style={{ marginBottom: 16 }}><Waveform active={true} color={partColor} /></div>
           <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: partColor, marginBottom: 6 }}>{t.transcribing}</div>
           <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textDim }}>{t.whisperProcessing}</div>
-          <div style={{ display: "flex", justifyContent: "center", gap: 5, marginTop: 14 }}>
-            {[0, 1, 2].map(i => (
-              <div key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: partColor, opacity: 0.7, animation: `pulse 1s infinite`, animationDelay: `${i * 0.3}s` }} />
-            ))}
-          </div>
         </div>
       )}
 
-      {/* ── ERROR STATE ── */}
       {isError && (
         <div style={{ background: C.red + "0e", border: `1px solid ${C.red}33`, borderRadius: 12, padding: "16px", marginBottom: 12 }}>
           <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.red, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>{t.recordingError}</div>
@@ -1929,7 +1810,6 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
         </div>
       )}
 
-      {/* ── REVIEW TRANSCRIPT ── */}
       {isReview && (
         <div style={{ marginBottom: 12 }}>
           <div style={{ background: C.green + "0e", border: `1px solid ${C.green}33`, borderRadius: 10, padding: "10px 14px", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
@@ -1942,13 +1822,12 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
 
           <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>{t.yourTranscript}</div>
           <textarea value={transcript} onChange={e => setTranscript(e.target.value)}
-            placeholder="Your transcribed speech will appear here. You can edit it to correct any errors before submitting for analysis…"
             style={{ width: "100%", minHeight: 150, background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 11, padding: "13px 14px", color: C.text, fontSize: 16, lineHeight: 1.72, fontFamily: "'Inter', sans-serif", resize: "vertical", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
             onFocus={e => e.target.style.borderColor = partColor}
             onBlur={e => e.target.style.borderColor = C.border}
           />
           <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? C.green : C.textMuted, marginTop: 6 }}>
-            {transcript.trim() ? transcript.trim().split(/\s+/).filter(Boolean).length : 0} words — minimum 20 to analyse {transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? "✓" : ""}
+            {transcript.trim() ? transcript.trim().split(/\s+/).filter(Boolean).length : 0} words — minimum 20 to save {transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? "✓" : ""}
           </div>
 
           <div style={{ display: "flex", gap: 8, marginTop: 9 }}>
@@ -1965,12 +1844,11 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
                 color: transcript.trim() && transcript.trim().split(/\s+/).length >= 20 ? "#FFFFFF" : C.textDim,
                 fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700,
                 cursor: transcript.trim() ? "pointer" : "not-allowed",
-              }}>{t.submitAnalyse}</button>
+              }}>Save Part →</button>
           </div>
         </div>
       )}
 
-      {/* ── MANUAL INPUT FALLBACK ── */}
       {recorderState === "idle" && (
         <div style={{ marginTop: 8 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
@@ -1997,7 +1875,7 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
                   color: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? "#FFFFFF" : C.textDim,
                   fontFamily: "'Inter', sans-serif", fontSize: 16, fontWeight: 700,
                   cursor: transcript.trim().split(/\s+/).filter(Boolean).length >= 20 ? "pointer" : "not-allowed",
-                }}>{t.submitAnalyse}</button>
+                }}>Save Part →</button>
             </div>
           )}
         </div>
@@ -2006,89 +1884,14 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
   );
 }
 
-// ─── PRONUNCIATION REPORT ────────────────────────────────────────────────────
-function ScoreBar({ label, score, color }) {
-  return (
-    <div style={{ marginBottom: 12 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.text, fontWeight: 500 }}>{label}</span>
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 700, color }}>{score}/100</span>
-      </div>
-      <div style={{ height: 8, background: C.surfaceAlt, borderRadius: 99, overflow: "hidden" }}>
-        <div style={{ height: "100%", width: `${score}%`, background: color, borderRadius: 99, transition: "width 1s ease" }} />
-      </div>
-    </div>
-  );
-}
-
-function PronunciationReport({ pronunciation: p, partColor }) {
-  if (!p) return null;
-  const overallColor = p.overall_score >= 75 ? C.green : p.overall_score >= 55 ? C.accent : C.red;
-
-  return (
-    <div>
-      <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 13, padding: "16px 15px", marginBottom: 14 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", flexWrap: "wrap", gap: 24 }}>
-          <div>
-            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Pronunciation Score</div>
-            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 40, fontWeight: 700, color: overallColor, lineHeight: 1 }}>{p.overall_score}</div>
-            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, marginTop: 3 }}>Band {p.pronunciation_band} · /100</div>
-          </div>
-          <div style={{ flex: 1, minWidth: 200 }}>
-            <ScoreBar label="Fluency" score={p.fluency_score} color={C.blue} />
-            <ScoreBar label="Word Stress" score={p.stress_score} color={C.accent} />
-            <ScoreBar label="Intonation" score={p.intonation_score} color={C.purple} />
-          </div>
-        </div>
-      </div>
-      <div style={{ background: C.blue + "0e", border: `1px solid ${C.blue}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 12 }}>
-        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.blue, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Assessment</div>
-        <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.summary}</p>
-      </div>
-      <div style={{ background: C.green + "0e", border: `1px solid ${C.green}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 12 }}>
-        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Strength</div>
-        <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.strengths}</p>
-      </div>
-      {p.problem_words && p.problem_words.length > 0 && (
-        <div style={{ marginBottom: 12 }}>
-          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, fontWeight: 600 }}>Words to Practise</div>
-          {p.problem_words.map((w, i) => (
-            <div key={i} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 14px", marginBottom: 8 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
-                <span style={{ background: C.red + "15", color: C.red, border: `1px solid ${C.red}33`, borderRadius: 6, padding: "2px 10px", fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 700 }}>{w.word}</span>
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textMuted }}>{w.issue}</span>
-              </div>
-              <p style={{ color: C.blue, fontSize: 13, lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>Tip: {w.tip}</p>
-            </div>
-          ))}
-        </div>
-      )}
-      <div style={{ background: C.accent + "0e", border: `1px solid ${C.accent}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 10 }}>
-        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.accent, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Fluency & Rhythm</div>
-        <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.fluency_comment}</p>
-      </div>
-      <div style={{ background: C.purple + "0e", border: `1px solid ${C.purple}28`, borderRadius: 10, padding: "12px 14px", marginBottom: 10 }}>
-        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.purple, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Intonation</div>
-        <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.intonation_comment}</p>
-      </div>
-      <div style={{ background: C.green + "0e", border: `1px solid ${C.green}28`, borderRadius: 10, padding: "12px 14px" }}>
-        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, textTransform: "uppercase", letterSpacing: 1, marginBottom: 5, fontWeight: 600 }}>Practice Plan</div>
-        <p style={{ color: C.text, fontSize: 14, lineHeight: 1.68, margin: 0 }}>{p.next_steps}</p>
-      </div>
-    </div>
-  );
-}
-
-// ─── SPEAKING PRACTICE ───────────────────────────────────────────────────────
-// ─── PORTFOLIO / MY HISTORY ───────────────────────────────────────────────
+// ─── PORTFOLIO / MY HISTORY ──────────────────────────────────────────────────
 function Portfolio({ supabase, userId }) {
   const t = useLang();
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedSession, setSelectedSession] = useState(null);
 
-  // Load sessions on mount
-useEffect(() => {
+  useEffect(() => {
     setLoading(true);
     loadSessions(supabase, userId).then(setSessions).finally(() => setLoading(false));
   }, [userId]);
@@ -2112,7 +1915,6 @@ useEffect(() => {
     );
   }
 
-  // If viewing a report
   if (selectedSession && selectedSession.feedback) {
     const isWriting = !!selectedSession.feedback.criteria?.task;
     const descriptors = isWriting ? WRITING_DESCRIPTORS : SPEAKING_DESCRIPTORS;
@@ -2145,7 +1947,6 @@ useEffect(() => {
     );
   }
 
-  // History list view
   return (
     <div>
       <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 12 }}>
@@ -2157,63 +1958,118 @@ useEffect(() => {
     </div>
   );
 }
+
+// ─── SPEAKING PRACTICE (NEW HOLISTIC 3-PART FLOW) ────────────────────────────
 function SpeakingPractice({ supabase, userId }) {
   const t = useLang();
-  const [part, setPart] = useState(1);
-  const [topic, setTopic] = useState(SPEAKING_TOPICS[1][0]);
+
+  // Topics per part
+  const [topics, setTopics] = useState({
+    1: SPEAKING_TOPICS[1][0],
+    2: SPEAKING_TOPICS[2][0],
+    3: SPEAKING_TOPICS[3][0],
+  });
+
+  // Saved transcripts per part
+  const [partTranscripts, setPartTranscripts] = useState({ 1: null, 2: null, 3: null });
+  const [partQuestions, setPartQuestions] = useState({ 1: null, 2: null, 3: null });
+
+  // Which part the student is currently on
+  const [currentPart, setCurrentPart] = useState(1);
+
+  // Supabase session row id
+  const [sessionRowId, setSessionRowId] = useState(null);
+
+  // Confirmation flash
+  const [justSaved, setJustSaved] = useState(false);
+
+  // Final scoring state
   const [loading, setLoading] = useState(false);
-  const [loadingStage, setLoadingStage] = useState("");
   const [feedback, setFeedback] = useState(null);
-  const [pronunciation, setPronunciation] = useState(null);
   const [view, setView] = useState("speak");
   const [exporting, setExporting] = useState(false);
-  const [lastTranscript, setLastTranscript] = useState("");
-
-  // Custom prompt
-  const partKey = part === 1 ? "speaking_part1" : part === 2 ? "speaking_part2" : "speaking_part3";
-  const cp = useCustomPrompt(supabase, partKey, userId);
-  const activePrompt = cp.useCustom && cp.customPrompt.trim()
-    ? (part === 2 && cp.customCueCard.trim()
-        ? `${cp.customPrompt.trim()}\n\n${cp.customCueCard.trim()}`
-        : cp.customPrompt.trim())
-    : topic.prompt;
 
   const partColors = { 1: C.blue, 2: C.green, 3: C.purple };
   const partLabels = { 1: t.partIntro, 2: t.partLongTurn, 3: t.partDiscussion };
-  const partHints = {
-    1: t.partHint1,
-    2: t.partHint2,
-    3: t.partHint3,
-  };
+  const partHints = { 1: t.partHint1, 2: t.partHint2, 3: t.partHint3 };
   const criteriaMap = [{ key: "fluency" }, { key: "lexis" }, { key: "grammar" }, { key: "pronunciation" }];
   const ringColors = [C.blue, C.green, C.accent, C.purple];
 
-function handlePartChange(p) {
-    setPart(p); setTopic(SPEAKING_TOPICS[p][0]);
-    setFeedback(null); setPronunciation(null); setView("speak");
-    cp.setUseCustom(false);
+  const allPartsSaved = partTranscripts[1] && partTranscripts[2] && partTranscripts[3];
+  const activeTopic = topics[currentPart];
+  const activePrompt = activeTopic.prompt;
+
+  // Save transcript for current part to Supabase
+  async function savePartTranscript(transcript) {
+    const updatedTranscripts = { ...partTranscripts, [currentPart]: transcript };
+    const updatedQuestions = { ...partQuestions, [currentPart]: activePrompt };
+    setPartTranscripts(updatedTranscripts);
+    setPartQuestions(updatedQuestions);
+
+    if (supabase && userId) {
+      try {
+        if (!sessionRowId) {
+          const insertData = {
+            user_id: userId,
+            status: "in_progress",
+            [`part${currentPart}_question`]: activePrompt,
+            [`part${currentPart}_transcript`]: transcript,
+          };
+          const { data, error } = await supabase
+            .from("speaking_sessions")
+            .insert(insertData)
+            .select()
+            .single();
+          if (!error && data) setSessionRowId(data.id);
+        } else {
+          await supabase
+            .from("speaking_sessions")
+            .update({
+              [`part${currentPart}_question`]: activePrompt,
+              [`part${currentPart}_transcript`]: transcript,
+            })
+            .eq("id", sessionRowId);
+        }
+      } catch (err) {
+        console.error("Failed to save part transcript:", err);
+      }
+    }
+
+    // Show confirmation
+    setJustSaved(true);
+    setTimeout(() => setJustSaved(false), 2500);
+
+    // Auto-advance to next part if not yet at part 3
+    if (currentPart < 3) {
+      setTimeout(() => setCurrentPart(currentPart + 1), 1200);
+    }
   }
 
-  async function analyze(transcript) {
-    setLastTranscript(transcript);
-    setLoading(true); setFeedback(null); setPronunciation(null);
-    setLoadingStage("Analysing your response…");
+  // Submit all 3 parts to holistic backend endpoint
+  async function getHolisticResults() {
+    if (!allPartsSaved) {
+      alert(t.completeAllParts);
+      return;
+    }
+    setLoading(true);
+    setFeedback(null);
     setView("loading");
+
     try {
-      // Fire parallel IELTS + pronunciation calls
-      const res = await fetch(`${PROXY}/analyse-speaking`, {
+      const combinedPrompt = buildHolisticSpeakingPrompt(
+        partQuestions[1], partTranscripts[1],
+        partQuestions[2], partTranscripts[2],
+        partQuestions[3], partTranscripts[3]
+      );
+
+      const res = await fetch(`${PROXY}/analyse-speaking-holistic`, {
         method: "POST",
-      headers: { "Content-Type": "application/json", "x-user-id": userId },
+        headers: { "Content-Type": "application/json", "x-user-id": userId },
         body: JSON.stringify({
-          ieltsMessages: [{ role: "user", content: buildSpeakingPrompt(part, activePrompt, transcript) }],
-          part,
-          question: activePrompt,
-          transcript,
-        })
+          ieltsMessages: [{ role: "user", content: combinedPrompt }],
+        }),
       });
       const data = await res.json();
-
-      // Parse IELTS feedback
       const ieltsRaw = data.ielts?.content?.find(b => b.type === "text")?.text || "{}";
       const flat = safeParseJSON(ieltsRaw);
       const nested = {
@@ -2242,93 +2098,155 @@ function handlePartChange(p) {
         }
       };
       setFeedback(nested);
-
-      // Parse pronunciation feedback
-      const pronRaw = data.pronunciation?.content?.find(b => b.type === "text")?.text || "{}";
-      setPronunciation(safeParseJSON(pronRaw));
       setView("feedback");
 
-      // Save session to Supabase
+      // Mark session complete in Supabase
+      if (supabase && userId && sessionRowId) {
+        await supabase.from("speaking_sessions")
+          .update({ status: "complete", feedback: nested })
+          .eq("id", sessionRowId);
+      }
+
+      // Save to general sessions table for history
+      const combinedResponse = `PART 1: ${partTranscripts[1]}\n\nPART 2: ${partTranscripts[2]}\n\nPART 3: ${partTranscripts[3]}`;
+      const combinedPromptDisplay = `PART 1: ${partQuestions[1]}\n\nPART 2: ${partQuestions[2]}\n\nPART 3: ${partQuestions[3]}`;
       saveSession(supabase, userId, {
-        taskType: `Speaking Part ${part}`,
-        topicLabel: cp.useCustom ? "Custom Prompt" : topic.label,
-        prompt: activePrompt,
-        response: transcript,
+        taskType: "Speaking (Holistic)",
+        topicLabel: `${topics[1].label} · ${topics[2].label} · ${topics[3].label}`,
+        prompt: combinedPromptDisplay,
+        response: combinedResponse,
         imageBase64: null,
         feedback: nested,
         overallBand: nested.overall_band,
       });
-    } catch (err) { setFeedback({ error: true, message: err?.message || String(err) }); setView("speak"); }
-    setLoading(false); setLoadingStage("");
+    } catch (err) {
+      setFeedback({ error: true, message: err?.message || String(err) });
+      setView("speak");
+    }
+    setLoading(false);
+  }
+
+  function startNewSession() {
+    setPartTranscripts({ 1: null, 2: null, 3: null });
+    setPartQuestions({ 1: null, 2: null, 3: null });
+    setSessionRowId(null);
+    setCurrentPart(1);
+    setFeedback(null);
+    setView("speak");
   }
 
   return (
     <div>
-      {/* View tabs — only show after feedback */}
       {feedback && !feedback.error && (
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
-          <Pill active={view === "speak"} onClick={() => setView("speak")} color={partColors[part]}>{t.myResponse}</Pill>
           <Pill active={view === "feedback"} onClick={() => setView("feedback")} color={C.purple}>{t.ieltsFeedback}</Pill>
-          <Pill active={view === "pronunciation"} onClick={() => setView("pronunciation")} color={C.accent}>{t.pronunciation}</Pill>
+          <button onClick={startNewSession} style={{
+            padding: "6px 13px", borderRadius: 999, border: `1.5px solid ${C.border}`,
+            background: "transparent", color: C.textMuted,
+            fontFamily: "'Inter', sans-serif", fontSize: 14, cursor: "pointer",
+          }}>Start New Session</button>
         </div>
       )}
 
-      {(view === "speak") && (
+      {view === "speak" && (
         <>
-          {/* Part selector */}
-          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>{t.part}</div>
-          <div style={{ display: "flex", gap: 6, marginBottom: 13 }}>
+          {/* Progress indicator */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
             {[1, 2, 3].map(p => (
-              <Pill key={p} active={part === p} onClick={() => handlePartChange(p)} color={partColors[p]}>Part {p}</Pill>
-            ))}
-          </div>
-
-          {/* Topic selector */}
-          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>{t.topic}</div>
-          <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
-            {SPEAKING_TOPICS[part].map(t => (
-              <Pill key={t.id} active={topic.id === t.id} onClick={() => { setTopic(t); setFeedback(null); }} color={partColors[part]}>{t.label}</Pill>
-            ))}
-          </div>
-
-         {/* Custom prompt toggle */}
-          <CustomPromptToggle
-            useCustom={cp.useCustom}
-            onToggle={cp.setUseCustom}
-            customPrompt={cp.customPrompt}
-            onPromptChange={cp.setCustomPrompt}
-            customCueCard={cp.customCueCard}
-            onCueCardChange={cp.setCustomCueCard}
-            showCueCard={part === 2}
-            saving={cp.saving}
-            onSave={cp.savePrompt}
-            taskType={`speaking_part${part}`}
-          />
-
-         {/* Prompt card — only show when using preset topic */}
-          {!cp.useCustom && (
-            <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 6 }}>
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: partColors[part], textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
-                Part {part} — {partLabels[part]}
+              <div key={p} style={{
+                flex: 1,
+                padding: "10px 8px",
+                borderRadius: 10,
+                border: `2px solid ${partTranscripts[p] ? C.green : currentPart === p ? partColors[p] : C.border}`,
+                background: partTranscripts[p] ? C.green + "0e" : currentPart === p ? partColors[p] + "0e" : "transparent",
+                textAlign: "center",
+                cursor: partTranscripts[p] || currentPart === p ? "pointer" : "default",
+                transition: "all 0.2s",
+              }}
+                onClick={() => { if (partTranscripts[p]) setCurrentPart(p); }}
+              >
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 700, color: partTranscripts[p] ? C.green : currentPart === p ? partColors[p] : C.textDim, marginBottom: 2 }}>
+                  Part {p} {partTranscripts[p] && "✓"}
+                </div>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted }}>
+                  {partTranscripts[p] ? "Saved" : currentPart === p ? "Current" : "Pending"}
+                </div>
               </div>
-              <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{topic.prompt}</p>
+            ))}
+          </div>
+
+          {/* Just-saved confirmation */}
+          {justSaved && (
+            <div style={{ background: C.green + "15", border: `1px solid ${C.green}`, borderRadius: 10, padding: "10px 14px", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 16 }}>✅</span>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.green, fontWeight: 600 }}>
+                Part {currentPart < 3 ? currentPart : 3} {t.partSaved}
+                {currentPart < 3 && ` — moving to Part ${currentPart + 1}`}
+              </span>
             </div>
           )}
 
-          {/* Examiner tip */}
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 7, padding: "8px 12px", marginBottom: 14 }}>
-            <span style={{ fontSize: 16, marginTop: 1 }}></span>
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, lineHeight: 1.6 }}>{partHints[part]}</span>
-          </div>
+          {/* Get Results button — appears only when all parts saved */}
+          {allPartsSaved && (
+            <button onClick={getHolisticResults} style={{
+              width: "100%", padding: "14px 0",
+              background: C.accent, color: "#FFFFFF",
+              border: "none", borderRadius: 11,
+              fontFamily: "'Inter', sans-serif", fontSize: 16, fontWeight: 700,
+              cursor: "pointer", marginBottom: 16,
+              boxShadow: `0 4px 14px ${C.accent}44`,
+            }}>{t.getMyResults}</button>
+          )}
 
-          {/* Voice Recorder */}
-          <VoiceRecorder partColor={partColors[part]} onTranscriptReady={analyze} userId={userId} />
+          {/* Current part section */}
+          {!allPartsSaved && (
+            <>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>{t.topic}</div>
+              <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
+                {SPEAKING_TOPICS[currentPart].map(tp => (
+                  <Pill key={tp.id} active={activeTopic.id === tp.id}
+                    onClick={() => setTopics({ ...topics, [currentPart]: tp })}
+                    color={partColors[currentPart]}>{tp.label}</Pill>
+                ))}
+              </div>
 
-          {/* Show last transcript for comparison when feedback exists */}
-          {lastTranscript && feedback && !feedback.error && (
-            <div style={{ marginTop: 14, background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px" }}>
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>{t.yourSubmittedResponse}</div>
-              <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, fontFamily: "'Inter', sans-serif" }}>{lastTranscript}</p>
+              <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 6 }}>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: partColors[currentPart], textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
+                  Part {currentPart} — {partLabels[currentPart]}
+                </div>
+                <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{activeTopic.prompt}</p>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 7, padding: "8px 12px", marginBottom: 14 }}>
+                <span style={{ fontSize: 16, marginTop: 1 }}>💡</span>
+                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, lineHeight: 1.6 }}>{partHints[currentPart]}</span>
+              </div>
+
+              <VoiceRecorder
+                key={`recorder-${currentPart}`}
+                partColor={partColors[currentPart]}
+                onTranscriptReady={savePartTranscript}
+                userId={userId}
+              />
+            </>
+          )}
+
+          {/* When all parts saved, show summary of what's stored */}
+          {allPartsSaved && (
+            <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "14px 16px" }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 10 }}>
+                All three parts saved. Press the button above to get your holistic IELTS feedback.
+              </div>
+              {[1, 2, 3].map(p => (
+                <div key={p} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: p < 3 ? `1px solid ${C.border}` : "none" }}>
+                  <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: partColors[p], textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>
+                    Part {p} — {topics[p].label}
+                  </div>
+                  <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted, lineHeight: 1.5 }}>
+                    {partTranscripts[p].slice(0, 140)}{partTranscripts[p].length > 140 ? "…" : ""}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
@@ -2341,22 +2259,13 @@ function handlePartChange(p) {
         </>
       )}
 
-      {/* Loading state */}
       {view === "loading" && (
         <div style={{ textAlign: "center", padding: "48px 20px" }}>
           <div style={{ marginBottom: 20 }}>
-            <Waveform active={true} color={partColors[part]} />
+            <Waveform active={true} color={C.accent} />
           </div>
-          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 600, color: partColors[part], marginBottom: 6 }}>{t.scoringResponse}</div>
-          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted, marginBottom: 20 }}>{t.runningAssessment}</div>
-          <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
-            {["IELTS Scoring", "Pronunciation Analysis"].map((stage, i) => (
-              <div key={i} style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 20, padding: "5px 12px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, display: "flex", alignItems: "center", gap: 5 }}>
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: partColors[part], display: "inline-block", animation: "pulse 1s infinite", animationDelay: `${i * 0.4}s` }} />
-                {stage}
-              </div>
-            ))}
-          </div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 600, color: C.accent, marginBottom: 6 }}>{t.submittingAll}</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted }}>{t.runningAssessment}</div>
         </div>
       )}
 
@@ -2368,19 +2277,16 @@ function handlePartChange(p) {
           ringColors={ringColors}
           onExport={() => {
             setExporting(true);
-            exportToPDF(feedback, { taskType: `Speaking Part ${part}`, topicLabel: topic.label });
+            exportToPDF(feedback, { taskType: "Speaking (Holistic)", topicLabel: `${topics[1].label} · ${topics[2].label} · ${topics[3].label}` });
             setTimeout(() => setExporting(false), 1500);
           }}
           exporting={exporting}
         />
       )}
-
-      {view === "pronunciation" && pronunciation && (
-        <PronunciationReport pronunciation={pronunciation} partColor={partColors[part]} />
-      )}
     </div>
   );
 }
+
 // ─── BAND PROGRESS CHART ─────────────────────────────────────────────────────
 const SAMPLE_DATA = [
   { date: "Jan 1",  band: 5.0, type: "Writing" },
@@ -2395,8 +2301,8 @@ const SAMPLE_DATA = [
 function BandProgressChart({ supabase, userId }) {
   const t = useLang();
   const [allSessions, setAllSessions] = useState([]);
-  const [filter, setFilter] = useState("Both");       // "Both" | "Writing" | "Speaking"
-  const [range, setRange] = useState("30");            // "7" | "30"
+  const [filter, setFilter] = useState("Both");
+  const [range, setRange] = useState("30");
   const [loading, setLoading] = useState(true);
   const isEmpty = allSessions.length === 0;
 
@@ -2413,7 +2319,6 @@ function BandProgressChart({ supabase, userId }) {
       });
   }, [userId]);
 
-  // Filter by time range
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - parseInt(range));
 
@@ -2426,14 +2331,12 @@ function BandProgressChart({ supabase, userId }) {
     }))
   ).filter(s => filter === "Both" || s.type === filter);
 
-  const filterColor = filter === "Writing" ? C.blue : filter === "Speaking" ? C.purple : C.accent;
-  const lineColor   = filter === "Writing" ? C.blue : filter === "Speaking" ? C.purple : C.accent;
+  const lineColor = filter === "Writing" ? C.blue : filter === "Speaking" ? C.purple : C.accent;
 
   if (loading) return null;
 
   return (
     <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: "16px 15px", marginBottom: 20 }}>
-      {/* Header row */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, flexWrap: "wrap", gap: 8 }}>
         <div>
           <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: C.textDim, textTransform: "uppercase", letterSpacing: 1 }}>{t.bandProgress}</div>
@@ -2442,7 +2345,6 @@ function BandProgressChart({ supabase, userId }) {
           )}
         </div>
         <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-          {/* Type filter */}
           {[[t.both, "Both"], [t.writing_label, "Writing"], [t.speaking_label, "Speaking"]].map(([label, f]) => {
             const col = f === "Writing" ? C.blue : f === "Speaking" ? C.purple : C.accent;
             return (
@@ -2451,46 +2353,32 @@ function BandProgressChart({ supabase, userId }) {
                 background: filter === f ? col + "18" : "transparent",
                 color: filter === f ? col : C.textMuted,
                 fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: filter === f ? 700 : 400,
-                cursor: "pointer", transition: "all 0.15s",
+                cursor: "pointer",
               }}>{label}</button>
             );
           })}
           <div style={{ width: 1, background: C.border, margin: "0 3px" }} />
-          {/* Range filter */}
           {[["7", "7d"], ["30", "30d"]].map(([val, label]) => (
             <button key={val} onClick={() => setRange(val)} style={{
               padding: "4px 11px", borderRadius: 999, border: `1.5px solid ${range === val ? C.teal : C.border}`,
               background: range === val ? C.teal + "18" : "transparent",
               color: range === val ? C.teal : C.textMuted,
               fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: range === val ? 700 : 400,
-              cursor: "pointer", transition: "all 0.15s",
+              cursor: "pointer",
             }}>{label}</button>
           ))}
         </div>
       </div>
 
-      {/* Chart */}
-      <div style={{ opacity: isEmpty ? 0.45 : 1, filter: isEmpty ? "grayscale(30%)" : "none", transition: "opacity 0.3s" }}>
+      <div style={{ opacity: isEmpty ? 0.45 : 1, filter: isEmpty ? "grayscale(30%)" : "none" }}>
         {chartData.length === 0 ? (
           <div style={{ textAlign: "center", padding: "28px 0", color: C.textDim, fontFamily: "'Inter', sans-serif", fontSize: 13 }}>{t.noSessionsRange}</div>
         ) : (
           <ResponsiveContainer width="100%" height={180}>
             <LineChart data={chartData} margin={{ top: 8, right: 8, left: -28, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false} />
-              <XAxis
-                dataKey="date"
-                tick={{ fill: C.textDim, fontSize: 10, fontFamily: "'Inter', sans-serif" }}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis
-                domain={[3, 9]}
-                ticks={[4, 5, 5.5, 6, 6.5, 7, 7.5, 8, 9]}
-                tick={{ fill: C.textDim, fontSize: 10, fontFamily: "'Inter', sans-serif" }}
-                tickLine={false}
-                axisLine={false}
-                width={40}
-              />
+              <XAxis dataKey="date" tick={{ fill: C.textDim, fontSize: 10, fontFamily: "'Inter', sans-serif" }} tickLine={false} axisLine={false} />
+              <YAxis domain={[3, 9]} ticks={[4, 5, 5.5, 6, 6.5, 7, 7.5, 8, 9]} tick={{ fill: C.textDim, fontSize: 10, fontFamily: "'Inter', sans-serif" }} tickLine={false} axisLine={false} width={40} />
               <Tooltip
                 contentStyle={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, fontFamily: "'Inter', sans-serif", fontSize: 11 }}
                 formatter={(v, _, props) => [`Band ${v} · ${props.payload.type}`, ""]}
@@ -2502,13 +2390,9 @@ function BandProgressChart({ supabase, userId }) {
                 stroke={lineColor}
                 strokeWidth={2.5}
                 dot={({ cx, cy, payload }) => (
-                  <circle
-                    key={`dot-${cx}-${cy}`}
-                    cx={cx} cy={cy} r={4}
+                  <circle key={`dot-${cx}-${cy}`} cx={cx} cy={cy} r={4}
                     fill={payload.type === "Writing" ? C.blue : C.purple}
-                    stroke={C.surface}
-                    strokeWidth={2}
-                  />
+                    stroke={C.surface} strokeWidth={2} />
                 )}
                 activeDot={{ r: 6, stroke: lineColor, strokeWidth: 2, fill: C.surface }}
               />
@@ -2517,7 +2401,6 @@ function BandProgressChart({ supabase, userId }) {
         )}
       </div>
 
-      {/* Dot legend */}
       <div style={{ display: "flex", gap: 14, marginTop: 10, justifyContent: "flex-end" }}>
         {[["Writing", C.blue], ["Speaking", C.purple]].map(([label, col]) => (
           <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
@@ -2529,6 +2412,7 @@ function BandProgressChart({ supabase, userId }) {
     </div>
   );
 }
+
 // ─── DASHBOARD ───────────────────────────────────────────────────────────────
 function Dashboard({ supabase, userId }) {
   const t = useLang();
@@ -2561,13 +2445,10 @@ function Dashboard({ supabase, userId }) {
       </div>
     );
   }
-return (
+
+  return (
     <div>
-
-      {/* ── ROW 1: Streak + Best Session ────────────────────────────────── */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
-
-        {/* Streak card */}
         <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: "16px 15px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
           <div style={{ fontSize: 32, marginBottom: 4 }}>🔥</div>
           <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 34, fontWeight: 800, color: streak > 0 ? C.accent : C.textDim, lineHeight: 1 }}>{streak}</div>
@@ -2577,14 +2458,11 @@ return (
           )}
         </div>
 
-        {/* Best session card */}
         <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: "16px 15px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
           <div style={{ fontSize: 32, marginBottom: 4 }}>🏆</div>
           {bestSession ? (
             <>
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 34, fontWeight: 800, color: BAND_COLOR(bestSession.overall_band), lineHeight: 1 }}>
-                {bestSession.overall_band}
-              </div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 34, fontWeight: 800, color: BAND_COLOR(bestSession.overall_band), lineHeight: 1 }}>{bestSession.overall_band}</div>
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginTop: 4 }}>{t.personalBest}</div>
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, marginTop: 4, lineHeight: 1.4 }}>
                 {bestSession.task_type?.includes("Task") ? t.writing_label : t.speaking_label} · {new Date(bestSession.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
@@ -2600,7 +2478,6 @@ return (
         </div>
       </div>
 
-      {/* ── ROW 2: Next Target Band ──────────────────────────────────────── */}
       <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: "14px 15px", marginBottom: 10 }}>
         {currentAvg !== null ? (
           <>
@@ -2636,7 +2513,6 @@ return (
         )}
       </div>
 
-      {/* ── ROW 3: Stat cards ────────────────────────────────────────────── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, marginBottom: 10 }}>
         {stats.length > 0 ? stats.map(s => (
           <div key={s.label} style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 15px" }}>
@@ -2651,10 +2527,8 @@ return (
         )}
       </div>
 
-      {/* ── ROW 4: Progress chart ────────────────────────────────────────── */}
       <BandProgressChart supabase={supabase} userId={userId} />
 
-      {/* ── ROW 5: Recent sessions ───────────────────────────────────────── */}
       {history.length > 0 && (
         <>
           <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>{t.recentSessions}</div>
@@ -2669,10 +2543,10 @@ return (
           ))}
         </>
       )}
-
     </div>
   );
 }
+
 // ─── LEGAL CONTENT ───────────────────────────────────────────────────────────
 const LEGAL = {
   privacy: {
@@ -2694,17 +2568,16 @@ HOW WE USE YOUR INFORMATION
 • We do not sell your personal data to third parties
 
 THIRD-PARTY SERVICES
-The App uses the following third-party services to operate:
 • Supabase — secure user authentication and data storage
-• OpenAI Whisper — voice transcription (audio is processed and not stored permanently)
+• OpenAI Whisper — voice transcription
 • Anthropic Claude — AI feedback generation
 • Netlify — frontend hosting
 
 DATA RETENTION
-Voice recordings are processed in real time and are not permanently stored. Written responses and scores are retained to provide your session history. You may request deletion of your account and data at any time by contacting us.
+Voice recordings are processed in real time and are not permanently stored. Written responses and scores are retained to provide your session history.
 
 YOUR RIGHTS
-You have the right to access, correct, or delete your personal data. Contact us at support@sound-ready.com to exercise these rights.
+Contact us at support@sound-ready.com to access, correct, or delete your personal data.
 
 CONTACT
 SoundReady English | support@sound-ready.com`
@@ -2713,32 +2586,19 @@ SoundReady English | support@sound-ready.com`
     title: "Terms of Service",
     content: `Last updated: May 2026
 
-By using SoundReady Ascend, you agree to these Terms of Service. Please read them carefully.
+By using SoundReady Ascend, you agree to these Terms of Service.
 
 ELIGIBILITY
-You must be at least 13 years old to use this App. By registering, you confirm that the information you provide is accurate.
+You must be at least 13 years old to use this App.
 
 ACCEPTABLE USE
-You agree to use SoundReady Ascend only for lawful purposes. You must not:
-• Share your account credentials with others
-• Attempt to reverse-engineer or copy the App
-• Use the App to generate or distribute harmful content
-• Misrepresent your identity or qualifications
+You agree to use SoundReady Ascend only for lawful purposes.
 
 AI-GENERATED CONTENT
-SoundReady Ascend uses artificial intelligence to provide IELTS feedback and pronunciation assessment. AI feedback is for educational purposes only and does not constitute a guarantee of exam performance. Scores generated by the App are approximations and may differ from official IELTS examination results.
+AI feedback is for educational purposes only and does not constitute a guarantee of exam performance.
 
 INTELLECTUAL PROPERTY
-All content, design, and technology within SoundReady Ascend is the property of SoundReady English. Reproduction, redistribution, or commercial use of any part of the App without written permission is prohibited.
-
-FREE AND PREMIUM TIERS
-Free tier users have access to limited sessions. Premium features require a paid subscription. We reserve the right to modify pricing and features with reasonable notice.
-
-TERMINATION
-We reserve the right to suspend or terminate accounts that violate these Terms.
-
-CHANGES TO TERMS
-We may update these Terms at any time. Continued use of the App after changes constitutes acceptance of the new Terms.
+All content within SoundReady Ascend is the property of SoundReady English.
 
 CONTACT
 SoundReady English | support@sound-ready.com`
@@ -2748,29 +2608,19 @@ SoundReady English | support@sound-ready.com`
     content: `Last updated: May 2026
 
 EDUCATIONAL PURPOSE ONLY
-SoundReady Ascend is an AI-powered educational tool designed to help students prepare for the IELTS examination. The feedback, band scores, and pronunciation assessments provided by the App are generated by artificial intelligence and are intended for practice and learning purposes only.
+SoundReady Ascend is an AI-powered educational tool designed to help students prepare for the IELTS examination.
 
 NO GUARANTEE OF EXAM RESULTS
-Band scores and feedback provided within the App are approximations based on AI analysis of your responses. They are not official IELTS scores and should not be relied upon as a prediction of your performance in an official IELTS examination administered by the British Council, IDP, or Cambridge Assessment English.
-
-AI LIMITATIONS
-Artificial intelligence systems, including those used in this App, may make errors in assessment. Pronunciation analysis is inference-based and may not capture all nuances of spoken English. We recommend using SoundReady Ascend as a supplementary practice tool alongside qualified human instruction.
-
-VOICE DATA
-Voice recordings submitted through the App are processed by OpenAI Whisper for transcription. By using the Speaking feature, you consent to this processing. Recordings are not permanently stored by SoundReady English.
+Band scores provided within the App are approximations and are not official IELTS scores.
 
 IELTS TRADEMARK
-IELTS is a registered trademark of the British Council, IDP: IELTS Australia, and Cambridge Assessment English. SoundReady Ascend is an independent preparation tool and is not affiliated with, endorsed by, or connected to any official IELTS testing body.
-
-LIABILITY
-SoundReady English accepts no liability for any loss or damage arising from reliance on AI-generated feedback or scores produced by the App.
+IELTS is a registered trademark of the British Council, IDP: IELTS Australia, and Cambridge Assessment English. SoundReady Ascend is an independent preparation tool.
 
 CONTACT
 SoundReady English | support@sound-ready.com`
   }
 };
 
-// ─── LEGAL MODAL ─────────────────────────────────────────────────────────────
 function LegalModal({ type, onClose }) {
   const content = LEGAL[type];
   if (!content) return null;
@@ -2790,7 +2640,6 @@ function LegalModal({ type, onClose }) {
   );
 }
 
-// ─── FOOTER ──────────────────────────────────────────────────────────────────
 function Footer({ onLegal }) {
   const t = useLang();
   return (
@@ -2808,7 +2657,6 @@ function Footer({ onLegal }) {
   );
 }
 
-// ─── AVATAR MENU ─────────────────────────────────────────────────────────────
 function AvatarMenu({ email, onLogout, onAdmin, onProfile }) {
   const t = useLang();
   const [open, setOpen] = useState(false);
@@ -2822,70 +2670,45 @@ function AvatarMenu({ email, onLogout, onAdmin, onProfile }) {
         display: "flex", alignItems: "center", justifyContent: "center",
         fontFamily: "'Sora', sans-serif", fontSize: 14, fontWeight: 700, color: "#FFFFFF",
         boxShadow: open ? `0 0 0 3px ${C.accent}33` : "none",
-        transition: "box-shadow 0.2s",
       }}>{initial}</button>
 
       {open && (
         <>
-          {/* Backdrop */}
           <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 99 }} />
-          {/* Dropdown */}
           <div style={{
             position: "absolute", right: 0, top: 44, zIndex: 100,
             background: C.surface, border: `1px solid ${C.border}`,
             borderRadius: 12, padding: "6px 0", minWidth: 220,
             boxShadow: "0 8px 32px rgba(27,42,58,0.12)",
           }}>
-            {/* User info */}
             <div style={{ padding: "12px 16px", borderBottom: `1px solid ${C.border}` }}>
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 3 }}>{email}</div>
               <div style={{ display: "inline-block", background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "2px 8px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green }}>{t.freePlan}</div>
             </div>
-            {/* Menu items */}
             <div style={{ padding: "6px 0" }}>
               <button onClick={() => { setOpen(false); onProfile && onProfile(); }} style={{
                 width: "100%", padding: "9px 16px", background: "transparent",
                 border: "none", textAlign: "left", cursor: "pointer",
                 fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted,
-              }}
-                onMouseOver={e => e.currentTarget.style.background = C.surfaceAlt}
-                onMouseOut={e => e.currentTarget.style.background = "transparent"}
-              >My Profile</button>
-              <button onClick={() => setOpen(false)} style={{
-                width: "100%", padding: "9px 16px", background: "transparent",
-                border: "none", textAlign: "left", cursor: "pointer",
-                fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted,
-              }}
-                onMouseOver={e => e.currentTarget.style.background = C.surfaceAlt}
-                onMouseOut={e => e.currentTarget.style.background = "transparent"}
-              >Session History</button>
+              }}>My Profile</button>
               {onAdmin && (
                 <button onClick={() => { setOpen(false); onAdmin(); }} style={{
                   width: "100%", padding: "9px 16px", background: "transparent",
                   border: "none", textAlign: "left", cursor: "pointer",
                   fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blue, fontWeight: 600,
-                }}
-                  onMouseOver={e => e.currentTarget.style.background = C.surfaceAlt}
-                  onMouseOut={e => e.currentTarget.style.background = "transparent"}
-                >{t.adminPanel}</button>
+                }}>{t.adminPanel}</button>
               )}
-            <button onClick={() => setOpen(false)} style={{
+              <button onClick={() => setOpen(false)} style={{
                 width: "100%", padding: "9px 16px", background: "transparent",
                 border: "none", textAlign: "left", cursor: "pointer",
                 fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.accent, fontWeight: 700,
-              }}
-                onMouseOver={e => e.currentTarget.style.background = C.accentSoft}
-                onMouseOut={e => e.currentTarget.style.background = "transparent"}
-              >{t.upgradePremium}</button>
+              }}>{t.upgradePremium}</button>
               <div style={{ height: 1, background: C.border, margin: "6px 0" }} />
               <button onClick={() => { setOpen(false); onLogout(); }} style={{
                 width: "100%", padding: "9px 16px", background: "transparent",
                 border: "none", textAlign: "left", cursor: "pointer",
                 fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.red,
-              }}
-                onMouseOver={e => e.currentTarget.style.background = C.red + "0e"}
-                onMouseOut={e => e.currentTarget.style.background = "transparent"}
-              >{t.logOut}</button>
+              }}>{t.logOut}</button>
             </div>
           </div>
         </>
@@ -2894,7 +2717,6 @@ function AvatarMenu({ email, onLogout, onAdmin, onProfile }) {
   );
 }
 
-// ─── NAV TABS ────────────────────────────────────────────────────────────────
 function NavTabs({ tab, setTab }) {
   const t = useLang();
   const tabs = [
@@ -2902,7 +2724,7 @@ function NavTabs({ tab, setTab }) {
     { id: "writing",   label: t.tabWriting   },
     { id: "speaking",  label: t.tabSpeaking  },
     { id: "history",   label: t.tabHistory   },
-    { id: "lessons", label: "Lessons" },
+    { id: "lessons",   label: "Lessons" },
   ];
   return (
     <div style={{ display: "flex" }}>
@@ -2912,14 +2734,13 @@ function NavTabs({ tab, setTab }) {
           borderBottom: `2px solid ${tab === tb.id ? C.accent : "transparent"}`,
           color: tab === tb.id ? C.accent : C.textMuted,
           fontFamily: "'Inter', sans-serif", fontSize: "clamp(11px, 2.8vw, 15px)",
-          fontWeight: tab === tb.id ? 600 : 400, cursor: "pointer", transition: "all 0.15s",
+          fontWeight: tab === tb.id ? 600 : 400, cursor: "pointer",
         }}>{tb.label}</button>
       ))}
     </div>
   );
 }
 
-// ─── LANG SWITCHER ───────────────────────────────────────────────────────────
 function LangSwitcher() {
   const { lang, switchLang } = useContext(LangContext);
   return (
@@ -2932,7 +2753,6 @@ function LangSwitcher() {
           color: lang === l ? C.accent : C.textDim,
           fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: lang === l ? 700 : 400,
           cursor: "pointer", textTransform: "uppercase", letterSpacing: 0.5,
-          transition: "all 0.15s",
         }}>{l}</button>
       ))}
     </div>
@@ -2946,7 +2766,7 @@ export default function App({ supabase, session, onAdmin, onProfile }) {
   const [selectedLesson, setSelectedLesson] = useState(null);
 
   const lessons = [
-     { id: "vocab_band5_001",     label: "Vocabulary — Band 5 — Part 1" },
+    { id: "vocab_band5_001",     label: "Vocabulary — Band 5 — Part 1" },
     { id: "vocab_band5_002",     label: "Vocabulary — Band 5 — Part 2" },
     { id: "vocab_band6_001",     label: "Vocabulary — Band 6 — Part 1" },
     { id: "vocab_band6_002",     label: "Vocabulary — Band 6 — Part 2" },
@@ -2977,6 +2797,7 @@ export default function App({ supabase, session, onAdmin, onProfile }) {
     { id: "speaking_band7_001",  label: "Speaking — Band 7 — Part 1" },
     { id: "speaking_band7_002",  label: "Speaking — Band 7 — Part 2" },
   ];
+
   async function handleLogout() {
     if (supabase) await supabase.auth.signOut();
   }
@@ -2986,94 +2807,86 @@ export default function App({ supabase, session, onAdmin, onProfile }) {
 
   return (
     <LangProvider>
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: radial-gradient(ellipse at 12% 50%, ${C.blue}55 0%, transparent 45%), radial-gradient(ellipse at 88% 30%, ${C.accent}45 0%, transparent 45%), ${C.bg}; color: ${C.text}; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; min-height: 100vh; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: ${C.bg}; }
-        ::-webkit-scrollbar-thumb { background: ${C.border}; border-radius: 3px; }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
-        @keyframes wave { from{height:4px} to{height:40px} }
-        input, textarea, select { color: ${C.text}; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
-        textarea::placeholder { color: ${C.textDim}; }
-      `}</style>
-     <div style={{ maxWidth: 720, margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column", width: "100%" }}>
-        <div style={{ padding: "16px clamp(18px, 5vw, 120px) 0", borderBottom: `1px solid ${C.border}`, background: C.bg, position: "sticky", top: 0, zIndex: 10, boxShadow: "0 2px 12px rgba(27,42,58,0.08)" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 13 }}>
-            <div style={{ width: 80, display: "flex", flexDirection: "column", gap: 6 }}>
-              <div style={{ background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "3px 10px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, display: "inline-block" }}>Free</div>
-              <LangSwitcher />
+      <>
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap');
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body { background: radial-gradient(ellipse at 12% 50%, ${C.blue}55 0%, transparent 45%), radial-gradient(ellipse at 88% 30%, ${C.accent}45 0%, transparent 45%), ${C.bg}; color: ${C.text}; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; min-height: 100vh; }
+          ::-webkit-scrollbar { width: 5px; }
+          ::-webkit-scrollbar-track { background: ${C.bg}; }
+          ::-webkit-scrollbar-thumb { background: ${C.border}; border-radius: 3px; }
+          @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+          @keyframes wave { from{height:4px} to{height:40px} }
+          input, textarea, select { color: ${C.text}; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+          textarea::placeholder { color: ${C.textDim}; }
+        `}</style>
+        <div style={{ maxWidth: 720, margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column", width: "100%" }}>
+          <div style={{ padding: "16px clamp(18px, 5vw, 120px) 0", borderBottom: `1px solid ${C.border}`, background: C.bg, position: "sticky", top: 0, zIndex: 10, boxShadow: "0 2px 12px rgba(27,42,58,0.08)" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 13 }}>
+              <div style={{ width: 80, display: "flex", flexDirection: "column", gap: 6 }}>
+                <div style={{ background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 999, padding: "3px 10px", fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.green, display: "inline-block" }}>Free</div>
+                <LangSwitcher />
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <img src="/soundready-logo-transparent.png" alt="SoundReady" style={{ height: 56, objectFit: "contain" }} />
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 3, marginTop: 2 }}>Ascend</div>
+              </div>
+              <div style={{ width: 80, display: "flex", justifyContent: "flex-end", position: "relative" }}>
+                <AvatarMenu email={userEmail} onLogout={handleLogout} onAdmin={isAdmin ? onAdmin : null} onProfile={onProfile} />
+              </div>
             </div>
-            <div style={{ textAlign: "center" }}>
-              <img
-                src="/soundready-logo-transparent.png"
-                alt="SoundReady"
-                style={{ height: 56, objectFit: "contain" }}
-              />
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 3, marginTop: 2 }}>Ascend</div>
-            </div>
-            <div style={{ width: 80, display: "flex", justifyContent: "flex-end", position: "relative" }}>
-              <AvatarMenu email={userEmail} onLogout={handleLogout} onAdmin={isAdmin ? onAdmin : null} onProfile={onProfile} />
-            </div>
+            <NavTabs tab={tab} setTab={setTab} />
           </div>
-          <NavTabs tab={tab} setTab={setTab} />
+
+          <div style={{ padding: "18px 20px", flex: 1 }}>
+            {tab === "dashboard" && <Dashboard supabase={supabase} userId={session?.user?.id} />}
+            {tab === "writing" && <WritingPractice supabase={supabase} userId={session?.user?.id} />}
+            {tab === "speaking" && <SpeakingPractice supabase={supabase} userId={session?.user?.id} />}
+            {tab === "history" && <Portfolio supabase={supabase} userId={session?.user?.id} />}
+            {tab === "lessons" && (
+              <SkillTree
+                lessons={lessons}
+                onSelectLesson={(id) => {
+                  setSelectedLesson(id);
+                  setTab("lesson-viewer");
+                }}
+              />
+            )}
+            {tab === "lesson-viewer" && selectedLesson && (
+              <LessonViewer
+                lessonId={selectedLesson}
+                onComplete={(correctCount, totalQuestions) => {
+                  const passed = correctCount / totalQuestions >= 0.8;
+                  if (passed) {
+                    const progress = JSON.parse(localStorage.getItem("sr_progress") || "{}");
+                    progress[selectedLesson] = { completed: true, completedAt: Date.now() };
+                    localStorage.setItem("sr_progress", JSON.stringify(progress));
+                    const idx = lessons.findIndex(l => l.id === selectedLesson);
+                    if (idx < lessons.length - 1) {
+                      setSelectedLesson(lessons[idx + 1].id);
+                    } else {
+                      setTab("lessons");
+                    }
+                  } else {
+                    setTab("lessons");
+                  }
+                }}
+                onBack={(correctCount, totalQuestions) => {
+                  if (correctCount && totalQuestions && correctCount / totalQuestions >= 0.8) {
+                    const progress = JSON.parse(localStorage.getItem("sr_progress") || "{}");
+                    progress[selectedLesson] = { completed: true, completedAt: Date.now() };
+                    localStorage.setItem("sr_progress", JSON.stringify(progress));
+                  }
+                  setTab("lessons");
+                }}
+              />
+            )}
+          </div>
+
+          <Footer onLegal={setLegalModal} />
+          {legalModal && <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />}
         </div>
-
-    <div style={{ padding: "18px 20px", flex: 1 }}>
-          {tab === "dashboard" && <Dashboard supabase={supabase} userId={session?.user?.id} />}
-          {tab === "writing" && <WritingPractice supabase={supabase} userId={session?.user?.id} />}
-          {tab === "speaking" && <SpeakingPractice supabase={supabase} userId={session?.user?.id} />}
-          {tab === "history" && <Portfolio supabase={supabase} userId={session?.user?.id} />}
-          {tab === "lessons" && (
-  <SkillTree
-    lessons={lessons}
-    onSelectLesson={(id) => {
-      setSelectedLesson(id);
-      setTab("lesson-viewer");
-    }}
-  />
-)}
-{tab === "lesson-viewer" && selectedLesson && (
-  <LessonViewer
-  lessonId={selectedLesson}
- onComplete={(correctCount, totalQuestions) => {
-    const passed = correctCount / totalQuestions >= 0.8;
-    if (passed) {
-      const progress = JSON.parse(localStorage.getItem("sr_progress") || "{}");
-      progress[selectedLesson] = { completed: true, completedAt: Date.now() };
-      localStorage.setItem("sr_progress", JSON.stringify(progress));
-      const idx = lessons.findIndex(l => l.id === selectedLesson);
-      if (idx < lessons.length - 1) {
-        setSelectedLesson(lessons[idx + 1].id);
-      } else {
-        setTab("lessons");
-      }
-    } else {
-      setTab("lessons");
-    }
-  }}
-
-  onBack={(correctCount, totalQuestions) => {
-  if (correctCount && totalQuestions && correctCount / totalQuestions >= 0.8) {
-    const progress = JSON.parse(localStorage.getItem("sr_progress") || "{}");
-    progress[selectedLesson] = { completed: true, completedAt: Date.now() };
-    localStorage.setItem("sr_progress", JSON.stringify(progress));
-  }
-  setTab("lessons");
-}}
-
-/>
-
-)}
-
-        </div>
-
-        <Footer onLegal={setLegalModal} />
-        {legalModal && <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />}
-      </div>
-    </>
+      </>
     </LangProvider>
   );
 }
