@@ -425,40 +425,64 @@ const WRITING_DESCRIPTORS = {
     label: "Task Response / Task Achievement",
     features: ["Task coverage", "Position clarity", "Idea development", "Relevance & accuracy"],
     bands: {
+      9: "Covers every part of the task with sophistication and insight. The position is fully developed and sustained from start to finish. Ideas are precise, well-supported, and completely relevant — nothing is wasted.",
       8: "Covers all parts of the task thoroughly. Presents a clear, well-developed position sustained throughout. Ideas are fully extended with relevant, specific support. No irrelevant content.",
       7: "Addresses all parts of the task. Position is clear but may not be fully developed in every section. Main ideas are relevant and extended, though some points could be better supported.",
       6: "Addresses the main requirements but may not cover all parts equally. A position is attempted but may shift or lack consistency. Ideas are present but development is sometimes limited or general.",
       5: "Only partially addresses the task. A position may be unclear or inconsistently maintained. Ideas are underdeveloped, formulaic, or repetitive. Some irrelevant or inaccurate content may appear.",
+      4: "Barely touches on the task. The response is too short, off-topic, or misunderstands what is being asked. Any position taken is hard to follow. Ideas are very limited and poorly supported.",
+      3: "Only manages to address the task in a very basic way, if at all. The response is minimal, the format may be wrong, and the ideas are very difficult to follow.",
+      2: "Attempts to respond but the writing is so limited that it is very hard to understand what the student is trying to say. Little or no connection to the task.",
+      1: "No real attempt to address the task. Content is absent, copied, or completely unrelated.",
+      0: "Nothing written, or the response is in a different language entirely.",
     }
   },
   coherence: {
     label: "Coherence & Cohesion",
     features: ["Paragraph organisation", "Logical sequencing", "Cohesive devices", "Referencing & substitution"],
     bands: {
+      9: "Ideas flow effortlessly from one to the next. Cohesion is invisible — the writing guides the reader without any mechanical connectors. Paragraphing is perfect, with each paragraph building on the last.",
       8: "Ideas are sequenced logically and cohesion is handled skilfully — connectors blend into the writing without drawing attention. Paragraphing is well-managed with a clear topic focus in each paragraph.",
       7: "Information flows logically with clear progression. Cohesive devices are used effectively but with some mechanical or over-frequent use. Paragraphing is generally clear but occasionally inconsistent.",
       6: "Overall organisation is evident. Cohesive devices are used but sometimes inaccurately or repetitively. Paragraphs have a recognisable structure but may lack clear central ideas.",
       5: "Basic organisation is present but ideas may not progress clearly. Connectors are limited or overused. Paragraphing may be inappropriate or mechanical.",
+      4: "Hard to follow the logic of the response. Ideas jump around without clear linking. Connectors are used wrongly or not at all. Paragraphing is missing or random.",
+      3: "Very little organisation. The response is difficult to read as a whole. Ideas appear in no clear order and connectors are mostly absent or incorrect.",
+      2: "Almost no organisation. The writing does not flow at all and the reader has to guess how ideas are connected.",
+      1: "No evidence of organisation or linking of ideas.",
+      0: "Nothing written.",
     }
   },
   lexis: {
     label: "Lexical Resource",
     features: ["Vocabulary range", "Topic-specific vocabulary", "Collocations & word choice", "Spelling & word form"],
     bands: {
+      9: "Vocabulary is wide, precise, and natural. Word choice is sophisticated and always appropriate. Collocations feel native. Spelling and word form are virtually error-free.",
       8: "Uses a wide, varied vocabulary with natural control. Collocations are accurate and topic-specific terms are used appropriately. Rare minor errors in spelling or word form have no impact on communication.",
       7: "Good range of vocabulary with awareness of less common or topic-specific words. Some imprecision in collocation or word choice, but meaning is clear. Occasional spelling or word form errors.",
       6: "Adequate vocabulary for the task. Some attempts at less common vocabulary, though these may be inaccurate or inappropriate. Noticeable errors in spelling and word form, but overall meaning is clear.",
       5: "Limited vocabulary range. Repetition of the same words and phrases. Errors in word choice, spelling, and word form are frequent enough to occasionally strain the reader.",
+      4: "Very basic vocabulary. The same simple words are used repeatedly. Errors in spelling and word form are frequent and make the writing hard to read in places.",
+      3: "Only a handful of basic words used correctly. Severe limitations in vocabulary make most of the response hard to understand.",
+      2: "Vocabulary is so limited that communication almost breaks down. Only isolated words or phrases may be recognisable.",
+      1: "No real vocabulary to assess — only a word or two, possibly copied.",
+      0: "Nothing written.",
     }
   },
   grammar: {
     label: "Grammatical Range & Accuracy",
     features: ["Sentence complexity", "Range of structures", "Error frequency", "Punctuation"],
     bands: {
+      9: "A full range of grammatical structures used with complete flexibility and accuracy. Complex sentences feel effortless. Errors are essentially absent.",
       8: "Wide range of sentence structures used flexibly and accurately. Complex sentences are handled with confidence. Errors are rare and do not affect meaning — typically minor slips.",
       7: "Variety of sentence structures with general accuracy. Complex sentences are attempted and mostly correct, though some errors occur. Errors do not impede communication.",
       6: "Mix of simple and complex sentences. Complex structures are attempted but errors are present. Grammar errors are noticeable but overall meaning remains clear.",
       5: "Limited range of structures, relying mainly on simple sentences. Errors in complex structures are frequent. Some errors cause difficulty understanding specific parts.",
+      4: "Very basic sentence structures only. Errors are frequent and often make the meaning unclear. Grammar control is weak even in simple sentences.",
+      3: "Sentence structures are severely limited. Errors dominate the response and make it very difficult to understand.",
+      2: "Almost no grammatical control. Only isolated words or short phrases may be correct.",
+      1: "No grammar to assess — the response is too short or incoherent.",
+      0: "Nothing written.",
     }
   }
 };
@@ -468,40 +492,64 @@ const SPEAKING_DESCRIPTORS = {
     label: "Fluency & Coherence",
     features: ["Speaking pace & flow", "Hesitation & self-correction", "Logical sequencing", "Discourse markers"],
     bands: {
+      9: "Speaks with complete fluency and no effort. Any hesitation is purely to think about ideas, never to search for words. Ideas are perfectly sequenced and the listener never has to work hard to follow.",
       8: "Speaks fluently with only occasional hesitation. Any pausing is for content rather than to search for words. Ideas are clearly sequenced and discourse markers are used naturally.",
       7: "Speaks at length without noticeable effort. May occasionally repeat or self-correct, but this does not affect overall fluency. Uses a range of cohesive devices, though sometimes mechanically.",
       6: "Able to keep talking but fluency is sometimes lost due to hesitation, repetition, or self-correction. Discourse markers are used but not always accurately or naturally.",
       5: "Maintains speech but relies on repetition and rephrasing to keep going. Hesitation is frequent. Basic connectors dominate. Ideas may lose logical flow.",
+      4: "Speech is very slow and broken. Long pauses are frequent. The student often cannot finish sentences or loses the thread completely. Very hard for the listener to follow.",
+      3: "Can only produce very short bursts of speech with long pauses. Communication is severely disrupted by hesitation. Ideas are almost impossible to follow.",
+      2: "Almost unable to produce connected speech. Only isolated words or short memorised phrases come out.",
+      1: "No real spoken communication. Only a word or two, possibly memorised.",
+      0: "No response at all.",
     }
   },
   lexis: {
     label: "Lexical Resource",
     features: ["Vocabulary range", "Topic-specific language", "Paraphrasing ability", "Idiomatic language"],
     bands: {
+      9: "Vocabulary is wide, precise, and completely natural. Uses idiomatic and less common expressions with ease and accuracy. Paraphrasing is effortless. Errors are essentially absent.",
       8: "Uses a varied vocabulary with flexibility. Handles less common and idiomatic expressions with some ease. Paraphrasing is attempted naturally when needed. Rare minor errors.",
       7: "Good range of vocabulary with some use of less common expressions. Attempts paraphrase with reasonable success. Some imprecision in word choice, but meaning is clear.",
       6: "Adequate vocabulary for most topics. Meaning is generally clear but range is limited. Paraphrasing is attempted but may be awkward or inaccurate.",
       5: "Limited vocabulary range. Relies on basic, familiar words. Paraphrasing is rare or unsuccessful. Frequent errors in word choice may cause occasional strain.",
+      4: "Very basic vocabulary only. The student repeats the same simple words and cannot paraphrase effectively. Errors in word choice make the meaning unclear in places.",
+      3: "Only a very small set of basic words used correctly. Severe vocabulary limitations make communication very difficult.",
+      2: "Vocabulary is so limited that only isolated words are recognisable. Meaning rarely comes through.",
+      1: "No usable vocabulary. Only one or two words, possibly memorised.",
+      0: "No response.",
     }
   },
   grammar: {
     label: "Grammatical Range & Accuracy",
     features: ["Structure variety", "Complex sentence use", "Tense accuracy", "Error frequency & impact"],
     bands: {
+      9: "Uses the full range of grammatical structures naturally and accurately. Complex forms feel effortless. Errors are virtually absent.",
       8: "Uses a wide range of structures with flexibility. Complex sentences are used accurately and naturally. Errors are occasional and do not affect understanding.",
       7: "Uses a variety of structures with reasonable accuracy. Both simple and complex forms are used effectively despite some errors. Error-free sentences are frequent.",
       6: "Uses basic structures accurately. Some complex sentences are attempted but errors are present. Errors are noticeable but communication is generally maintained.",
       5: "Mostly simple sentence forms. Short utterances may be accurate but complex attempts contain frequent errors. Errors occasionally make meaning unclear.",
+      4: "Only very simple structures attempted, and even these contain frequent errors. Grammar control is weak. Errors regularly disrupt meaning.",
+      3: "Almost no grammatical control. Only a few basic forms used, often incorrectly. Very hard to understand.",
+      2: "Grammar is essentially absent. Only isolated words or fixed phrases produced.",
+      1: "No grammar to assess.",
+      0: "No response.",
     }
   },
   pronunciation: {
     label: "Pronunciation",
     features: ["Intelligibility", "Stress & rhythm", "Intonation", "Individual sounds"],
     bands: {
+      9: "Pronunciation is consistently clear and natural. Uses a full range of features — stress, rhythm, intonation — with precision. L1 accent may be present but never affects understanding.",
       8: "Easy to understand throughout. Uses a range of pronunciation features with control. Stress and intonation are generally appropriate. Occasional L1 influence does not affect clarity.",
       7: "Generally clear and easy to follow. Some features of pronunciation are controlled well. Minor lapses in stress or intonation occur but do not impede understanding.",
       6: "Understandable but requires some listener effort at times. Intonation and stress patterns are attempted. Individual sounds are occasionally mispronounced but meaning is usually clear.",
       5: "Understanding is possible but takes effort. Limited range of pronunciation features. Stress and rhythm are inconsistent. Some mispronounced sounds cause clarity issues.",
+      4: "Frequently difficult to understand. Mispronunciation of sounds, wrong stress, and flat intonation all combine to make listening a challenge. The listener has to work hard throughout.",
+      3: "Very hard to understand for most of the response. Severe pronunciation problems disrupt communication at every turn.",
+      2: "Almost impossible to understand due to pronunciation. Only occasional words are clear.",
+      1: "No intelligible speech to assess.",
+      0: "No response.",
     }
   }
 };
@@ -1628,7 +1676,6 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
   const [timer, setTimer] = useState(0);
   const [audioUrl, setAudioUrl] = useState(null);
   const [transcript, setTranscript] = useState("");
-  const [acousticFeatures, setAcousticFeatures] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
   const timerRef = useRef(null);
   const mediaRecorderRef = useRef(null);
@@ -1661,9 +1708,8 @@ function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
       }
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-     setTranscript(data.transcript || "");
-     setAcousticFeatures(data.acousticFeatures || null);
-     setRecorderState("review");
+      setTranscript(data.transcript || "");
+      setRecorderState("review");
     } catch (err) {
       setErrorMsg(err.message || "Transcription failed. Please try again.");
       setRecorderState("error");
@@ -2067,10 +2113,8 @@ function SpeakingPractice({ supabase, userId }) {
       const res = await fetch(`${PROXY}/analyse-speaking-holistic`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-user-id": userId },
-       body: JSON.stringify({
+        body: JSON.stringify({
           ieltsMessages: [{ role: "user", content: combinedPrompt }],
-          acousticFeatures,
-        }),
         }),
       });
       const data = await res.json();
