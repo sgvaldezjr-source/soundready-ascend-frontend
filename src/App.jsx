@@ -1448,28 +1448,29 @@ function WritingPractice({ supabase, userId }) {
       if (data.error) throw new Error(`API error: ${data.error.type} — ${data.error.message}`);
       const raw = data.content.find(b => b.type === "text")?.text || "{}";
       const flat = safeParseJSON(raw);
+      const str = (v) => (v == null ? "—" : typeof v === "object" ? JSON.stringify(v) : String(v));
       const nested = {
         overall_band: flat.overall_band,
         cefr: flat.cefr,
-        examiner_comment: flat.examiner_comment,
-        next_band_targets: flat.next_band_targets,
-        model_rewrite: flat.model_rewrite,
+        examiner_comment: str(flat.examiner_comment),
+        next_band_targets: str(flat.next_band_targets),
+        model_rewrite: str(flat.model_rewrite),
         criteria: {
-          task: { band: flat.task_band, descriptor_matched: flat.task_matched, quick_summary: flat.task_summary, evidence: [
-            { feature: "Task coverage", extract: flat.task_evidence_1, observation: flat.task_obs_1, band_signal: flat.task_signal_1 },
-            { feature: "Idea development", extract: flat.task_evidence_2, observation: flat.task_obs_2, band_signal: flat.task_signal_2 },
+          task: { band: flat.task_band, descriptor_matched: str(flat.task_matched), quick_summary: str(flat.task_summary), evidence: [
+            { feature: "Task coverage",    extract: str(flat.task_evidence_1), observation: str(flat.task_obs_1), band_signal: flat.task_signal_1 || "neutral" },
+            { feature: "Idea development", extract: str(flat.task_evidence_2), observation: str(flat.task_obs_2), band_signal: flat.task_signal_2 || "neutral" },
           ]},
-          coherence: { band: flat.coherence_band, descriptor_matched: flat.coherence_matched, quick_summary: flat.coherence_summary, evidence: [
-            { feature: "Paragraph organisation", extract: flat.coherence_evidence_1, observation: flat.coherence_obs_1, band_signal: flat.coherence_signal_1 },
-            { feature: "Cohesive devices", extract: flat.coherence_evidence_2, observation: flat.coherence_obs_2, band_signal: flat.coherence_signal_2 },
+          coherence: { band: flat.coherence_band, descriptor_matched: str(flat.coherence_matched), quick_summary: str(flat.coherence_summary), evidence: [
+            { feature: "Paragraph organisation", extract: str(flat.coherence_evidence_1), observation: str(flat.coherence_obs_1), band_signal: flat.coherence_signal_1 || "neutral" },
+            { feature: "Cohesive devices",       extract: str(flat.coherence_evidence_2), observation: str(flat.coherence_obs_2), band_signal: flat.coherence_signal_2 || "neutral" },
           ]},
-          lexis: { band: flat.lexis_band, descriptor_matched: flat.lexis_matched, quick_summary: flat.lexis_summary, evidence: [
-            { feature: "Vocabulary range", extract: flat.lexis_evidence_1, observation: flat.lexis_obs_1, band_signal: flat.lexis_signal_1 },
-            { feature: "Collocations", extract: flat.lexis_evidence_2, observation: flat.lexis_obs_2, band_signal: flat.lexis_signal_2 },
+          lexis: { band: flat.lexis_band, descriptor_matched: str(flat.lexis_matched), quick_summary: str(flat.lexis_summary), evidence: [
+            { feature: "Vocabulary range", extract: str(flat.lexis_evidence_1), observation: str(flat.lexis_obs_1), band_signal: flat.lexis_signal_1 || "neutral" },
+            { feature: "Collocations",     extract: str(flat.lexis_evidence_2), observation: str(flat.lexis_obs_2), band_signal: flat.lexis_signal_2 || "neutral" },
           ]},
-          grammar: { band: flat.grammar_band, descriptor_matched: flat.grammar_matched, quick_summary: flat.grammar_summary, evidence: [
-            { feature: "Sentence complexity", extract: flat.grammar_evidence_1, observation: flat.grammar_obs_1, band_signal: flat.grammar_signal_1 },
-            { feature: "Range of structures", extract: flat.grammar_evidence_2, observation: flat.grammar_obs_2, band_signal: flat.grammar_signal_2 },
+          grammar: { band: flat.grammar_band, descriptor_matched: str(flat.grammar_matched), quick_summary: str(flat.grammar_summary), evidence: [
+            { feature: "Sentence complexity",  extract: str(flat.grammar_evidence_1), observation: str(flat.grammar_obs_1), band_signal: flat.grammar_signal_1 || "neutral" },
+            { feature: "Range of structures",  extract: str(flat.grammar_evidence_2), observation: str(flat.grammar_obs_2), band_signal: flat.grammar_signal_2 || "neutral" },
           ]},
         }
       };
@@ -2120,28 +2121,29 @@ function SpeakingPractice({ supabase, userId }) {
       const data = await res.json();
       const ieltsRaw = data.ielts?.content?.find(b => b.type === "text")?.text || "{}";
       const flat = safeParseJSON(ieltsRaw);
+      const str = (v) => (v == null ? "—" : typeof v === "object" ? JSON.stringify(v) : String(v));
       const nested = {
         overall_band: flat.overall_band,
         cefr: flat.cefr,
-        examiner_comment: flat.examiner_comment,
-        next_band_targets: flat.next_band_targets,
-        model_rewrite: flat.model_rewrite,
+        examiner_comment: str(flat.examiner_comment),
+        next_band_targets: str(flat.next_band_targets),
+        model_rewrite: str(flat.model_rewrite),
         criteria: {
-          fluency: { band: flat.fluency_band, descriptor_matched: flat.fluency_matched, quick_summary: flat.fluency_summary, evidence: [
-            { feature: "Speaking pace & flow", extract: flat.fluency_evidence_1, observation: flat.fluency_obs_1, band_signal: flat.fluency_signal_1 },
-            { feature: "Discourse markers", extract: flat.fluency_evidence_2, observation: flat.fluency_obs_2, band_signal: flat.fluency_signal_2 },
+          fluency: { band: flat.fluency_band, descriptor_matched: str(flat.fluency_matched), quick_summary: str(flat.fluency_summary), evidence: [
+            { feature: "Speaking pace & flow", extract: str(flat.fluency_evidence_1), observation: str(flat.fluency_obs_1), band_signal: flat.fluency_signal_1 || "neutral" },
+            { feature: "Discourse markers",    extract: str(flat.fluency_evidence_2), observation: str(flat.fluency_obs_2), band_signal: flat.fluency_signal_2 || "neutral" },
           ]},
-          lexis: { band: flat.lexis_band, descriptor_matched: flat.lexis_matched, quick_summary: flat.lexis_summary, evidence: [
-            { feature: "Vocabulary range", extract: flat.lexis_evidence_1, observation: flat.lexis_obs_1, band_signal: flat.lexis_signal_1 },
-            { feature: "Topic-specific language", extract: flat.lexis_evidence_2, observation: flat.lexis_obs_2, band_signal: flat.lexis_signal_2 },
+          lexis: { band: flat.lexis_band, descriptor_matched: str(flat.lexis_matched), quick_summary: str(flat.lexis_summary), evidence: [
+            { feature: "Vocabulary range",        extract: str(flat.lexis_evidence_1), observation: str(flat.lexis_obs_1), band_signal: flat.lexis_signal_1 || "neutral" },
+            { feature: "Topic-specific language", extract: str(flat.lexis_evidence_2), observation: str(flat.lexis_obs_2), band_signal: flat.lexis_signal_2 || "neutral" },
           ]},
-          grammar: { band: flat.grammar_band, descriptor_matched: flat.grammar_matched, quick_summary: flat.grammar_summary, evidence: [
-            { feature: "Structure variety", extract: flat.grammar_evidence_1, observation: flat.grammar_obs_1, band_signal: flat.grammar_signal_1 },
-            { feature: "Complex sentence use", extract: flat.grammar_evidence_2, observation: flat.grammar_obs_2, band_signal: flat.grammar_signal_2 },
+          grammar: { band: flat.grammar_band, descriptor_matched: str(flat.grammar_matched), quick_summary: str(flat.grammar_summary), evidence: [
+            { feature: "Structure variety",    extract: str(flat.grammar_evidence_1), observation: str(flat.grammar_obs_1), band_signal: flat.grammar_signal_1 || "neutral" },
+            { feature: "Complex sentence use", extract: str(flat.grammar_evidence_2), observation: str(flat.grammar_obs_2), band_signal: flat.grammar_signal_2 || "neutral" },
           ]},
-          pronunciation: { band: flat.pronunciation_band, descriptor_matched: flat.pronunciation_matched, quick_summary: flat.pronunciation_summary, evidence: [
-            { feature: "Intelligibility", extract: flat.pronunciation_evidence_1, observation: flat.pronunciation_obs_1, band_signal: flat.pronunciation_signal_1 },
-            { feature: "Stress & rhythm", extract: flat.pronunciation_evidence_2, observation: flat.pronunciation_obs_2, band_signal: flat.pronunciation_signal_2 },
+          pronunciation: { band: flat.pronunciation_band, descriptor_matched: str(flat.pronunciation_matched), quick_summary: str(flat.pronunciation_summary), evidence: [
+            { feature: "Intelligibility", extract: str(flat.pronunciation_evidence_1), observation: str(flat.pronunciation_obs_1), band_signal: flat.pronunciation_signal_1 || "neutral" },
+            { feature: "Stress & rhythm",  extract: str(flat.pronunciation_evidence_2), observation: str(flat.pronunciation_obs_2), band_signal: flat.pronunciation_signal_2 || "neutral" },
           ]},
         }
       };
