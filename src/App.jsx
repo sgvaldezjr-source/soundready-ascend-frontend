@@ -2293,7 +2293,7 @@ function SpeakingPractice({ supabase, userId }) {
                     Part {p} — {topics[p].label}
                   </div>
                   <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.textMuted, lineHeight: 1.5 }}>
-                    {partTranscripts[p].slice(0, 140)}{partTranscripts[p].length > 140 ? "…" : ""}
+                    {(partTranscripts[p] || "").slice(0, 140)}{(partTranscripts[p] || "").length > 140 ? "…" : ""}
                   </div>
                 </div>
               ))}
