@@ -2,6 +2,8 @@ import { useState, useRef, useEffect, createContext, useContext } from "react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 import LessonViewer from './components/LessonViewer/LessonViewer';
 import SkillTree from './components/SkillTree/SkillTree';
+import PdfLibrary from './components/PdfViewer/PdfLibrary';
+import PdfViewer from './components/PdfViewer/PdfViewer';
 
 function LessonSelector() {
   return null;
@@ -2775,6 +2777,7 @@ function NavTabs({ tab, setTab }) {
     { id: "speaking",  label: t.tabSpeaking  },
     { id: "history",   label: t.tabHistory   },
     { id: "lessons",   label: "Lessons" },
+    { id: "resources", label: "Resources" },
   ];
   return (
     <div style={{ display: "flex" }}>
@@ -2814,6 +2817,7 @@ export default function App({ supabase, session, onAdmin, onProfile }) {
   const [tab, setTab] = useState("dashboard");
   const [legalModal, setLegalModal] = useState(null);
   const [selectedLesson, setSelectedLesson] = useState(null);
+  const [selectedPdf, setSelectedPdf] = useState(null);
 
   const lessons = [
     { id: "vocab_band5_001",     label: "Vocabulary — Band 5 — Part 1" },
@@ -2929,6 +2933,21 @@ export default function App({ supabase, session, onAdmin, onProfile }) {
                   }
                   setTab("lessons");
                 }}
+              />
+            )}
+            {tab === "resources" && (
+              <PdfLibrary
+                onSelectPdf={(id) => {
+                  setSelectedPdf(id);
+                  setTab("pdf-viewer");
+                }}
+              />
+            )}
+            {tab === "pdf-viewer" && selectedPdf && (
+              <PdfViewer
+                supabase={supabase}
+                pdfId={selectedPdf}
+                onBack={() => setTab("resources")}
               />
             )}
           </div>

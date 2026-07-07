@@ -1,0 +1,80 @@
+.pdf-library {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.pdf-library-header {
+  margin-bottom: 24px;
+}
+
+.pdf-library-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.pdf-library-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.pdf-library-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pdf-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 18px 20px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.pdf-card:hover {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.pdf-card-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.pdf-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.pdf-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.pdf-card-description {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.pdf-card-chevron {
+  font-size: 24px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .pdf-card {
+    padding: 14px 16px;
+  }
+}
