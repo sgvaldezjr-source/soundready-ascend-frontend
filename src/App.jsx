@@ -691,78 +691,169 @@ const SPEAKING_TOPICS = {
 // ─── AI PROMPT BUILDERS ───────────────────────────────────────────────────────
 // FIXED: clean, single JSON template with WRITING fields (not speaking)
 function buildWritingPrompt(taskType, topicPrompt, response) {
-  return `You are a senior IELTS examiner with 15 years of experience marking scripts at all band levels including 8 and 9. Score the essay below accurately and without leniency bias.
+  return `You are a senior IELTS examiner with 15 years of experience. Your job is to score accurately — not kindly. Band inflation is a serious professional failure. A student who receives Band 6 when they deserve Band 5 will be unprepared for their real exam.
 
-CRITICAL SCORING INSTRUCTIONS:
-- Band 9: Virtually no errors. Fully addresses all parts. Sophisticated vocabulary, complex grammar, flawless cohesion. Rare.
-- Band 8: Minor errors only. All parts addressed. Wide range of vocabulary and grammar used with flexibility. Cohesion is skilful.
-- Band 7: Good control with some inaccuracies. All parts addressed but development may be uneven. Good range of vocabulary with some less common use.
-- Band 6: Adequate. Main requirements addressed but not all parts equally. Limited range with some errors.
-- Band 5: Partial task coverage. Limited vocabulary and grammar range. Errors affect clarity.
-- Do NOT default to Band 6 or 7. If the evidence supports Band 8 or 9, award it.
-- CRITICAL: Do NOT use language copied or paraphrased from the task prompt as positive evidence. If a quote mirrors the prompt wording, ignore it.
-- Do NOT suggest proofreading as a next step. Give a specific constructive tip instead.
-- Each criterion (task, coherence, lexis, grammar) must be scored independently based on its own evidence.
-- overall_band is the mean of the four criterion bands, rounded to the nearest 0.5.
+SCORING PHILOSOPHY:
+- Start at Band 5. Work upward only when you find clear, specific evidence.
+- When evidence is borderline between two bands, always score the lower band.
+- Do not reward effort, length, or topic relevance alone — these are not band criteria.
+- Every band score must be justified by quoting specific language from the essay.
+
+IMAGE READING INSTRUCTIONS (applies when a chart or graph image is provided):
+- Study the image carefully before writing any feedback.
+- Read all axis labels, legends, titles, and data points precisely.
+- Do not guess or assume any values — only report what is clearly visible in the image.
+- If a value is unclear or hard to read, say so rather than inventing a number.
+- Never contradict what the image shows. If the x-axis starts at 1995, do not say 1996.
+- Base all Task Achievement feedback on what the image actually contains.
+
+TASK ACHIEVEMENT HARD CAPS — apply before scoring anything else:
+
+TASK 1 ACADEMIC:
+- Count how many key features or data points from the visual are addressed.
+- If fewer than 3 key features are identified and described, Task Achievement is CAPPED at Band 4. Do not award Band 5 or above regardless of language quality.
+- Key features means distinct, specific observations (trends, comparisons, notable figures) — not vague general statements.
+- CHECK FOR OVERVIEW: Does the response open with a general statement summarising the main trend, pattern, or purpose of the data?
+  - No overview at all → Task Achievement CAPPED at Band 5. Do not award Band 6 or above.
+  - Overview present but vague, inaccurate, or poorly selected → Task Achievement CAPPED at Band 6. Do not award Band 7 or above.
+  - Clear, accurate overview present → Band 7 or above is possible if other criteria are met.
+
+TASK 1 GENERAL:
+- Count how many bullet points or sub-tasks from the letter prompt are addressed.
+- If fewer than 3 bullet points are addressed, Task Achievement is CAPPED at Band 4.
+- If any bullet point is only partially mentioned without development, treat it as not addressed.
+
+TASK 2 ACADEMIC / GENERAL:
+- The task prompt contains bullet points or sub-questions. Count how many the student has addressed.
+- If any bullet point or sub-question from the task prompt is NOT addressed, Task Achievement is CAPPED at Band 4. Do not award Band 5 or above regardless of language quality.
+- Partial mention does not count as addressed — the student must develop the point.
+
+HARD FLOOR CONDITIONS — a band cannot be awarded unless ALL conditions are met:
+
+BAND 9 (all four must apply):
+- Virtually no errors across all criteria
+- Ideas are sophisticated, precise, and completely relevant
+- Vocabulary is native-level with perfect collocation
+- Sentence structures are fully flexible and accurate throughout
+
+BAND 8 (all four must apply):
+- All parts of the task addressed fully
+- Only very minor, occasional errors that do not affect meaning
+- Wide vocabulary range with accurate less-common word use
+- Complex structures used confidently and mostly accurately
+
+BAND 7 (all three must apply):
+- All main parts of the task addressed, even if unevenly
+- Errors present but do not impede communication
+- Some less-common vocabulary attempted, even if occasionally imprecise
+
+BAND 6 (all three must apply):
+- Main task requirements addressed, though not all parts equally
+- Meaning is generally clear despite noticeable errors
+- Vocabulary goes beyond the most basic everyday words
+
+BAND 5 (default if Band 6 conditions are not fully met):
+- Task only partially addressed OR position unclear
+- Errors are frequent enough to cause the reader difficulty
+- Vocabulary is limited and repetitive
+- Award Band 5 whenever you are uncertain between 5 and 6
+
+BAND 4 (award if any of these apply):
+- Response is too short to fully address the task
+- Position or argument is very hard to follow
+- Errors dominate and regularly obscure meaning
+- Vocabulary is very basic with severe limitations
+
+ADDITIONAL RULES:
+- CRITICAL: Do NOT use language copied or paraphrased from the task prompt as positive evidence.
+- Do NOT suggest proofreading. Give a specific constructive tip instead.
+- Do NOT reward a response for being long. Length without quality is Band 5 or lower.
+- overall_band = mean of the four criterion bands, rounded to nearest 0.5.
+- Each criterion scored independently. A strong vocabulary does not raise a weak task score.
 
 FEEDBACK LANGUAGE RULES:
 - Write as a warm, encouraging tutor speaking directly to the student.
-- Use simple, everyday English. Avoid jargon like "lexical resource" or "cohesive devices".
-- Always acknowledge what the student did well before explaining what to improve.
-- Keep sentences short. Aim for a reading age of 14-16.
-- For next_band_targets, write exactly two tips. Each tip must have a short bold-style title on its own line, followed by 2-3 sentences of warm plain advice.
-- Write next_band_targets at B1-C1 level — clear for teenagers and parents.
-- Each tip must reference something specific from the essay.
-- Never use terms like "lexical precision", "circumlocution", "syntactic subordination".
-- Always include one practical study habit the student can do outside the classroom.
+- Use simple everyday English. No jargon.
+- Acknowledge what the student did well before explaining what to improve.
+- Reading age 14-16. Short sentences.
+- For next_band_targets: two tips with a short bold-style title each, then 2-3 sentences of plain advice referencing specific examples from the essay.
+- Include one practical study habit the student can do outside the classroom.
 - No apostrophes anywhere in the output.
 
-Return ONLY this JSON with accurate values:
-{"overall_band":0,"cefr":"","task_band":0,"coherence_band":0,"lexis_band":0,"grammar_band":0,"task_matched":"plain English explanation of which level the student is at for answering the question","task_summary":"one sentence on what they did well, one sentence on what to improve","coherence_matched":"plain English explanation of which level the student is at for organising ideas","coherence_summary":"one sentence on what they did well, one sentence on what to improve","lexis_matched":"plain English explanation of which level the student is at for vocabulary","lexis_summary":"one sentence on what they did well, one sentence on what to improve","grammar_matched":"plain English explanation of which level the student is at for grammar","grammar_summary":"one sentence on what they did well, one sentence on what to improve","task_evidence_1":"direct quote from essay","task_obs_1":"warm plain-English observation","task_signal_1":"positive","task_evidence_2":"direct quote from essay","task_obs_2":"warm plain-English observation","task_signal_2":"negative","coherence_evidence_1":"direct quote from essay","coherence_obs_1":"warm plain-English observation","coherence_signal_1":"positive","coherence_evidence_2":"direct quote from essay","coherence_obs_2":"warm plain-English observation","coherence_signal_2":"negative","lexis_evidence_1":"direct quote from essay","lexis_obs_1":"warm plain-English observation","lexis_signal_1":"positive","lexis_evidence_2":"direct quote from essay","lexis_obs_2":"warm plain-English observation","lexis_signal_2":"negative","grammar_evidence_1":"direct quote from essay","grammar_obs_1":"warm plain-English observation","grammar_signal_1":"positive","grammar_evidence_2":"direct quote from essay","grammar_obs_2":"warm plain-English observation","grammar_signal_2":"negative","examiner_comment":"two warm tutor-style sentences with band justification","next_band_targets":"two specific friendly tips with bold titles referencing real examples","model_rewrite":"one sentence from the essay rewritten at the next band level with a brief note on what changed"}
+Return ONLY this JSON with accurate values — zero is a valid default, do not inflate:
+{"overall_band":0,"cefr":"","task_band":0,"coherence_band":0,"lexis_band":0,"grammar_band":0,"task_matched":"plain English explanation of which level the student is at for answering the question","task_summary":"one sentence on what they did well, one sentence on what to improve","coherence_matched":"plain English explanation of which level the student is at for organising ideas","coherence_summary":"one sentence on what they did well, one sentence on what to improve","lexis_matched":"plain English explanation of which level the student is at for vocabulary","lexis_summary":"one sentence on what they did well, one sentence on what to improve","grammar_matched":"plain English explanation of which level the student is at for grammar","grammar_summary":"one sentence on what they did well, one sentence on what to improve","task_evidence_1":"direct quote from essay","task_obs_1":"warm plain-English observation","task_signal_1":"positive","task_evidence_2":"direct quote from essay","task_obs_2":"warm plain-English observation","task_signal_2":"negative","coherence_evidence_1":"direct quote from essay","coherence_obs_1":"warm plain-English observation","coherence_signal_1":"positive","coherence_evidence_2":"direct quote from essay","coherence_obs_2":"warm plain-English observation","coherence_signal_2":"negative","lexis_evidence_1":"direct quote from essay","lexis_obs_1":"warm plain-English observation","lexis_signal_1":"positive","lexis_evidence_2":"direct quote from essay","lexis_obs_2":"warm plain-English observation","lexis_signal_2":"negative","grammar_evidence_1":"direct quote from essay","grammar_obs_1":"warm plain-English observation","grammar_signal_1":"positive","grammar_evidence_2":"direct quote from essay","grammar_obs_2":"warm plain-English observation","grammar_signal_2":"negative","examiner_comment":"two warm tutor-style sentences with honest band justification","next_band_targets":"two specific tips with bold titles referencing real examples from the essay","model_rewrite":"one sentence from the essay rewritten at the next band level with a brief note on what changed"}
 
 TASK: ${taskType}
 PROMPT: ${topicPrompt}
 ESSAY: ${response}`;
 }
 
-// FIXED: properly closed template literal, holistic scoring across all 3 parts
 function buildHolisticSpeakingPrompt(part1Q, part1T, part2Q, part2T, part3Q, part3T) {
-  return `You are a senior IELTS Speaking examiner with 15 years of experience. Score the candidate below using the official IELTS Speaking Band Descriptors.
+  return `You are a senior IELTS Speaking examiner with 15 years of experience. Your job is to score accurately — not kindly. Band inflation is a serious professional failure. A student who receives Band 6 when they deserve Band 5 will be unprepared for their real exam.
 
-IMPORTANT: You are scoring all three parts of the IELTS Speaking test together as one holistic assessment. Award one score per criterion based on the candidate's overall performance across all three parts, not per part.
+SCORING PHILOSOPHY:
+- Start at Band 5. Work upward only when you find clear, specific evidence across all three parts.
+- When evidence is borderline between two bands, always score the lower band.
+- Do not reward effort, enthusiasm, or topic knowledge — these are not band criteria.
+- Natural spoken features (um, you know, I mean, self-correction, repetition for emphasis) are NOT penalised. Only penalise disfluency that genuinely disrupts communication.
+- Score holistically across all three parts — one band per criterion based on overall impression.
+- Every band score must be justified with a direct quote from one of the transcripts.
 
-CRITICAL SCORING INSTRUCTIONS:
-- Band 9: Complete fluency and precision. Sophisticated, idiomatic vocabulary. Flexible, accurate grammar throughout. Rare.
-- Band 8: Fluent with only occasional hesitation. Wide vocabulary, natural idiomatic use. Complex grammar mostly accurate. Easy to understand.
-- Band 7: Speaks at length without noticeable effort. Good vocabulary range. Variety of structures with general accuracy. Generally clear.
-- Band 6: Keeps talking but some fluency loss. Adequate vocabulary. Mix of structures with errors. Understandable with some effort.
-- Band 5: Relies on repetition. Limited vocabulary and grammar. Frequent hesitation. Errors affect clarity.
-- Do NOT default to Band 6 or 7. Award Band 8 or 9 when the evidence merits it.
-- Score all four criteria holistically based on overall impression across all three parts.
-- overall_band = mean of four criteria rounded to nearest 0.5.
+HARD FLOOR CONDITIONS — a band cannot be awarded unless ALL conditions are met:
 
-CONTEXT — READ BEFORE SCORING:
-- Part 1 is a short personal interview. Do NOT penalise lack of complex argument development.
-- Part 2 is a long turn monologue. Expect natural self-correction and filler.
-- Part 3 is a two-way discussion. Expect hesitation and repair as thinking out loud is normal.
-- Spoken English is NOT written English. Do NOT penalise natural spoken features: "I mean", "you know", "and that sort of thing", repetition for emphasis, mid-sentence self-correction.
-- Do NOT penalise natural disfluency markers like "um", "well", "let me think". Only penalise disfluency that genuinely disrupts communication.
-- PRONUNCIATION NOTE: This assessment is based on written transcripts. Do NOT make confident claims about pronunciation, stress, or intonation. Flag in feedback that full pronunciation assessment requires audio.
+BAND 9 (all four must apply):
+- Complete fluency with zero communication breakdown across all three parts
+- Vocabulary is sophisticated, idiomatic, and always precise
+- Grammar is fully flexible and accurate — errors essentially absent
+- Pronunciation is consistently clear with natural prosody throughout
+
+BAND 8 (all four must apply):
+- Speaks at length with only occasional hesitation that does not disrupt flow
+- Uses less-common and idiomatic vocabulary accurately
+- Complex grammatical structures used naturally and mostly accurately
+- Easy to understand throughout all three parts with only minor L1 influence
+
+BAND 7 (all three must apply):
+- Speaks without noticeable effort across most of the test
+- Some less-common vocabulary attempted, even if occasionally imprecise
+- A variety of structures used, with errors that do not impede communication
+
+BAND 6 (all three must apply):
+- Able to keep talking for extended turns, even if fluency is sometimes lost
+- Vocabulary goes beyond the most basic everyday words
+- Meaning is generally clear despite noticeable grammatical errors
+
+BAND 5 (default if Band 6 conditions are not fully met):
+- Relies on repetition and rephrasing to maintain speech
+- Vocabulary is limited to familiar, everyday words
+- Errors are frequent enough to cause the listener occasional difficulty
+- Award Band 5 whenever you are uncertain between 5 and 6
+
+BAND 4 (award if any of these apply):
+- Speech is slow and very broken with long pauses throughout
+- Cannot sustain extended turns without losing the thread
+- Errors regularly prevent the listener from understanding
+
+ADDITIONAL RULES:
+- PRONUNCIATION: Assessment is based on transcripts. Do not make confident pronunciation claims. Note that full assessment requires audio.
+- Do NOT penalise for: um, uh, you know, I mean, well, let me think, mid-sentence self-correction, natural repetition.
+- DO penalise: very long silences mid-sentence, complete loss of meaning, inability to produce sentences.
+- Part 1 is a short interview — do not penalise absence of complex argument development.
+- Part 2 is a long turn — expect some natural filler.
+- Part 3 is a discussion — thinking out loud is normal and acceptable.
+- overall_band = mean of four criterion bands, rounded to nearest 0.5.
 
 FEEDBACK LANGUAGE RULES:
-- Write as a warm encouraging tutor speaking to the student.
-- Use simple everyday English. Avoid jargon.
-- Acknowledge strengths first, then improvements.
-- Reading age 14-16, short sentences.
-- For next_band_targets, write exactly two tips. Each tip starts with a short bold-style title on its own line, then 2-3 sentences of plain advice.
-- Write at B1-C1 level. Specific enough to guide improvement.
-- Reference real examples from the transcripts.
-- Never use terms like "lexical precision", "circumlocution", "syntactic subordination".
-- Always include one practical study habit for outside the classroom.
-- No apostrophes anywhere in output.
+- Write as a warm, encouraging tutor speaking directly to the student.
+- Use simple everyday English. No jargon.
+- Acknowledge what the student did well before explaining what to improve.
+- Reading age 14-16. Short sentences.
+- For next_band_targets: two tips with a short bold-style title each, then 2-3 sentences of plain advice referencing specific examples from the transcripts.
+- Include one practical study habit the student can do outside the classroom.
+- No apostrophes anywhere in the output.
 
-Return ONLY this JSON with accurate values:
-{"overall_band":0,"cefr":"","fluency_band":0,"lexis_band":0,"grammar_band":0,"pronunciation_band":0,"fluency_matched":"plain English explanation of fluency level across all three parts","fluency_summary":"one sentence on what they did well with fluency, one sentence on what to improve","lexis_matched":"plain English explanation of vocabulary level across all three parts","lexis_summary":"one sentence on what they did well with word choice, one sentence on what to improve","grammar_matched":"plain English explanation of grammar level across all three parts","grammar_summary":"one sentence on what they did well grammatically, one sentence on what to improve","pronunciation_matched":"provisional plain English explanation noting full assessment requires audio","pronunciation_summary":"one sentence on what the transcripts suggest about pronunciation, one sentence noting full assessment requires audio","fluency_evidence_1":"direct quote from any part","fluency_obs_1":"warm plain-English observation","fluency_signal_1":"positive","fluency_evidence_2":"direct quote from any part","fluency_obs_2":"warm plain-English observation — do not penalise natural spoken fillers","fluency_signal_2":"negative","lexis_evidence_1":"direct quote from any part","lexis_obs_1":"warm plain-English observation","lexis_signal_1":"positive","lexis_evidence_2":"direct quote from any part","lexis_obs_2":"warm plain-English observation","lexis_signal_2":"negative","grammar_evidence_1":"direct quote from any part","grammar_obs_1":"warm plain-English observation","grammar_signal_1":"positive","grammar_evidence_2":"direct quote from any part","grammar_obs_2":"warm plain-English observation","grammar_signal_2":"negative","pronunciation_evidence_1":"any transcript evidence relevant to pronunciation","pronunciation_obs_1":"warm plain-English observation flagging transcript limitation","pronunciation_signal_1":"positive","pronunciation_evidence_2":"any transcript evidence relevant to pronunciation","pronunciation_obs_2":"warm plain-English observation","pronunciation_signal_2":"negative","examiner_comment":"two warm tutor-style sentences wrapping up overall performance","next_band_targets":"two specific friendly tips with bold titles referencing real examples","model_rewrite":"one sentence from any part rewritten at next band level with brief note on what changed"}
+Return ONLY this JSON with accurate values — zero is a valid default, do not inflate:
+{"overall_band":0,"cefr":"","fluency_band":0,"lexis_band":0,"grammar_band":0,"pronunciation_band":0,"fluency_matched":"plain English explanation of fluency level across all three parts","fluency_summary":"one sentence on what they did well with fluency, one sentence on what to improve","lexis_matched":"plain English explanation of vocabulary level across all three parts","lexis_summary":"one sentence on what they did well with word choice, one sentence on what to improve","grammar_matched":"plain English explanation of grammar level across all three parts","grammar_summary":"one sentence on what they did well grammatically, one sentence on what to improve","pronunciation_matched":"provisional plain English explanation noting full assessment requires audio","pronunciation_summary":"one sentence on what the transcripts suggest about pronunciation, one sentence noting full assessment requires audio","fluency_evidence_1":"direct quote from any part","fluency_obs_1":"warm plain-English observation","fluency_signal_1":"positive","fluency_evidence_2":"direct quote from any part","fluency_obs_2":"warm plain-English observation","fluency_signal_2":"negative","lexis_evidence_1":"direct quote from any part","lexis_obs_1":"warm plain-English observation","lexis_signal_1":"positive","lexis_evidence_2":"direct quote from any part","lexis_obs_2":"warm plain-English observation","lexis_signal_2":"negative","grammar_evidence_1":"direct quote from any part","grammar_obs_1":"warm plain-English observation","grammar_signal_1":"positive","grammar_evidence_2":"direct quote from any part","grammar_obs_2":"warm plain-English observation","grammar_signal_2":"negative","pronunciation_evidence_1":"any transcript evidence relevant to pronunciation","pronunciation_obs_1":"warm plain-English observation flagging transcript limitation","pronunciation_signal_1":"positive","pronunciation_evidence_2":"any transcript evidence relevant to pronunciation","pronunciation_obs_2":"warm plain-English observation","pronunciation_signal_2":"negative","examiner_comment":"two warm tutor-style sentences with honest overall assessment and band justification","next_band_targets":"two specific tips with bold titles referencing real examples from the transcripts","model_rewrite":"one sentence from any part rewritten at next band level with brief note on what changed"}
 
 PART 1 — Personal Interview
 Question: ${part1Q}
