@@ -688,6 +688,8 @@ const SPEAKING_TOPICS = {
   ],
 };
 
+const FUNCTIONAL_TYPES = ["list", "compare_contrast", "cause_effect", "process"];
+
 // ─── AI PROMPT BUILDERS ───────────────────────────────────────────────────────
 // FIXED: clean, single JSON template with WRITING fields (not speaking)
 function buildWritingPrompt(taskType, topicPrompt, response) {
@@ -788,7 +790,7 @@ PROMPT: ${topicPrompt}
 ESSAY: ${response}`;
 }
 
-function buildHolisticSpeakingPrompt(part1Q, part1T, part2Q, part2T, part3Q, part3T) {
+function buildHolisticSpeakingPrompt(part1Q, part1T, part2Q, part2T, part3Q, part3T, functionalType) {
   return `You are a senior IELTS Speaking examiner with 15 years of experience. Your job is to score accurately — not kindly. Band inflation is a serious professional failure. A student who receives Band 6 when they deserve Band 5 will be unprepared for their real exam.
 
 SCORING PHILOSOPHY:
@@ -842,6 +844,7 @@ ADDITIONAL RULES:
 - Part 2 is a long turn — expect some natural filler.
 - Part 3 is a discussion — thinking out loud is normal and acceptable.
 - overall_band = mean of four criterion bands, rounded to nearest 0.5.
+- PART 3 FUNCTIONAL LANGUAGE: This Part 3 was designed to elicit ${functionalType} language (compare_contrast: comparatives like 'whereas', 'in contrast', 'more... than'; cause_effect: causal connectors like 'because', 'as a result', 'leads to'; process: sequencing markers like 'first', 'then', 'after that'; list: enumeration markers like 'firstly', 'one thing is', 'another is'). Check whether the candidate used this functional language in Part 3 and factor it into the Grammatical Range evidence and observations specifically — note explicitly if the expected structures are present or absent.
 
 FEEDBACK LANGUAGE RULES:
 - Write as a warm, encouraging tutor speaking directly to the student.
@@ -2119,6 +2122,17 @@ function SpeakingPractice({ supabase, userId }) {
   // Which part the student is currently on
   const [currentPart, setCurrentPart] = useState(1);
 
+  // Part 1: the 2 randomly-picked pool topics for this session (from part1_topics)
+  const [part1PoolTopics, setPart1PoolTopics] = useState([]);
+  const [part1Loading, setPart1Loading] = useState(true);
+
+  // Part 2: free-text custom prompt
+  const cp2 = useCustomPrompt(supabase, "speaking_part2", userId);
+
+  // Part 3: functional type picked once per session, and generation loading state
+  const [functionalType, setFunctionalType] = useState(null);
+  const [part3Loading, setPart3Loading] = useState(false);
+
   // Supabase session row id
   const [sessionRowId, setSessionRowId] = useState(null);
 
@@ -2139,7 +2153,104 @@ function SpeakingPractice({ supabase, userId }) {
 
   const allPartsSaved = partTranscripts[1] && partTranscripts[2] && partTranscripts[3];
   const activeTopic = topics[currentPart];
-  const activePrompt = activeTopic.prompt;
+  const activePrompt =
+    currentPart === 2 && cp2.useCustom && cp2.customPrompt.trim()
+      ? cp2.customPrompt.trim()
+      : activeTopic.prompt;
+
+  // Fetch part1_topics pool, filter out topics used in the last ~5 sessions, pick 2
+  async function pickPart1Topics() {
+    setPart1Loading(true);
+    if (!supabase) { setPart1Loading(false); return; }
+    try {
+      const { data: allTopics, error: topicsErr } = await supabase
+        .from("part1_topics")
+        .select("id, label, prompt_text");
+      if (topicsErr || !allTopics || allTopics.length === 0) return;
+
+      let usedIds = new Set();
+      if (userId) {
+        const { data: recentSessions } = await supabase
+          .from("speaking_sessions")
+          .select("part1_topic_ids")
+          .eq("user_id", userId)
+          .order("created_at", { ascending: false })
+          .limit(5);
+        usedIds = new Set((recentSessions || []).flatMap(s => s.part1_topic_ids || []));
+      }
+
+      let available = allTopics.filter(tp => !usedIds.has(tp.id));
+      if (available.length < 2) available = allTopics;
+
+      const shuffled = [...available].sort(() => Math.random() - 0.5);
+      const picked = shuffled.slice(0, Math.min(2, shuffled.length))
+        .map(row => ({ id: row.id, label: row.label, prompt: row.prompt_text }));
+
+      setPart1PoolTopics(picked);
+
+      const topic1 = SPEAKING_TOPICS[1][0];
+      const combinedPrompt = [
+        `[TOPIC 1] ${topic1.label}\n${topic1.prompt}`,
+        ...picked.map((p, i) => `[TOPIC ${i + 2}] ${p.label}\n${p.prompt}`),
+      ].join("\n\n");
+
+      setTopics(prev => ({
+        ...prev,
+        1: {
+          id: "part1-combined",
+          label: [topic1.label, ...picked.map(p => p.label)].join(" · "),
+          prompt: combinedPrompt,
+        },
+      }));
+    } catch (err) {
+      console.error("Failed to load Part 1 topic pool:", err);
+    } finally {
+      setPart1Loading(false);
+    }
+  }
+
+  useEffect(() => { pickPart1Topics(); }, []);
+
+  // Generate Part 3 questions from Part 2's topic once Part 3 loads
+  useEffect(() => {
+    if (currentPart !== 3) return;
+    if (topics[3]?.id === "part3-generated" || topics[3]?.id === "part3-fallback") return;
+
+    let cancelled = false;
+    setPart3Loading(true);
+
+    const ft = functionalType || FUNCTIONAL_TYPES[Math.floor(Math.random() * FUNCTIONAL_TYPES.length)];
+    if (!functionalType) setFunctionalType(ft);
+
+    fetch(`${PROXY}/generate-part3-questions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-user-id": userId },
+      body: JSON.stringify({ part2Topic: partQuestions[2], functionalType: ft }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (cancelled) return;
+        if (!Array.isArray(data.questions) || data.questions.length !== 3) {
+          throw new Error("Unexpected response shape from /generate-part3-questions");
+        }
+        setTopics(prev => ({
+          ...prev,
+          3: { id: "part3-generated", label: `Discussion (${ft})`, prompt: data.questions.join("\n") },
+        }));
+      })
+      .catch(err => {
+        console.error("Part 3 question generation failed, using static fallback:", err);
+        if (cancelled) return;
+        const fallback = SPEAKING_TOPICS[3][Math.floor(Math.random() * SPEAKING_TOPICS[3].length)];
+        setTopics(prev => ({
+          ...prev,
+          3: { id: "part3-fallback", label: fallback.label, prompt: fallback.prompt },
+        }));
+      })
+      .finally(() => { if (!cancelled) setPart3Loading(false); });
+
+    return () => { cancelled = true; };
+  }, [currentPart]);
 
   // Save transcript for current part to Supabase
   async function savePartTranscript(transcript) {
@@ -2150,12 +2261,17 @@ function SpeakingPractice({ supabase, userId }) {
 
     if (supabase && userId) {
       try {
+        const extraFields = {};
+        if (currentPart === 1) extraFields.part1_topic_ids = part1PoolTopics.map(p => p.id);
+        if (currentPart === 3) extraFields.part3_functional_type = functionalType;
+
         if (!sessionRowId) {
           const insertData = {
             user_id: userId,
             status: "in_progress",
             [`part${currentPart}_question`]: activePrompt,
             [`part${currentPart}_transcript`]: transcript,
+            ...extraFields,
           };
           const { data, error } = await supabase
             .from("speaking_sessions")
@@ -2169,6 +2285,7 @@ function SpeakingPractice({ supabase, userId }) {
             .update({
               [`part${currentPart}_question`]: activePrompt,
               [`part${currentPart}_transcript`]: transcript,
+              ...extraFields,
             })
             .eq("id", sessionRowId);
         }
@@ -2183,6 +2300,9 @@ function SpeakingPractice({ supabase, userId }) {
 
     // Auto-advance to next part if not yet at part 3
     if (currentPart < 3) {
+      if (currentPart === 2) {
+        setFunctionalType(FUNCTIONAL_TYPES[Math.floor(Math.random() * FUNCTIONAL_TYPES.length)]);
+      }
       setTimeout(() => setCurrentPart(currentPart + 1), 1200);
     }
   }
@@ -2201,7 +2321,8 @@ function SpeakingPractice({ supabase, userId }) {
       const combinedPrompt = buildHolisticSpeakingPrompt(
         partQuestions[1], partTranscripts[1],
         partQuestions[2], partTranscripts[2],
-        partQuestions[3], partTranscripts[3]
+        partQuestions[3], partTranscripts[3],
+        functionalType || "list"
       );
 
       const res = await fetch(`${PROXY}/analyse-speaking-holistic`, {
@@ -2276,6 +2397,10 @@ function SpeakingPractice({ supabase, userId }) {
     setCurrentPart(1);
     setFeedback(null);
     setView("speak");
+    setTopics({ 1: SPEAKING_TOPICS[1][0], 2: SPEAKING_TOPICS[2][0], 3: SPEAKING_TOPICS[3][0] });
+    setFunctionalType(null);
+    setPart3Loading(false);
+    pickPart1Topics();
   }
 
   return (
@@ -2344,33 +2469,63 @@ function SpeakingPractice({ supabase, userId }) {
           {/* Current part section */}
           {!allPartsSaved && (
             <>
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>{t.topic}</div>
-              <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
-                {SPEAKING_TOPICS[currentPart].map(tp => (
-                  <Pill key={tp.id} active={activeTopic.id === tp.id}
-                    onClick={() => setTopics({ ...topics, [currentPart]: tp })}
-                    color={partColors[currentPart]}>{tp.label}</Pill>
-                ))}
-              </div>
+              {currentPart === 2 && (
+                <>
+                  <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>{t.topic}</div>
+                  <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
+                    {SPEAKING_TOPICS[2].map(tp => (
+                      <Pill key={tp.id} active={activeTopic.id === tp.id}
+                        onClick={() => setTopics({ ...topics, 2: tp })}
+                        color={partColors[2]}>{tp.label}</Pill>
+                    ))}
+                  </div>
 
-              <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 6 }}>
-                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: partColors[currentPart], textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
-                  Part {currentPart} — {partLabels[currentPart]}
+                  <CustomPromptToggle
+                    useCustom={cp2.useCustom}
+                    onToggle={cp2.setUseCustom}
+                    customPrompt={cp2.customPrompt}
+                    onPromptChange={cp2.setCustomPrompt}
+                    customCueCard={cp2.customCueCard}
+                    onCueCardChange={cp2.setCustomCueCard}
+                    showCueCard={true}
+                    saving={cp2.saving}
+                    onSave={cp2.savePrompt}
+                    taskType="speaking_part2"
+                  />
+                </>
+              )}
+
+              {(currentPart === 1 && part1Loading) || (currentPart === 3 && part3Loading) ? (
+                <div style={{ textAlign: "center", padding: "32px 12px" }}>
+                  <Waveform active={true} color={partColors[currentPart]} />
+                  <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.textMuted, marginTop: 10 }}>
+                    {currentPart === 1 ? "Loading your topics…" : "Generating your Part 3 questions…"}
+                  </div>
                 </div>
-                <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{activeTopic.prompt}</p>
-              </div>
+              ) : (
+                <>
+                  {!(currentPart === 2 && cp2.useCustom) && (
+                    <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 6 }}>
+                      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: partColors[currentPart], textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
+                        Part {currentPart} — {partLabels[currentPart]}
+                      </div>
+                      <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{activeTopic.prompt}</p>
+                    </div>
+                  )}
 
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 7, padding: "8px 12px", marginBottom: 14 }}>
-                <span style={{ fontSize: 16, marginTop: 1 }}>💡</span>
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, lineHeight: 1.6 }}>{partHints[currentPart]}</span>
-              </div>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: 7, padding: "8px 12px", marginBottom: 14 }}>
+                    <span style={{ fontSize: 16, marginTop: 1 }}>💡</span>
+                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, lineHeight: 1.6 }}>{partHints[currentPart]}</span>
+                  </div>
 
-              <VoiceRecorder
-                key={`recorder-${currentPart}`}
-                partColor={partColors[currentPart]}
-                onTranscriptReady={savePartTranscript}
-                userId={userId}
-              />
+                  <VoiceRecorder
+                    key={`recorder-${currentPart}`}
+                    partColor={partColors[currentPart]}
+                    onTranscriptReady={savePartTranscript}
+                    userId={userId}
+                  />
+                </>
+              )}
             </>
           )}
 
