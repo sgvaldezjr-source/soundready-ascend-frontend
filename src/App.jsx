@@ -2489,7 +2489,20 @@ function SpeakingPractice({ supabase, userId }) {
                     onCueCardChange={cp2.setCustomCueCard}
                     showCueCard={true}
                     saving={cp2.saving}
-                    onSave={cp2.savePrompt}
+                    onSave={async (prompt, cueCard) => {
+                      await cp2.savePrompt(prompt, cueCard);
+                      if (supabase && userId && prompt?.trim()) {
+                        try {
+                          await supabase.from("part2_topics").insert({
+                            topic_prompt: prompt.trim(),
+                            cue_card: cueCard || null,
+                            submitted_by: userId,
+                          });
+                        } catch (err) {
+                          console.error("Failed to save part2_topics entry:", err);
+                        }
+                      }
+                    }}
                     taskType="speaking_part2"
                   />
                 </>
