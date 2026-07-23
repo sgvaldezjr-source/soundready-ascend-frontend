@@ -3148,6 +3148,36 @@ function AvatarMenu({ email, onLogout, onAdmin, onProfile }) {
   );
 }
 
+function Sidebar({ tab, setTab }) {
+  const t = useLang();
+  const items = [
+    { id: "dashboard", label: t.tabDashboard, icon: "🏠" },
+    { id: "writing",   label: t.tabWriting,   icon: "✍️" },
+    { id: "speaking",  label: t.tabSpeaking,  icon: "🎤" },
+    { id: "history",   label: t.tabHistory,   icon: "📊" },
+    { id: "lessons",   label: "Lessons",      icon: "📚" },
+    { id: "resources", label: "Resources",    icon: "📄" },
+  ];
+  return (
+    <div className="sr-sidebar" style={{ flexDirection: "column", width: 220, flexShrink: 0, position: "sticky", top: 24, alignSelf: "flex-start", gap: 4, padding: "8px 0" }}>
+      {items.map(it => (
+        <button key={it.id} onClick={() => setTab(it.id)} style={{
+          display: "flex", alignItems: "center", gap: 10,
+          padding: "10px 14px", borderRadius: 10, border: "none",
+          background: tab === it.id ? C.accent + "18" : "transparent",
+          color: tab === it.id ? C.accent : C.textMuted,
+          fontFamily: "'Inter', sans-serif", fontSize: 14,
+          fontWeight: tab === it.id ? 700 : 500, cursor: "pointer",
+          textAlign: "left", width: "100%", transition: "all 0.15s",
+        }}>
+          <span style={{ fontSize: 16 }}>{it.icon}</span>
+          {it.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function NavTabs({ tab, setTab }) {
   const t = useLang();
   const tabs = [
@@ -3252,8 +3282,17 @@ export default function App({ supabase, session, onAdmin, onProfile }) {
           @keyframes wave { from{height:4px} to{height:40px} }
           input, textarea, select { color: ${C.text}; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
           textarea::placeholder { color: ${C.textDim}; }
+          .sr-sidebar { display: none; }
+          .sr-top-tabs { display: block; }
+          @media (min-width: 1280px) {
+            .sr-sidebar { display: flex; }
+            .sr-top-tabs { display: none; }
+            .sr-center-col { max-width: 900px !important; }
+          }
         `}</style>
-        <div style={{ maxWidth: 720, margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column", width: "100%" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: 24, width: "100%", minHeight: "100vh" }}>
+        <Sidebar tab={tab} setTab={setTab} />
+        <div className="sr-center-col" style={{ maxWidth: 720, minHeight: "100vh", display: "flex", flexDirection: "column", width: "100%" }}>
           <div style={{ padding: "16px clamp(18px, 5vw, 120px) 0", borderBottom: `1px solid ${C.border}`, background: C.bg, position: "sticky", top: 0, zIndex: 10, boxShadow: "0 2px 12px rgba(27,42,58,0.08)" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 13 }}>
               <div style={{ width: 80, display: "flex", flexDirection: "column", gap: 6 }}>
@@ -3268,7 +3307,9 @@ export default function App({ supabase, session, onAdmin, onProfile }) {
                 <AvatarMenu email={userEmail} onLogout={handleLogout} onAdmin={isAdmin ? onAdmin : null} onProfile={onProfile} />
               </div>
             </div>
-            <NavTabs tab={tab} setTab={setTab} />
+            <div className="sr-top-tabs">
+              <NavTabs tab={tab} setTab={setTab} />
+            </div>
           </div>
 
           <div style={{ padding: "18px 20px", flex: 1 }}>
@@ -3333,6 +3374,7 @@ export default function App({ supabase, session, onAdmin, onProfile }) {
 
           <Footer onLegal={setLegalModal} />
           {legalModal && <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />}
+        </div>
         </div>
       </>
     </LangProvider>
