@@ -2176,6 +2176,27 @@ function Portfolio({ supabase, userId }) {
   );
 }
 
+// Classifies CEFR level from Part 1+2 transcripts to calibrate Part 3 question
+// difficulty. Any failure (network, bad shape, invalid level) resolves to "B2"
+// rather than rejecting, so callers never need their own fallback logic.
+async function fetchCefrLevel(part1Transcript, part2Transcript, userId) {
+  try {
+    const res = await fetch(`${PROXY}/assess-cefr-level`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-user-id": userId },
+      body: JSON.stringify({ part1Transcript, part2Transcript }),
+    });
+    const data = await res.json();
+    if (!["B1", "B2", "C1"].includes(data.level)) {
+      throw new Error("Unexpected response shape from /assess-cefr-level");
+    }
+    return data.level;
+  } catch (err) {
+    console.error("CEFR level assessment failed, defaulting to B2:", err);
+    return "B2";
+  }
+}
+
 // ─── SPEAKING PRACTICE (NEW HOLISTIC 3-PART FLOW) ────────────────────────────
 function SpeakingPractice({ supabase, userId }) {
   const t = useLang();
@@ -2206,6 +2227,10 @@ function SpeakingPractice({ supabase, userId }) {
   // Part 3: functional type picked once per session, and generation loading state
   const [functionalType, setFunctionalType] = useState(null);
   const [part3Loading, setPart3Loading] = useState(false);
+  // In-flight CEFR assessment, kicked off as soon as Part 2 is saved so it resolves
+  // hidden behind the 1200ms auto-advance delay instead of adding visible latency
+  // to the "Generating your Part 3 questions…" spinner.
+  const cefrAssessmentRef = useRef(null);
 
   // Supabase session row id
   const [sessionRowId, setSessionRowId] = useState(null);
@@ -2348,11 +2373,16 @@ function SpeakingPractice({ supabase, userId }) {
     const ft = functionalType || FUNCTIONAL_TYPES[Math.floor(Math.random() * FUNCTIONAL_TYPES.length)];
     if (!functionalType) setFunctionalType(ft);
 
-    fetch(`${PROXY}/generate-part3-questions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-user-id": userId },
-      body: JSON.stringify({ part2Topic: partQuestions[2], functionalType: ft }),
-    })
+    // Normally already in flight from savePartTranscript when Part 2 was saved;
+    // fire it fresh here only as a defensive fallback (e.g. direct navigation to Part 3).
+    const cefrPromise = cefrAssessmentRef.current || fetchCefrLevel(partTranscripts[1], partTranscripts[2], userId);
+
+    cefrPromise
+      .then(cefrLevel => fetch(`${PROXY}/generate-part3-questions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-user-id": userId },
+        body: JSON.stringify({ part2Topic: partQuestions[2], functionalType: ft, cefrLevel }),
+      }))
       .then(res => res.json())
       .then(data => {
         if (cancelled) return;
@@ -2429,6 +2459,7 @@ function SpeakingPractice({ supabase, userId }) {
     if (currentPart < 3) {
       if (currentPart === 2) {
         setFunctionalType(FUNCTIONAL_TYPES[Math.floor(Math.random() * FUNCTIONAL_TYPES.length)]);
+        cefrAssessmentRef.current = fetchCefrLevel(updatedTranscripts[1], updatedTranscripts[2], userId);
       }
       setTimeout(() => setCurrentPart(currentPart + 1), 1200);
     }
