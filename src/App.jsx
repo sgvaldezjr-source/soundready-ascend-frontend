@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, createContext, useContext } from "react";
+import { useState, useRef, useEffect, useMemo, createContext, useContext } from "react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 import LessonViewer from './components/LessonViewer/LessonViewer';
 import SkillTree from './components/SkillTree/SkillTree';
@@ -1766,6 +1766,78 @@ function AudioPlayer({ audioUrl, color }) {
   );
 }
 
+// ─── PROMPT CAROUSEL ─────────────────────────────────────────────────────────
+// Only [TOPIC N]-tagged text (Part 1's combined prompt) is split on blank lines.
+// Part 2 cue cards also contain blank lines (title / "you should say" bullets /
+// timing) but must stay on one slide, so blank-line splitting is gated on the
+// topic tag. Text with no blank lines at all (Part 3's questions, joined with
+// a single "\n") splits one line per slide instead.
+function splitPromptIntoSlides(text) {
+  if (!text) return [{ header: null, body: "" }];
+  const blocks = text.split(/\n\n+/).filter(b => b.trim());
+  const hasTopicTags = blocks.some(b => /^\[TOPIC \d+\]/.test(b.trim()));
+  let source;
+  if (hasTopicTags && blocks.length > 1) {
+    source = blocks;
+  } else if (blocks.length <= 1) {
+    source = text.split("\n").filter(l => l.trim());
+  } else {
+    source = [text.trim()];
+  }
+  return source.map((block, i) => {
+    const topicMatch = block.match(/^\[TOPIC (\d+)\]\s*(.*)$/s);
+    if (topicMatch) {
+      const rest = topicMatch[2];
+      const [label, ...bodyLines] = rest.split("\n");
+      return { header: `Topic ${topicMatch[1]}${label ? `: ${label}` : ""}`, body: bodyLines.join("\n").trim() || label };
+    }
+    return { header: source.length > 1 ? `${i + 1} of ${source.length}` : null, body: block.trim() };
+  });
+}
+
+function PromptCarousel({ text, color }) {
+  const slides = useMemo(() => splitPromptIntoSlides(text), [text]);
+  const [idx, setIdx] = useState(0);
+  useEffect(() => { setIdx(0); }, [text]);
+  const active = Math.min(idx, slides.length - 1);
+  return (
+    <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 6, minHeight: 150, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+      {/* All slides are stacked in the same grid cell so the row auto-sizes to the
+          tallest one — keeps this box (and the Record button below it) a constant
+          height across slides even though wrapped line counts differ per slide. */}
+      <div style={{ display: "grid" }}>
+        {slides.map((slide, i) => (
+          <div key={i} style={{ gridColumn: 1, gridRow: 1, visibility: i === active ? "visible" : "hidden" }} aria-hidden={i !== active}>
+            {slide.header && (
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color, fontWeight: 700, marginBottom: 6 }}>
+                {slide.header}
+              </div>
+            )}
+            <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{slide.body}</p>
+          </div>
+        ))}
+      </div>
+      {slides.length > 1 && (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 12 }}>
+          <button onClick={() => setIdx(i => Math.max(0, i - 1))} disabled={idx === 0}
+            style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: idx === 0 ? "transparent" : C.surface, color: idx === 0 ? C.textDim : C.text, cursor: idx === 0 ? "default" : "pointer", fontFamily: "'Inter', sans-serif", fontSize: 13 }}>
+            ← Prev
+          </button>
+          <div style={{ display: "flex", gap: 5 }}>
+            {slides.map((_, i) => (
+              <div key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: i === idx ? color : C.border }} />
+            ))}
+          </div>
+          <button onClick={() => setIdx(i => Math.min(slides.length - 1, i + 1))} disabled={idx === slides.length - 1}
+            style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: idx === slides.length - 1 ? "transparent" : C.surface, color: idx === slides.length - 1 ? C.textDim : C.text, cursor: idx === slides.length - 1 ? "default" : "pointer", fontFamily: "'Inter', sans-serif", fontSize: 13 }}>
+            Next →
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── VOICE RECORDER ──────────────────────────────────────────────────────────
 function VoiceRecorder({ partColor, onTranscriptReady, userId }) {
   const t = useLang();
@@ -2518,12 +2590,12 @@ function SpeakingPractice({ supabase, userId }) {
               ) : (
                 <>
                   {!(currentPart === 2 && cp2.useCustom) && (
-                    <div style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 11, padding: "12px 14px", marginBottom: 6 }}>
+                    <>
                       <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: partColors[currentPart], textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
                         Part {currentPart} — {partLabels[currentPart]}
                       </div>
-                      <p style={{ color: C.text, fontSize: 16, lineHeight: 1.75, margin: 0, whiteSpace: "pre-line" }}>{activeTopic.prompt}</p>
-                    </div>
+                      <PromptCarousel text={activeTopic.prompt} color={partColors[currentPart]} />
+                    </>
                   )}
 
                   <div style={{ display: "flex", alignItems: "flex-start", gap: 7, padding: "8px 12px", marginBottom: 14 }}>
