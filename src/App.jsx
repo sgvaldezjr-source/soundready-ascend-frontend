@@ -2198,7 +2198,9 @@ function SpeakingPractice({ supabase, userId }) {
   const [part1PoolTopics, setPart1PoolTopics] = useState([]);
   const [part1Loading, setPart1Loading] = useState(true);
 
-  // Part 2: free-text custom prompt
+  // Part 2: randomly-picked topic for this session (from part2_topics), plus free-text custom override
+  const [part2PoolTopic, setPart2PoolTopic] = useState(null);
+  const [part2Loading, setPart2Loading] = useState(true);
   const cp2 = useCustomPrompt(supabase, "speaking_part2", userId);
 
   // Part 3: functional type picked once per session, and generation loading state
@@ -2283,6 +2285,58 @@ function SpeakingPractice({ supabase, userId }) {
 
   useEffect(() => { pickPart1Topics(); }, []);
 
+  // Fetch part2_topics archive (only status "approved" rows — excludes the moderation
+  // queue for pending user-submitted prompts), filter out topics used in the last ~5
+  // sessions, pick 1 at random. Falls back to the static SPEAKING_TOPICS[2] set if
+  // Supabase is unavailable, the fetch fails, or the archive is empty. The table has
+  // no label column, so topic_prompt itself doubles as the display label.
+  async function pickPart2Topics() {
+    setPart2Loading(true);
+    try {
+      if (supabase) {
+        const { data: allTopics, error: topicsErr } = await supabase
+          .from("part2_topics")
+          .select("id, topic_prompt, cue_card")
+          .eq("status", "approved");
+
+        if (!topicsErr && allTopics && allTopics.length > 0) {
+          let usedIds = new Set();
+          if (userId) {
+            const { data: recentSessions } = await supabase
+              .from("speaking_sessions")
+              .select("part2_topic_id")
+              .eq("user_id", userId)
+              .order("created_at", { ascending: false })
+              .limit(5);
+            usedIds = new Set((recentSessions || []).map(s => s.part2_topic_id).filter(Boolean));
+          }
+
+          let available = allTopics.filter(tp => !usedIds.has(tp.id));
+          if (available.length === 0) available = allTopics;
+
+          const picked = available[Math.floor(Math.random() * available.length)];
+          const prompt = `${picked.topic_prompt}\n\n${picked.cue_card}\n\nYou have one minute to prepare. Then speak for 1–2 minutes.`;
+
+          setPart2PoolTopic({ id: picked.id, label: picked.topic_prompt });
+          setTopics(prev => ({ ...prev, 2: { id: `part2-${picked.id}`, label: picked.topic_prompt, prompt } }));
+          return;
+        }
+      }
+      const fallback = SPEAKING_TOPICS[2][Math.floor(Math.random() * SPEAKING_TOPICS[2].length)];
+      setPart2PoolTopic(null);
+      setTopics(prev => ({ ...prev, 2: fallback }));
+    } catch (err) {
+      console.error("Failed to load Part 2 topic pool:", err);
+      const fallback = SPEAKING_TOPICS[2][Math.floor(Math.random() * SPEAKING_TOPICS[2].length)];
+      setPart2PoolTopic(null);
+      setTopics(prev => ({ ...prev, 2: fallback }));
+    } finally {
+      setPart2Loading(false);
+    }
+  }
+
+  useEffect(() => { pickPart2Topics(); }, []);
+
   // Generate Part 3 questions from Part 2's topic once Part 3 loads
   useEffect(() => {
     if (currentPart !== 3) return;
@@ -2335,6 +2389,7 @@ function SpeakingPractice({ supabase, userId }) {
       try {
         const extraFields = {};
         if (currentPart === 1) extraFields.part1_topic_ids = part1PoolTopics.map(p => p.id);
+        if (currentPart === 2 && part2PoolTopic) extraFields.part2_topic_id = part2PoolTopic.id;
         if (currentPart === 3) extraFields.part3_functional_type = functionalType;
 
         if (!sessionRowId) {
@@ -2472,7 +2527,9 @@ function SpeakingPractice({ supabase, userId }) {
     setTopics({ 1: SPEAKING_TOPICS[1][0], 2: SPEAKING_TOPICS[2][0], 3: SPEAKING_TOPICS[3][0] });
     setFunctionalType(null);
     setPart3Loading(false);
+    setPart2PoolTopic(null);
     pickPart1Topics();
+    pickPart2Topics();
   }
 
   return (
@@ -2543,15 +2600,6 @@ function SpeakingPractice({ supabase, userId }) {
             <>
               {currentPart === 2 && (
                 <>
-                  <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: C.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>{t.topic}</div>
-                  <div style={{ display: "flex", gap: 6, marginBottom: 13, flexWrap: "wrap" }}>
-                    {SPEAKING_TOPICS[2].map(tp => (
-                      <Pill key={tp.id} active={activeTopic.id === tp.id}
-                        onClick={() => setTopics({ ...topics, 2: tp })}
-                        color={partColors[2]}>{tp.label}</Pill>
-                    ))}
-                  </div>
-
                   <CustomPromptToggle
                     useCustom={cp2.useCustom}
                     onToggle={cp2.setUseCustom}
@@ -2580,11 +2628,11 @@ function SpeakingPractice({ supabase, userId }) {
                 </>
               )}
 
-              {(currentPart === 1 && part1Loading) || (currentPart === 3 && part3Loading) ? (
+              {(currentPart === 1 && part1Loading) || (currentPart === 2 && part2Loading && !cp2.useCustom) || (currentPart === 3 && part3Loading) ? (
                 <div style={{ textAlign: "center", padding: "32px 12px" }}>
                   <Waveform active={true} color={partColors[currentPart]} />
                   <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.textMuted, marginTop: 10 }}>
-                    {currentPart === 1 ? "Loading your topics…" : "Generating your Part 3 questions…"}
+                    {currentPart === 1 ? "Loading your topics…" : currentPart === 2 ? "Loading your topic…" : "Generating your Part 3 questions…"}
                   </div>
                 </div>
               ) : (
