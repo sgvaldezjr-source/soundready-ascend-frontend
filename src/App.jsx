@@ -1473,7 +1473,7 @@ function safeParseJSON(raw) {
   const end = raw.lastIndexOf("}");
   if (start === -1 || end === -1) throw new Error("No JSON object found in response");
   let str = raw.slice(start, end + 1);
-  str = str.replace(/[\u2018\u2019]/g, "\\'").replace(/[\u201C\u201D]/g, '\\"');
+  str = str.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '\\"');
   try { return JSON.parse(str); } catch {}
   let result = "";
   let inString = false;
