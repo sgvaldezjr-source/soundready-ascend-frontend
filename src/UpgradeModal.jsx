@@ -18,7 +18,7 @@ export default function UpgradeModal({ type, onClose, supabase, userEmail }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const label = type === "writing" ? "writing" : "speaking";
+  const label = type === "writing" ? "writing" : type === "speaking" ? "speaking" : "writing and speaking";
 
   async function handleWaitlist(e) {
     e.preventDefault();
@@ -45,7 +45,7 @@ export default function UpgradeModal({ type, onClose, supabase, userEmail }) {
         {!submitted ? (
           <>
             <h2 style={styles.heading}>
-              You've used your 2 free {label} sessions
+              Premium is coming soon
             </h2>
             <p style={styles.sub}>
               SoundReady Ascend is growing fast. Join the waitlist to get early

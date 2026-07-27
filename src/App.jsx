@@ -4,6 +4,7 @@ import LessonViewer from './components/LessonViewer/LessonViewer';
 import SkillTree from './components/SkillTree/SkillTree';
 import PdfLibrary from './components/PdfViewer/PdfLibrary';
 import PdfViewer from './components/PdfViewer/PdfViewer';
+import UpgradeModal from './UpgradeModal';
 
 // ─── BACKEND PROXY ───────────────────────────────────────────────────────────
 const PROXY = "https://web-production-e43ad.up.railway.app";
@@ -3115,9 +3116,10 @@ function Footer({ onLegal }) {
   );
 }
 
-function AvatarMenu({ email, onLogout, onAdmin, onProfile }) {
+function AvatarMenu({ email, onLogout, onAdmin, onProfile, supabase }) {
   const t = useLang();
   const [open, setOpen] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const initial = email ? email[0].toUpperCase() : "?";
 
   return (
@@ -3156,7 +3158,7 @@ function AvatarMenu({ email, onLogout, onAdmin, onProfile }) {
                   fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.blue, fontWeight: 600,
                 }}>{t.adminPanel}</button>
               )}
-              <button onClick={() => setOpen(false)} style={{
+              <button onClick={() => { setOpen(false); setShowUpgrade(true); }} style={{
                 width: "100%", padding: "9px 16px", background: "transparent",
                 border: "none", textAlign: "left", cursor: "pointer",
                 fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.accent, fontWeight: 700,
@@ -3170,6 +3172,14 @@ function AvatarMenu({ email, onLogout, onAdmin, onProfile }) {
             </div>
           </div>
         </>
+      )}
+
+      {showUpgrade && (
+        <UpgradeModal
+          onClose={() => setShowUpgrade(false)}
+          supabase={supabase}
+          userEmail={email}
+        />
       )}
     </div>
   );
@@ -3331,7 +3341,7 @@ export default function App({ supabase, session, onAdmin, onProfile }) {
                 <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, textTransform: "uppercase", letterSpacing: 3, marginTop: 2 }}>Ascend</div>
               </div>
               <div style={{ width: 80, display: "flex", justifyContent: "flex-end", position: "relative" }}>
-                <AvatarMenu email={userEmail} onLogout={handleLogout} onAdmin={isAdmin ? onAdmin : null} onProfile={onProfile} />
+                <AvatarMenu email={userEmail} onLogout={handleLogout} onAdmin={isAdmin ? onAdmin : null} onProfile={onProfile} supabase={supabase} />
               </div>
             </div>
             <div className="sr-top-tabs">
