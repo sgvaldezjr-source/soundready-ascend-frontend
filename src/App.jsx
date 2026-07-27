@@ -5,10 +5,6 @@ import SkillTree from './components/SkillTree/SkillTree';
 import PdfLibrary from './components/PdfViewer/PdfLibrary';
 import PdfViewer from './components/PdfViewer/PdfViewer';
 
-function LessonSelector() {
-  return null;
-}
-
 // ─── BACKEND PROXY ───────────────────────────────────────────────────────────
 const PROXY = "https://web-production-e43ad.up.railway.app";
 
