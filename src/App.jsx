@@ -7,7 +7,10 @@ import PdfViewer from './components/PdfViewer/PdfViewer';
 import UpgradeModal from './UpgradeModal';
 
 // ─── BACKEND PROXY ───────────────────────────────────────────────────────────
-const PROXY = "https://web-production-e43ad.up.railway.app";
+// Override with VITE_BACKEND_URL to point at a local backend. Vite inlines this
+// at build time, so the value comes from whichever .env the build ran against -
+// or from Netlify's environment variables in CI.
+const PROXY = import.meta.env.VITE_BACKEND_URL || "https://web-production-e43ad.up.railway.app";
 
 // ─── THEME — SoundReady English Light Mode ───────────────────────────────────
 const C = {
@@ -687,6 +690,10 @@ const SPEAKING_TOPICS = {
 
 const FUNCTIONAL_TYPES = ["list", "compare_contrast", "cause_effect", "process"];
 
+// Part 3 runs as a turn-by-turn discussion: one generated question per round,
+// each one reacting to the answer before it.
+const PART3_MAX_ROUNDS = 5;
+
 // ─── AI PROMPT BUILDERS ───────────────────────────────────────────────────────
 // FIXED: clean, single JSON template with WRITING fields (not speaking)
 function buildWritingPrompt(taskType, topicPrompt, response) {
@@ -787,7 +794,16 @@ PROMPT: ${topicPrompt}
 ESSAY: ${response}`;
 }
 
-function buildHolisticSpeakingPrompt(part1Q, part1T, part2Q, part2T, part3Q, part3T, functionalType) {
+// part3History is an array of { question, answer } - one entry per discussion
+// round - so the scorer sees every exchange rather than only the final one.
+function buildHolisticSpeakingPrompt(part1Q, part1T, part2Q, part2T, part3History, functionalType) {
+  const history = Array.isArray(part3History) ? part3History : [];
+  const part3Block = history.length
+    ? history
+        .map((turn, i) => `Q${i + 1}: ${turn.question}\nA${i + 1}: ${turn.answer || "(no answer recorded)"}`)
+        .join("\n\n")
+    : "(no Part 3 discussion recorded)";
+
   return `You are a senior IELTS Speaking examiner with 15 years of experience. Your job is to score accurately — not kindly. Band inflation is a serious professional failure. A student who receives Band 6 when they deserve Band 5 will be unprepared for their real exam.
 
 SCORING PHILOSOPHY:
@@ -863,9 +879,10 @@ PART 2 — Long Turn
 Question: ${part2Q}
 Transcript: ${part2T}
 
-PART 3 — Discussion
-Question: ${part3Q}
-Transcript: ${part3T}`;
+PART 3 — Discussion (${history.length} exchange${history.length === 1 ? "" : "s"})
+Score the discussion as a whole. Later answers carry more weight than the opening one, because the candidate has warmed up by then.
+
+${part3Block}`;
 }
 
 // ─── PDF EXPORT (FIXED template literals) ────────────────────────────────────
@@ -2229,6 +2246,16 @@ function SpeakingPractice({ supabase, userId }) {
   // to the "Generating your Part 3 questions…" spinner.
   const cefrAssessmentRef = useRef(null);
 
+  // Part 3 turn-by-turn discussion state
+  const [part3History, setPart3History] = useState([]);          // [{ question, answer }]
+  const [part3Round, setPart3Round] = useState(1);               // 1..PART3_MAX_ROUNDS
+  const [part3CurrentQuestion, setPart3CurrentQuestion] = useState("");
+  const [part3Thinking, setPart3Thinking] = useState(false);     // between-round generation
+  const [part3Complete, setPart3Complete] = useState(false);
+  // Static fallback bank, fetched once and cached for the rest of the session so a
+  // failing generation never costs a second round trip.
+  const part3FallbackRef = useRef(null);
+
   // Supabase session row id
   const [sessionRowId, setSessionRowId] = useState(null);
 
@@ -2359,10 +2386,68 @@ function SpeakingPractice({ supabase, userId }) {
 
   useEffect(() => { pickPart2Topics(); }, []);
 
-  // Generate Part 3 questions from Part 2's topic once Part 3 loads
+  // Fetches the static fallback bank once and caches it. Falls back again to the
+  // hardcoded SPEAKING_TOPICS[3] set if even this request fails, so a question is
+  // always available and the student is never blocked.
+  async function getPart3FallbackQuestion(ft, roundIndex) {
+    if (!part3FallbackRef.current) {
+      try {
+        const res = await fetch(`${PROXY}/part3-fallback-questions`);
+        const bank = await res.json();
+        if (bank && typeof bank === "object") part3FallbackRef.current = bank;
+      } catch (err) {
+        console.error("Part 3 fallback bank fetch failed:", err);
+      }
+    }
+    const bank = part3FallbackRef.current;
+    const list = bank?.[ft] || bank?.list;
+    if (Array.isArray(list) && list.length) {
+      return list[roundIndex % list.length];
+    }
+    // Last resort: split a static topic's multi-line prompt into single questions.
+    const staticTopic = SPEAKING_TOPICS[3][roundIndex % SPEAKING_TOPICS[3].length];
+    const lines = staticTopic.prompt.split("\n").filter(Boolean);
+    return lines[roundIndex % lines.length] || staticTopic.prompt;
+  }
+
+  // Requests one adaptive question for the given round. Never throws - on any
+  // failure or timeout it resolves to a fallback question instead, because a
+  // blocked student is worse than a slightly generic question.
+  async function requestPart3Question(ft, history, roundNumber) {
+    try {
+      // cefrAssessmentRef holds a PROMISE (set when Part 2 was saved), not a value,
+      // and is null if the student jumped straight to Part 3 without going through
+      // the Part 2 save - hence the await and the defensive re-fire.
+      const cefrLevel = await (cefrAssessmentRef.current
+        || fetchCefrLevel(partTranscripts[1], partTranscripts[2], userId));
+
+      const res = await fetch(`${PROXY}/generate-next-part3-question`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-user-id": userId },
+        body: JSON.stringify({
+          part2Topic: partQuestions[2],
+          functionalType: ft,
+          cefrLevel,
+          history,
+          roundNumber,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || typeof data.next_question !== "string" || !data.next_question.trim()) {
+        throw new Error(data.error || `Unexpected response from /generate-next-part3-question (${res.status})`);
+      }
+      return data.next_question.trim();
+    } catch (err) {
+      console.error(`Part 3 round ${roundNumber} generation failed, using fallback:`, err);
+      return getPart3FallbackQuestion(ft, roundNumber - 1);
+    }
+  }
+
+  // Opening question for round 1, fired when the student first reaches Part 3.
   useEffect(() => {
     if (currentPart !== 3) return;
-    if (topics[3]?.id === "part3-generated" || topics[3]?.id === "part3-fallback") return;
+    if (part3Complete) return;
+    if (part3CurrentQuestion || part3History.length > 0) return;  // already started or resumed
 
     let cancelled = false;
     setPart3Loading(true);
@@ -2370,34 +2455,14 @@ function SpeakingPractice({ supabase, userId }) {
     const ft = functionalType || FUNCTIONAL_TYPES[Math.floor(Math.random() * FUNCTIONAL_TYPES.length)];
     if (!functionalType) setFunctionalType(ft);
 
-    // Normally already in flight from savePartTranscript when Part 2 was saved;
-    // fire it fresh here only as a defensive fallback (e.g. direct navigation to Part 3).
-    const cefrPromise = cefrAssessmentRef.current || fetchCefrLevel(partTranscripts[1], partTranscripts[2], userId);
-
-    cefrPromise
-      .then(cefrLevel => fetch(`${PROXY}/generate-part3-questions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-user-id": userId },
-        body: JSON.stringify({ part2Topic: partQuestions[2], functionalType: ft, cefrLevel }),
-      }))
-      .then(res => res.json())
-      .then(data => {
+    requestPart3Question(ft, [], 1)
+      .then(question => {
         if (cancelled) return;
-        if (!Array.isArray(data.questions) || data.questions.length !== 3) {
-          throw new Error("Unexpected response shape from /generate-part3-questions");
-        }
+        setPart3Round(1);
+        setPart3CurrentQuestion(question);
         setTopics(prev => ({
           ...prev,
-          3: { id: "part3-generated", label: `Discussion (${ft})`, prompt: data.questions.join("\n") },
-        }));
-      })
-      .catch(err => {
-        console.error("Part 3 question generation failed, using static fallback:", err);
-        if (cancelled) return;
-        const fallback = SPEAKING_TOPICS[3][Math.floor(Math.random() * SPEAKING_TOPICS[3].length)];
-        setTopics(prev => ({
-          ...prev,
-          3: { id: "part3-fallback", label: fallback.label, prompt: fallback.prompt },
+          3: { id: "part3-discussion", label: `Discussion (${ft})`, prompt: question },
         }));
       })
       .finally(() => { if (!cancelled) setPart3Loading(false); });
@@ -2462,6 +2527,126 @@ function SpeakingPractice({ supabase, userId }) {
     }
   }
 
+  const flattenPart3Questions = h => h.map((t, i) => `Q${i + 1}: ${t.question}`).join("\n\n");
+  const flattenPart3Answers = h => h.map((t, i) => `A${i + 1}: ${t.answer}`).join("\n\n");
+
+  // Part 3's per-round handler, used instead of savePartTranscript while the
+  // discussion is running. Persists the answer BEFORE requesting the next
+  // question so a dropped connection cannot lose what the student just said.
+  async function savePart3Answer(transcript) {
+    const newHistory = [...part3History, { question: part3CurrentQuestion, answer: transcript }];
+    setPart3History(newHistory);
+
+    const isFinalRound = part3Round >= PART3_MAX_ROUNDS;
+
+    if (supabase && userId) {
+      try {
+        const row = {
+          part3_qa_history: newHistory,
+          part3_functional_type: functionalType,
+          // Flattened copies keep the pre-existing part3_question/part3_transcript
+          // columns meaningful for anything still reading the single-string shape.
+          part3_question: flattenPart3Questions(newHistory),
+          part3_transcript: flattenPart3Answers(newHistory),
+        };
+        if (sessionRowId) {
+          await supabase.from("speaking_sessions").update(row).eq("id", sessionRowId);
+        } else {
+          // Only reachable if every earlier save failed - recreate the row rather
+          // than silently dropping the discussion.
+          const { data, error } = await supabase
+            .from("speaking_sessions")
+            .insert({ user_id: userId, status: "in_progress", ...row })
+            .select()
+            .single();
+          if (!error && data) setSessionRowId(data.id);
+        }
+      } catch (err) {
+        console.error("Failed to save Part 3 answer:", err);
+      }
+    }
+
+    setJustSaved(true);
+    setTimeout(() => setJustSaved(false), 2500);
+
+    if (isFinalRound) {
+      // partTranscripts[3] is only filled in now, at the end: it drives
+      // allPartsSaved, which swaps the recorder out for the Get Results button.
+      // Setting it earlier would end the discussion after round 1.
+      setPartTranscripts(prev => ({ ...prev, 3: flattenPart3Answers(newHistory) }));
+      setPartQuestions(prev => ({ ...prev, 3: flattenPart3Questions(newHistory) }));
+      setPart3Complete(true);
+      setPart3CurrentQuestion("");
+      return;
+    }
+
+    const nextRound = part3Round + 1;
+    const ft = functionalType || FUNCTIONAL_TYPES[0];
+    setPart3Round(nextRound);
+    setPart3Thinking(true);
+    const question = await requestPart3Question(ft, newHistory, nextRound);
+    setPart3CurrentQuestion(question);
+    setTopics(prev => ({ ...prev, 3: { ...prev[3], prompt: question } }));
+    setPart3Thinking(false);
+  }
+
+  // Resume an interrupted Part 3 after a reload. sessionRowId lives only in
+  // component state, so on mount it is always null - resuming therefore means
+  // looking the row up by user and status, not by id.
+  useEffect(() => {
+    if (!supabase || !userId) return;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("speaking_sessions")
+          .select("id, part1_question, part1_transcript, part2_question, part2_transcript, part3_qa_history, part3_functional_type")
+          .eq("user_id", userId)
+          .eq("status", "in_progress")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (cancelled || !data) return;
+        const saved = Array.isArray(data.part3_qa_history) ? data.part3_qa_history : [];
+        if (saved.length === 0) return;  // not mid-discussion; leave the fresh session alone
+
+        const ft = data.part3_functional_type || FUNCTIONAL_TYPES[0];
+        setSessionRowId(data.id);
+        setPart3History(saved);
+        if (data.part3_functional_type) setFunctionalType(data.part3_functional_type);
+        // Parts 1 and 2 are restored only as data - their selection flow is untouched.
+        // Without them allPartsSaved can never become true and scoring has no input.
+        setPartTranscripts(prev => ({ ...prev, 1: data.part1_transcript, 2: data.part2_transcript }));
+        setPartQuestions(prev => ({ ...prev, 1: data.part1_question, 2: data.part2_question }));
+        setCurrentPart(3);
+
+        if (saved.length >= PART3_MAX_ROUNDS) {
+          // Discussion finished but scoring never ran - restore straight to done.
+          setPart3Round(PART3_MAX_ROUNDS);
+          setPart3Complete(true);
+          setPartTranscripts(prev => ({ ...prev, 3: flattenPart3Answers(saved) }));
+          setPartQuestions(prev => ({ ...prev, 3: flattenPart3Questions(saved) }));
+          return;
+        }
+
+        const nextRound = saved.length + 1;
+        setPart3Round(nextRound);
+        setPart3Thinking(true);
+        const question = await requestPart3Question(ft, saved, nextRound);
+        if (cancelled) return;
+        setPart3CurrentQuestion(question);
+        setTopics(prev => ({ ...prev, 3: { id: "part3-discussion", label: `Discussion (${ft})`, prompt: question } }));
+        setPart3Thinking(false);
+      } catch (err) {
+        console.error("Part 3 resume check failed:", err);
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [userId]);
+
   // Submit all 3 parts to holistic backend endpoint
   async function getHolisticResults() {
     if (!allPartsSaved) {
@@ -2473,10 +2658,12 @@ function SpeakingPractice({ supabase, userId }) {
     setView("loading");
 
     try {
+      // Part 3 now goes to the scorer as the full Q&A history - all rounds, not
+      // just a single flattened question/transcript pair.
       const combinedPrompt = buildHolisticSpeakingPrompt(
         partQuestions[1], partTranscripts[1],
         partQuestions[2], partTranscripts[2],
-        partQuestions[3], partTranscripts[3],
+        part3History,
         functionalType || "list"
       );
 
@@ -2555,6 +2742,12 @@ function SpeakingPractice({ supabase, userId }) {
     setTopics({ 1: SPEAKING_TOPICS[1][0], 2: SPEAKING_TOPICS[2][0], 3: SPEAKING_TOPICS[3][0] });
     setFunctionalType(null);
     setPart3Loading(false);
+    setPart3History([]);
+    setPart3Round(1);
+    setPart3CurrentQuestion("");
+    setPart3Thinking(false);
+    setPart3Complete(false);
+    cefrAssessmentRef.current = null;
     setPart2PoolTopic(null);
     pickPart1Topics();
     pickPart2Topics();
@@ -2605,7 +2798,9 @@ function SpeakingPractice({ supabase, userId }) {
             <div style={{ background: C.green + "15", border: `1px solid ${C.green}`, borderRadius: 10, padding: "10px 14px", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ fontSize: 16 }}>✅</span>
               <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.green, fontWeight: 600 }}>
-                Part {currentPart < 3 ? currentPart : 3} {t.partSaved}
+                {currentPart === 3 && !part3Complete
+                  ? `Answer ${part3History.length} of ${PART3_MAX_ROUNDS} saved`
+                  : `Part ${currentPart < 3 ? currentPart : 3} ${t.partSaved}`}
                 {currentPart < 3 && ` — moving to Part ${currentPart + 1}`}
               </span>
             </div>
@@ -2656,11 +2851,17 @@ function SpeakingPractice({ supabase, userId }) {
                 </>
               )}
 
-              {(currentPart === 1 && part1Loading) || (currentPart === 2 && part2Loading && !cp2.useCustom) || (currentPart === 3 && part3Loading) ? (
+              {(currentPart === 1 && part1Loading) || (currentPart === 2 && part2Loading && !cp2.useCustom) || (currentPart === 3 && (part3Loading || part3Thinking)) ? (
                 <div style={{ textAlign: "center", padding: "32px 12px" }}>
                   <Waveform active={true} color={partColors[currentPart]} />
                   <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.textMuted, marginTop: 10 }}>
-                    {currentPart === 1 ? "Loading your topics…" : currentPart === 2 ? "Loading your topic…" : "Generating your Part 3 questions…"}
+                    {currentPart === 1
+                      ? "Loading your topics…"
+                      : currentPart === 2
+                      ? "Loading your topic…"
+                      : part3Thinking
+                      ? "Thinking about your answer…"
+                      : "Generating your Part 3 questions…"}
                   </div>
                 </div>
               ) : (
@@ -2669,6 +2870,7 @@ function SpeakingPractice({ supabase, userId }) {
                     <>
                       <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: partColors[currentPart], textTransform: "uppercase", letterSpacing: 1, marginBottom: 7 }}>
                         Part {currentPart} — {partLabels[currentPart]}
+                        {currentPart === 3 && ` · Question ${part3Round} of ${PART3_MAX_ROUNDS}`}
                       </div>
                       <PromptCarousel text={activeTopic.prompt} color={partColors[currentPart]} />
                     </>
@@ -2679,10 +2881,13 @@ function SpeakingPractice({ supabase, userId }) {
                     <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, color: C.textMuted, lineHeight: 1.6 }}>{partHints[currentPart]}</span>
                   </div>
 
+                  {/* Keying on the round remounts the recorder between Part 3
+                      questions, resetting it to idle instead of leaving the
+                      previous answer sitting in its review state. */}
                   <VoiceRecorder
-                    key={`recorder-${currentPart}`}
+                    key={currentPart === 3 ? `recorder-3-${part3Round}` : `recorder-${currentPart}`}
                     partColor={partColors[currentPart]}
-                    onTranscriptReady={savePartTranscript}
+                    onTranscriptReady={currentPart === 3 ? savePart3Answer : savePartTranscript}
                     userId={userId}
                   />
                 </>
