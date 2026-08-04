@@ -10,7 +10,7 @@ import UpgradeModal from './UpgradeModal';
 // Override with VITE_BACKEND_URL to point at a local backend. Vite inlines this
 // at build time, so the value comes from whichever .env the build ran against -
 // or from Netlify's environment variables in CI.
-const PROXY = import.meta.env.VITE_BACKEND_URL || "https://web-production-e43ad.up.railway.app";
+const PROXY = "https://web-production-e43ad.up.railway.app";
 
 // ─── THEME — SoundReady English Light Mode ───────────────────────────────────
 const C = {
