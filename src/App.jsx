@@ -688,7 +688,22 @@ const SPEAKING_TOPICS = {
   ],
 };
 
-const FUNCTIONAL_TYPES = ["list", "compare_contrast", "cause_effect", "process"];
+// Mirrors the round -> question-structure mapping in the backend's
+// /generate-next-part3-question. The server derives the type itself from
+// roundNumber and no longer accepts one from here; this copy exists only so
+// client-side fallback-bank lookups land on the same category the server would
+// have used. Round 5 reuses `process` for lookup continuity - the server's
+// round-5 closing instruction overrides the structure anyway.
+const PART3_ROUND_TYPES = ["list", "compare_contrast", "cause_effect", "process", "process"];
+
+const part3TypeForRound = n =>
+  PART3_ROUND_TYPES[Math.min(Math.max(Number(n) || 1, 1), PART3_ROUND_TYPES.length) - 1];
+
+// speaking_sessions.part3_functional_type is a single text column, but the type
+// now varies per round, so it can no longer describe a session. It is still
+// written - with the round 1 type - so anything reading the column keeps getting
+// a valid value, but nothing in this app reads it back.
+const PART3_STORED_FUNCTIONAL_TYPE = PART3_ROUND_TYPES[0];
 
 // Part 3 runs as a turn-by-turn discussion: one generated question per round,
 // each one reacting to the answer before it.
@@ -796,7 +811,7 @@ ESSAY: ${response}`;
 
 // part3History is an array of { question, answer } - one entry per discussion
 // round - so the scorer sees every exchange rather than only the final one.
-function buildHolisticSpeakingPrompt(part1Q, part1T, part2Q, part2T, part3History, functionalType) {
+function buildHolisticSpeakingPrompt(part1Q, part1T, part2Q, part2T, part3History) {
   const history = Array.isArray(part3History) ? part3History : [];
   const part3Block = history.length
     ? history
@@ -857,7 +872,7 @@ ADDITIONAL RULES:
 - Part 2 is a long turn — expect some natural filler.
 - Part 3 is a discussion — thinking out loud is normal and acceptable.
 - overall_band = mean of four criterion bands, rounded to nearest 0.5.
-- PART 3 FUNCTIONAL LANGUAGE: This Part 3 was designed to elicit ${functionalType} language (compare_contrast: comparatives like 'whereas', 'in contrast', 'more... than'; cause_effect: causal connectors like 'because', 'as a result', 'leads to'; process: sequencing markers like 'first', 'then', 'after that'; list: enumeration markers like 'firstly', 'one thing is', 'another is'). Check whether the candidate used this functional language in Part 3 and factor it into the Grammatical Range evidence and observations specifically — note explicitly if the expected structures are present or absent.
+- PART 3 FUNCTIONAL LANGUAGE: This Part 3 walked the candidate through a different question structure each round, so a different set of structures was expected in each answer — round 1 listing (enumeration markers like 'firstly', 'one thing is', 'another is'), round 2 comparing (comparatives like 'whereas', 'in contrast', 'more... than'), round 3 cause and effect (causal connectors like 'because', 'as a result', 'leads to'), round 4 process (sequencing markers like 'first', 'then', 'after that'), round 5 a reflective close drawing the discussion together. Check answer by answer whether the candidate produced the functional language its own question called for, and factor this into the Grammatical Range evidence and observations specifically — note explicitly which of these structures were present and which were absent.
 
 FEEDBACK LANGUAGE RULES:
 - Write as a warm, encouraging tutor speaking directly to the student.
@@ -2238,8 +2253,8 @@ function SpeakingPractice({ supabase, userId }) {
   const [part2Loading, setPart2Loading] = useState(true);
   const cp2 = useCustomPrompt(supabase, "speaking_part2", userId);
 
-  // Part 3: functional type picked once per session, and generation loading state
-  const [functionalType, setFunctionalType] = useState(null);
+  // Part 3 generation loading state. There is no session-wide functional type
+  // any more - the structure is derived per round from part3TypeForRound.
   const [part3Loading, setPart3Loading] = useState(false);
   // In-flight CEFR assessment, kicked off as soon as Part 2 is saved so it resolves
   // hidden behind the 1200ms auto-advance delay instead of adding visible latency
@@ -2389,7 +2404,9 @@ function SpeakingPractice({ supabase, userId }) {
   // Fetches the static fallback bank once and caches it. Falls back again to the
   // hardcoded SPEAKING_TOPICS[3] set if even this request fails, so a question is
   // always available and the student is never blocked.
-  async function getPart3FallbackQuestion(ft, roundIndex) {
+  async function getPart3FallbackQuestion(roundNumber) {
+    const ft = part3TypeForRound(roundNumber);
+    const roundIndex = Math.max(Number(roundNumber) || 1, 1) - 1;
     if (!part3FallbackRef.current) {
       try {
         const res = await fetch(`${PROXY}/part3-fallback-questions`);
@@ -2413,7 +2430,7 @@ function SpeakingPractice({ supabase, userId }) {
   // Requests one adaptive question for the given round. Never throws - on any
   // failure or timeout it resolves to a fallback question instead, because a
   // blocked student is worse than a slightly generic question.
-  async function requestPart3Question(ft, history, roundNumber) {
+  async function requestPart3Question(history, roundNumber) {
     try {
       // cefrAssessmentRef holds a PROMISE (set when Part 2 was saved), not a value,
       // and is null if the student jumped straight to Part 3 without going through
@@ -2426,7 +2443,6 @@ function SpeakingPractice({ supabase, userId }) {
         headers: { "Content-Type": "application/json", "x-user-id": userId },
         body: JSON.stringify({
           part2Topic: partQuestions[2],
-          functionalType: ft,
           cefrLevel,
           history,
           roundNumber,
@@ -2439,7 +2455,7 @@ function SpeakingPractice({ supabase, userId }) {
       return data.next_question.trim();
     } catch (err) {
       console.error(`Part 3 round ${roundNumber} generation failed, using fallback:`, err);
-      return getPart3FallbackQuestion(ft, roundNumber - 1);
+      return getPart3FallbackQuestion(roundNumber);
     }
   }
 
@@ -2452,17 +2468,14 @@ function SpeakingPractice({ supabase, userId }) {
     let cancelled = false;
     setPart3Loading(true);
 
-    const ft = functionalType || FUNCTIONAL_TYPES[Math.floor(Math.random() * FUNCTIONAL_TYPES.length)];
-    if (!functionalType) setFunctionalType(ft);
-
-    requestPart3Question(ft, [], 1)
+    requestPart3Question([], 1)
       .then(question => {
         if (cancelled) return;
         setPart3Round(1);
         setPart3CurrentQuestion(question);
         setTopics(prev => ({
           ...prev,
-          3: { id: "part3-discussion", label: `Discussion (${ft})`, prompt: question },
+          3: { id: "part3-discussion", label: "Discussion", prompt: question },
         }));
       })
       .finally(() => { if (!cancelled) setPart3Loading(false); });
@@ -2482,7 +2495,7 @@ function SpeakingPractice({ supabase, userId }) {
         const extraFields = {};
         if (currentPart === 1) extraFields.part1_topic_ids = part1PoolTopics.map(p => p.id);
         if (currentPart === 2 && part2PoolTopic) extraFields.part2_topic_id = part2PoolTopic.id;
-        if (currentPart === 3) extraFields.part3_functional_type = functionalType;
+        if (currentPart === 3) extraFields.part3_functional_type = PART3_STORED_FUNCTIONAL_TYPE;
 
         if (!sessionRowId) {
           const insertData = {
@@ -2520,7 +2533,6 @@ function SpeakingPractice({ supabase, userId }) {
     // Auto-advance to next part if not yet at part 3
     if (currentPart < 3) {
       if (currentPart === 2) {
-        setFunctionalType(FUNCTIONAL_TYPES[Math.floor(Math.random() * FUNCTIONAL_TYPES.length)]);
         cefrAssessmentRef.current = fetchCefrLevel(updatedTranscripts[1], updatedTranscripts[2], userId);
       }
       setTimeout(() => setCurrentPart(currentPart + 1), 1200);
@@ -2543,7 +2555,7 @@ function SpeakingPractice({ supabase, userId }) {
       try {
         const row = {
           part3_qa_history: newHistory,
-          part3_functional_type: functionalType,
+          part3_functional_type: PART3_STORED_FUNCTIONAL_TYPE,
           // Flattened copies keep the pre-existing part3_question/part3_transcript
           // columns meaningful for anything still reading the single-string shape.
           part3_question: flattenPart3Questions(newHistory),
@@ -2581,10 +2593,9 @@ function SpeakingPractice({ supabase, userId }) {
     }
 
     const nextRound = part3Round + 1;
-    const ft = functionalType || FUNCTIONAL_TYPES[0];
     setPart3Round(nextRound);
     setPart3Thinking(true);
-    const question = await requestPart3Question(ft, newHistory, nextRound);
+    const question = await requestPart3Question(newHistory, nextRound);
     setPart3CurrentQuestion(question);
     setTopics(prev => ({ ...prev, 3: { ...prev[3], prompt: question } }));
     setPart3Thinking(false);
@@ -2601,7 +2612,7 @@ function SpeakingPractice({ supabase, userId }) {
       try {
         const { data } = await supabase
           .from("speaking_sessions")
-          .select("id, part1_question, part1_transcript, part2_question, part2_transcript, part3_qa_history, part3_functional_type")
+          .select("id, part1_question, part1_transcript, part2_question, part2_transcript, part3_qa_history")
           .eq("user_id", userId)
           .eq("status", "in_progress")
           .order("created_at", { ascending: false })
@@ -2612,10 +2623,10 @@ function SpeakingPractice({ supabase, userId }) {
         const saved = Array.isArray(data.part3_qa_history) ? data.part3_qa_history : [];
         if (saved.length === 0) return;  // not mid-discussion; leave the fresh session alone
 
-        const ft = data.part3_functional_type || FUNCTIONAL_TYPES[0];
         setSessionRowId(data.id);
         setPart3History(saved);
-        if (data.part3_functional_type) setFunctionalType(data.part3_functional_type);
+        // The structure of the resumed round comes from its round number, so
+        // part3_functional_type no longer needs restoring.
         // Parts 1 and 2 are restored only as data - their selection flow is untouched.
         // Without them allPartsSaved can never become true and scoring has no input.
         setPartTranscripts(prev => ({ ...prev, 1: data.part1_transcript, 2: data.part2_transcript }));
@@ -2634,10 +2645,10 @@ function SpeakingPractice({ supabase, userId }) {
         const nextRound = saved.length + 1;
         setPart3Round(nextRound);
         setPart3Thinking(true);
-        const question = await requestPart3Question(ft, saved, nextRound);
+        const question = await requestPart3Question(saved, nextRound);
         if (cancelled) return;
         setPart3CurrentQuestion(question);
-        setTopics(prev => ({ ...prev, 3: { id: "part3-discussion", label: `Discussion (${ft})`, prompt: question } }));
+        setTopics(prev => ({ ...prev, 3: { id: "part3-discussion", label: "Discussion", prompt: question } }));
         setPart3Thinking(false);
       } catch (err) {
         console.error("Part 3 resume check failed:", err);
@@ -2663,8 +2674,7 @@ function SpeakingPractice({ supabase, userId }) {
       const combinedPrompt = buildHolisticSpeakingPrompt(
         partQuestions[1], partTranscripts[1],
         partQuestions[2], partTranscripts[2],
-        part3History,
-        functionalType || "list"
+        part3History
       );
 
       const res = await fetch(`${PROXY}/analyse-speaking-holistic`, {
