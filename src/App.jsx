@@ -325,20 +325,15 @@ async function loadDashboardStats(supabase, userId) {
 
     const allSessions = sessions || [];
     const totalSessions = allSessions.length;
-    const avgBand = totalSessions > 0
-      ? (allSessions.reduce((sum, s) => sum + (s.overall_band || 0), 0) / totalSessions).toFixed(1)
-      : "—";
+    const writingSessions = allSessions.filter(s => classifySkill(s.task_type) === "Writing");
+    const speakingSessions = allSessions.filter(s => classifySkill(s.task_type) === "Speaking");
 
-    const writingSessions = allSessions.filter(s => s.task_type?.includes("Task"));
-    const speakingSessions = allSessions.filter(s => s.task_type?.includes("Speaking"));
+    const writingMean = meanBand(writingSessions);
+    const speakingMean = meanBand(speakingSessions);
 
-    const writingAvg = writingSessions.length > 0
-      ? (writingSessions.reduce((sum, s) => sum + (s.overall_band || 0), 0) / writingSessions.length).toFixed(1)
-      : "—";
-
-    const speakingAvg = speakingSessions.length > 0
-      ? (speakingSessions.reduce((sum, s) => sum + (s.overall_band || 0), 0) / speakingSessions.length).toFixed(1)
-      : "—";
+    const writingAvg = formatBand(writingMean);
+    const speakingAvg = formatBand(speakingMean);
+    const avgBand = formatBand(meanOfSkillAverages(writingMean, speakingMean));
 
     const stats = [
       { label: "Sessions", value: String(totalSessions), color: C.blue },
@@ -349,7 +344,7 @@ async function loadDashboardStats(supabase, userId) {
 
     const recentSessions = allSessions.slice(0, 4).map(s => ({
       date: new Date(s.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
-      type: s.task_type?.includes("Task") ? "Writing" : "Speaking",
+      type: classifySkill(s.task_type) || "Other",
       task: s.task_type || "Unknown",
       topic: s.topic_label || "—",
       band: s.overall_band || "—",
@@ -385,9 +380,13 @@ async function loadDashboardStats(supabase, userId) {
       ? allSessions.reduce((best, s) => (!best || (s.overall_band || 0) > (best.overall_band || 0)) ? s : best, null)
       : null;
 
-    const currentAvg = totalSessions > 0
-      ? allSessions.reduce((sum, s) => sum + (s.overall_band || 0), 0) / totalSessions
-      : null;
+    // Same equal-weight-per-skill definition as the Avg Band card, so the two
+    // "overall" figures on this screen cannot disagree.
+    //
+    // Deliberately the RAW mean, not half-band rounded: nextTarget and
+    // targetProgress below measure distance to the next half band, so rounding
+    // here would snap progress to 0% or 100% and make the bar meaningless.
+    const currentAvg = meanOfSkillAverages(writingMean, speakingMean);
     const nextTarget = currentAvg !== null
       ? Math.ceil(currentAvg * 2) / 2 + (currentAvg === Math.ceil(currentAvg * 2) / 2 ? 0.5 : 0)
       : null;
@@ -687,6 +686,70 @@ const SPEAKING_TOPICS = {
     { id: "s3-3", label: "Environment", prompt: "Who is most responsible for protecting the environment — individuals, governments, or businesses?\nWhy do many people still choose convenience over sustainability?\nWhat changes do you think future generations will make?" },
   ],
 };
+
+// ─── SESSION SKILL CLASSIFICATION ────────────────────────────────────────────
+// Maps sessions.task_type to a skill by EXACT match against the values we
+// actually write. This replaces three separate substring checks that disagreed
+// with each other: the per-skill averages used two positive tests
+// (includes("Task") / includes("Speaking")), while the history list and the
+// progress chart used an else-branch, so a row matching neither test was
+// dropped from both averages yet still labelled "Speaking" on screen.
+//
+// LEGACY_SPEAKING_TASK_TYPES come from the older per-part speaking flow. Those
+// rows are still in the sessions table and are genuine speaking sessions, so
+// they stay classified as Speaking - exact-matching only "Speaking (Holistic)"
+// would silently drop them out of the Speaking average.
+const LEGACY_SPEAKING_TASK_TYPES = ["Speaking Part 1", "Speaking Part 2", "Speaking Part 3"];
+const SPEAKING_TASK_TYPES = new Set(["Speaking (Holistic)", ...LEGACY_SPEAKING_TASK_TYPES]);
+const WRITING_TASK_TYPES = new Set(Object.keys(WRITING_TOPICS));
+
+// Returns "Writing", "Speaking", or null for an unrecognised task_type.
+// Callers must handle null explicitly - never default it into a skill.
+function classifySkill(taskType) {
+  if (WRITING_TASK_TYPES.has(taskType)) return "Writing";
+  if (SPEAKING_TASK_TYPES.has(taskType)) return "Speaking";
+  return null;
+}
+
+// ─── BAND AVERAGING ──────────────────────────────────────────────────────────
+// Mean of overall_band, ignoring rows with no usable score. Unscored sessions
+// are excluded from BOTH numerator and denominator - the previous
+// `sum + (s.overall_band || 0)` counted a failed scoring run as a band 0 and
+// dragged the average down permanently. Returns null when nothing is scorable.
+function meanBand(sessions) {
+  const scored = (sessions || []).filter(s => Number.isFinite(s?.overall_band));
+  if (scored.length === 0) return null;
+  return scored.reduce((sum, s) => sum + s.overall_band, 0) / scored.length;
+}
+
+// IELTS reports whole and half bands only. Round to the nearest 0.5 with the
+// .25 midpoint going up (6.25 -> 6.5), which is how IELTS rounds an average.
+// Display-only: the stored per-session overall_band is never altered.
+function toHalfBand(value) {
+  if (!Number.isFinite(value)) return null;
+  return Math.round(value * 2) / 2;
+}
+
+const formatBand = value => {
+  const rounded = toHalfBand(value);
+  return rounded === null ? "—" : rounded.toFixed(1);
+};
+
+// The overall average, weighting each SKILL equally rather than pooling every
+// session into one mean. Real IELTS derives an overall band from the skill
+// scores regardless of how many tasks each involved, and this value is shown
+// beside the per-skill cards - a pooled mean drifts toward whichever skill was
+// practised more and can land outside the range the two cards span, which
+// reads as a bug.
+//
+// A skill with no scored sessions contributes nothing rather than counting as
+// zero, so a writing-only user sees their writing average here, not a dash.
+// Returns null only when no skill has a scored session at all.
+function meanOfSkillAverages(...skillAverages) {
+  const present = skillAverages.filter(v => Number.isFinite(v));
+  if (present.length === 0) return null;
+  return present.reduce((sum, v) => sum + v, 0) / present.length;
+}
 
 // Mirrors the round -> question-structure mapping in the backend's
 // /generate-next-part3-question. The server derives the type itself from
@@ -3001,7 +3064,7 @@ function BandProgressChart({ supabase, userId }) {
     .map(s => ({
       date: new Date(s.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
       band: s.overall_band,
-      type: s.task_type?.includes("Task") ? "Writing" : "Speaking",
+      type: classifySkill(s.task_type) || "Other",
     }))
   ).filter(s => filter === "Both" || s.type === filter);
 
@@ -3065,7 +3128,7 @@ function BandProgressChart({ supabase, userId }) {
                 strokeWidth={2.5}
                 dot={({ cx, cy, payload }) => (
                   <circle key={`dot-${cx}-${cy}`} cx={cx} cy={cy} r={4}
-                    fill={payload.type === "Writing" ? C.blue : C.purple}
+                    fill={payload.type === "Writing" ? C.blue : payload.type === "Speaking" ? C.purple : C.textDim}
                     stroke={C.surface} strokeWidth={2} />
                 )}
                 activeDot={{ r: 6, stroke: lineColor, strokeWidth: 2, fill: C.surface }}
@@ -3139,7 +3202,9 @@ function Dashboard({ supabase, userId }) {
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 34, fontWeight: 800, color: BAND_COLOR(bestSession.overall_band), lineHeight: 1 }}>{bestSession.overall_band}</div>
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1, marginTop: 4 }}>{t.personalBest}</div>
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, marginTop: 4, lineHeight: 1.4 }}>
-                {bestSession.task_type?.includes("Task") ? t.writing_label : t.speaking_label} · {new Date(bestSession.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                {classifySkill(bestSession.task_type) === "Writing" ? t.writing_label
+                  : classifySkill(bestSession.task_type) === "Speaking" ? t.speaking_label
+                  : (bestSession.task_type || "—")} · {new Date(bestSession.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
               </div>
             </>
           ) : (
