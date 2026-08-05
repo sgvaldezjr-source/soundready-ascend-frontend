@@ -312,34 +312,65 @@ async function saveSession(supabase, userId, { taskType, topicLabel, prompt, res
   }
 }
 
+// Most recent SCORED session for one skill. Two narrow columns, one row - the
+// Writing and Speaking cards show a single session's band now, not an average,
+// so there is nothing to compute client side.
+//
+// Unscored rows are filtered out in the query rather than being allowed to win
+// the sort: a failed scoring run is not a result, and letting it through would
+// blank the card until the next session.
+async function fetchLatestSkillBand(supabase, userId, taskTypes) {
+  const { data, error } = await supabase
+    .from("sessions")
+    .select("overall_band, created_at")
+    .eq("user_id", userId)
+    .in("task_type", taskTypes)
+    .not("overall_band", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data || null;
+}
+
 // ─── DASHBOARD STATS ──────────────────────────────────────────────────────
 async function loadDashboardStats(supabase, userId) {
   if (!supabase || !userId) return { stats: [], recentSessions: [] };
   try {
-    const { data: sessions, error } = await supabase
-      .from("sessions")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
-    if (error) throw error;
+    // Explicit column list, not select("*"): the widgets below need only these
+    // four fields, and "*" was dragging every essay body, prompt and feedback
+    // JSON across the wire on each dashboard load.
+    const [sessionsRes, latestWriting, latestSpeaking] = await Promise.all([
+      supabase
+        .from("sessions")
+        .select("created_at, task_type, topic_label, overall_band")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false }),
+      fetchLatestSkillBand(supabase, userId, [...WRITING_TASK_TYPES]),
+      fetchLatestSkillBand(supabase, userId, [...SPEAKING_TASK_TYPES]),
+    ]);
+    if (sessionsRes.error) throw sessionsRes.error;
 
-    const allSessions = sessions || [];
+    const allSessions = sessionsRes.data || [];
     const totalSessions = allSessions.length;
     const writingSessions = allSessions.filter(s => classifySkill(s.task_type) === "Writing");
     const speakingSessions = allSessions.filter(s => classifySkill(s.task_type) === "Speaking");
 
+    // Still averaged, but only to feed the next-target progress bar below -
+    // no longer shown as its own card.
     const writingMean = meanBand(writingSessions);
     const speakingMean = meanBand(speakingSessions);
 
-    const writingAvg = formatBand(writingMean);
-    const speakingAvg = formatBand(speakingMean);
-    const avgBand = formatBand(meanOfSkillAverages(writingMean, speakingMean));
+    // Latest band per skill. formatBand applies the half-band rounding rule in
+    // case a stored score is not already a clean .0/.5 value.
+    const latestCard = (label, row, color) => row
+      ? { label, value: formatBand(row.overall_band), color }
+      : { label, value: "—", color, note: "None yet" };
 
     const stats = [
       { label: "Sessions", value: String(totalSessions), color: C.blue },
-      { label: "Avg Band", value: String(avgBand), color: C.accent },
-      { label: "Writing", value: String(writingAvg), color: C.green },
-      { label: "Speaking", value: String(speakingAvg), color: C.purple },
+      latestCard("Writing", latestWriting, C.green),
+      latestCard("Speaking", latestSpeaking, C.purple),
     ];
 
     const recentSessions = allSessions.slice(0, 4).map(s => ({
@@ -737,14 +768,15 @@ const formatBand = value => {
 
 // The overall average, weighting each SKILL equally rather than pooling every
 // session into one mean. Real IELTS derives an overall band from the skill
-// scores regardless of how many tasks each involved, and this value is shown
-// beside the per-skill cards - a pooled mean drifts toward whichever skill was
-// practised more and can land outside the range the two cards span, which
-// reads as a bug.
+// scores regardless of how many tasks each involved; a pooled mean drifts
+// toward whichever skill was practised more.
+//
+// Sole remaining caller is the next-target progress bar. The Avg Band card
+// this was written for has been removed, and the Writing/Speaking cards now
+// show a single latest session rather than an average.
 //
 // A skill with no scored sessions contributes nothing rather than counting as
-// zero, so a writing-only user sees their writing average here, not a dash.
-// Returns null only when no skill has a scored session at all.
+// zero. Returns null only when no skill has a scored session at all.
 function meanOfSkillAverages(...skillAverages) {
   const present = skillAverages.filter(v => Number.isFinite(v));
   if (present.length === 0) return null;
@@ -3252,11 +3284,14 @@ function Dashboard({ supabase, userId }) {
         )}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, marginBottom: 10 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 10 }}>
         {stats.length > 0 ? stats.map(s => (
           <div key={s.label} style={{ background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 15px" }}>
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 30, fontWeight: 700, color: s.color, marginBottom: 4 }}>{s.value}</div>
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textMuted, textTransform: "uppercase", letterSpacing: 1 }}>{s.label}</div>
+            {s.note && (
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: C.textDim, marginTop: 4, lineHeight: 1.4 }}>{s.note}</div>
+            )}
           </div>
         )) : (
           <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "24px 0", color: C.textMuted }}>
